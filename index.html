@@ -1,0 +1,2148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FamilyHealth Monitor</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060C18;--bg2:#0B1525;--card:#0F1D30;--card2:#162438;--card3:#1C2E42;
+  --border:#1F3348;--border2:#2A4460;
+  --acc:#00D4AA;--acc2:#0EA5E9;--acc3:#6366F1;
+  --pink:#F472B6;--orange:#FB923C;--yellow:#FBBF24;
+  --red:#F87171;--green:#4ADE80;--purple:#A78BFA;
+  --text:#E8F0F5;--muted:#8BA3B5;--muted2:#5A7A90;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+button,input,select,textarea{font-family:var(--font)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.fade-up{animation:fadeUp .3s ease forwards}
+.fade-in{animation:fadeIn .2s ease forwards}
+.spin{animation:spin 1s linear infinite}
+.pulse{animation:pulse 2s ease infinite}
+.mono{font-family:var(--mono)}
+
+/* ── LAYOUT ── */
+#app{display:flex;height:100vh;overflow:hidden}
+#sidebar{width:248px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:width .25s cubic-bezier(.4,0,.2,1);z-index:10}
+#sidebar.collapsed{width:62px}
+#main{flex:1;overflow-y:auto;min-width:0;background:var(--bg)}
+.sidebar-header{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10;min-height:60px}
+.sidebar-logo{font-size:22px;flex-shrink:0}
+.sidebar-title{font-weight:700;font-size:15px;background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;overflow:hidden}
+.collapsed .sidebar-title,.collapsed .nav-label,.collapsed .user-info{display:none}
+.sidebar-toggle{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;flex-shrink:0;padding:4px;border-radius:6px;transition:color .2s}
+.sidebar-toggle:hover{color:var(--text)}
+.user-bar{padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:9px;position:relative;transition:background .15s}
+.user-bar:hover{background:rgba(255,255,255,.03)}
+.user-avatar{width:32px;height:32px;background:rgba(0,212,170,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-name{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:11px;color:var(--muted)}
+.user-caret{font-size:10px;color:var(--muted);flex-shrink:0}
+#nav{flex:1;overflow-y:auto;padding:6px 0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer;border-left:3px solid transparent;transition:all .15s;justify-content:flex-start}
+.collapsed .nav-item{justify-content:center;padding:10px 0}
+.nav-item:hover{background:rgba(255,255,255,.03)}
+.nav-item.active{background:rgba(0,212,170,.08);border-left-color:var(--acc)}
+.nav-item.active .nav-label{color:var(--acc);font-weight:600}
+.nav-icon{font-size:16px;flex-shrink:0}
+.nav-label{font-size:13px;color:var(--muted);white-space:nowrap}
+.member-dropdown{position:absolute;top:100%;left:0;right:0;background:var(--card2);border:1px solid var(--border);border-radius:8px;z-index:100;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.member-opt{padding:9px 13px;display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13px;transition:background .1s}
+.member-opt:hover{background:var(--border)}
+.member-opt.danger{color:var(--red);border-top:1px solid var(--border)}
+#content{padding:24px;animation:fadeUp .25s ease}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;transition:border-color .2s}
+.card.hoverable{cursor:pointer}
+.card.hoverable:hover{border-color:var(--border2);transform:translateY(-1px)}
+.card-title{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;align-items:flex-start;gap:12px}
+.stat-icon{border-radius:9px;padding:9px;font-size:18px;flex-shrink:0}
+.stat-label{font-size:11px;color:var(--muted);margin-bottom:2px}
+.stat-value{font-size:20px;font-weight:700;line-height:1.2}
+.stat-sub{font-size:11px;color:var(--muted2);margin-top:2px}
+
+/* ── FORMS ── */
+.form-group{display:flex;flex-direction:column;gap:5px}
+label.fl{font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.3px}
+.req{color:var(--pink)}
+input[type=text],input[type=number],input[type=date],input[type=time],input[type=password],input[type=email],input[type=url],select,textarea{
+  background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;
+  color:var(--text);font-size:13px;outline:none;transition:border-color .2s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--acc)}
+select option{background:var(--card2);color:var(--text)}
+textarea{resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.checkbox-row{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;cursor:pointer}
+input[type=checkbox]{width:16px;height:16px;accent-color:var(--acc);cursor:pointer}
+.range-wrap{display:flex;flex-direction:column;gap:4px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:8px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;font-size:13px;padding:8px 16px}
+.btn-sm{font-size:12px;padding:6px 12px}
+.btn-lg{font-size:15px;padding:12px 24px}
+.btn-full{width:100%;justify-content:center}
+.btn-primary{background:var(--acc);color:#06101A}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn-secondary{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--acc)}
+.btn-danger{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.25)}
+.btn-danger:hover{background:rgba(248,113,113,.2)}
+.btn-ghost{background:transparent;color:var(--muted);border:none}
+.btn-ghost:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.btn-blue{background:var(--acc2);color:#fff}
+.btn-blue:hover{filter:brightness(1.1)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── TAGS ── */
+.tag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap}
+
+/* ── MODAL ── */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;transition:opacity .2s}
+#modal-overlay.visible{opacity:1}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;transform:translateY(10px);transition:transform .2s;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+#modal-overlay.visible .modal-box{transform:translateY(0)}
+.modal-box.wide{max-width:740px}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-title{font-weight:600;font-size:16px}
+.modal-close{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;padding:2px 6px}
+.modal-close:hover{color:var(--text)}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
+.form-stack{display:flex;flex-direction:column;gap:14px}
+
+/* ── TABLES & LISTS ── */
+.data-list{display:flex;flex-direction:column;gap:8px}
+.list-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;align-items:flex-start;gap:12px;transition:border-color .15s}
+.list-item:hover{border-color:var(--border2)}
+.list-body{flex:1;min-width:0}
+.list-actions{display:flex;gap:5px;flex-shrink:0;margin-left:10px}
+.list-primary{font-weight:600;font-size:14px;margin-bottom:3px}
+.list-secondary{font-size:12px;color:var(--muted2);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.list-meta{font-size:12px;color:var(--muted);margin-top:5px}
+
+/* ── SEARCH ── */
+.search-bar{position:relative;margin-bottom:16px;max-width:320px}
+.search-bar input{padding-left:32px}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted2);font-size:14px}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:48px 24px;color:var(--muted2)}
+.empty-icon{font-size:44px;margin-bottom:14px;opacity:.5}
+.empty-text{font-size:14px}
+
+/* ── SECTION HEADER ── */
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.section-title{font-size:20px;font-weight:700;display:flex;align-items:center;gap:8px}
+
+/* ── TABS ── */
+.tab-bar{display:flex;gap:4px;background:var(--card2);border-radius:10px;padding:4px;margin-bottom:20px}
+.tab-btn{flex:1;padding:7px 10px;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;background:transparent;color:var(--muted)}
+.tab-btn.active{background:var(--acc);color:#06101A}
+
+/* ── BADGE ── */
+.badge-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+
+/* ── LOGIN ── */
+#login-screen{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
+#login-screen::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(0,212,170,.07),transparent),radial-gradient(ellipse 60% 40% at 100% 80%,rgba(14,165,233,.05),transparent);pointer-events:none}
+.login-box{width:100%;max-width:460px;position:relative;z-index:1}
+.login-hero{text-align:center;margin-bottom:36px}
+.login-logo{font-size:52px;margin-bottom:14px;display:block}
+.login-brand{font-size:30px;font-weight:700;background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.login-sub{color:var(--muted);font-size:14px;margin-top:6px}
+.login-step{display:none}
+.login-step.active{display:block;animation:fadeUp .3s ease}
+.step-label{font-size:11px;font-weight:600;color:var(--muted2);letter-spacing:.8px;text-transform:uppercase;margin-bottom:16px}
+.member-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.member-card{padding:16px;border-radius:10px;cursor:pointer;text-align:center;border:2px solid var(--border);background:var(--card2);transition:all .2s}
+.member-card:hover{border-color:var(--border2)}
+.member-card.selected{border-color:var(--acc);background:rgba(0,212,170,.08)}
+.member-card-av{font-size:30px;margin-bottom:4px}
+.member-card-name{font-weight:600;font-size:13px}
+.member-card-role{font-size:11px;color:var(--muted2)}
+.pin-input{text-align:center;font-size:24px;letter-spacing:10px;padding:12px}
+.login-hint{font-size:11px;color:var(--muted2);text-align:center;margin-top:10px}
+.sheet-input-wrap{position:relative}
+.sheet-input-wrap input{padding-right:36px}
+.sheet-input-info{font-size:11px;color:var(--muted2);margin-top:6px;line-height:1.6}
+.error-msg{color:var(--red);font-size:12px;text-align:center;margin-top:8px;min-height:16px}
+.sync-status{font-size:12px;margin-top:8px;text-align:center;min-height:16px}
+
+/* ── CHARTS ── */
+.chart-wrap{position:relative;height:200px}
+.chart-wrap.tall{height:260px}
+
+/* ── NOTIFICATION ── */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;font-weight:500;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;max-width:300px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.success{border-color:var(--green);color:var(--green)}
+#toast.error{border-color:var(--red);color:var(--red)}
+
+/* ── PREDICTION BOX ── */
+.pred-box{background:linear-gradient(135deg,rgba(244,114,182,.08),rgba(167,139,250,.08));border:1px solid rgba(244,114,182,.3);border-radius:12px;padding:16px;margin-bottom:20px}
+.pred-title{font-size:13px;font-weight:600;color:var(--pink);margin-bottom:12px}
+.pred-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center}
+.pred-label{font-size:11px;color:var(--muted2);margin-bottom:4px}
+.pred-val{font-size:15px;font-weight:700}
+
+/* ── CODE BLOCK ── */
+.code-block{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:11px;color:var(--acc);overflow-x:auto;font-family:var(--mono);line-height:1.7;white-space:pre}
+
+/* ── SETTINGS GUIDE ── */
+.guide-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.step-num{width:26px;height:26px;background:rgba(0,212,170,.15);color:var(--acc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* ── HEALTH SCORE ── */
+.score-ring{position:relative;width:100px;height:100px}
+.score-ring canvas{position:absolute;top:0;left:0}
+.score-ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  #sidebar{position:absolute;height:100%;z-index:50}
+  .grid2,.grid3,.grid4{grid-template-columns:1fr}
+  .pred-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+<div id="modal-overlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal-box" id="modal-box"></div>
+</div>
+
+<div id="app"></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONSTANTS & CONFIG
+// ══════════════════════════════════════════════
+const VERSION = '1.0.0';
+
+const NAV_ITEMS = [
+  {id:'dashboard',  icon:'🏠', label:'Dashboard'},
+  {id:'medical',    icon:'📋', label:'Rekam Medis'},
+  {id:'lab',        icon:'🔬', label:'Hasil Lab'},
+  {id:'exercise',   icon:'🏃', label:'Latihan Fisik'},
+  {id:'symptoms',   icon:'🤒', label:'Gejala'},
+  {id:'menstruation',icon:'🩷',label:'Menstruasi & Nifas'},
+  {id:'immunization',icon:'💉',label:'Imunisasi & Vaksin'},
+  {id:'spo2',       icon:'💓', label:'SpO2 & Detak'},
+  {id:'sleep',      icon:'😴', label:'Pola Tidur'},
+  {id:'nutrition',  icon:'🥗', label:'Makanan & Minuman'},
+  {id:'illness',    icon:'🤧', label:'Riwayat Sakit'},
+  {id:'doctor',     icon:'👨‍⚕️',label:'Dokter & Diagnosa'},
+  {id:'medications',icon:'💊', label:'Obat'},
+  {id:'conditions', icon:'🩹', label:'Kondisi & Cedera'},
+  {id:'lifestyle',  icon:'🌿', label:'Kebiasaan Hidup'},
+  {id:'genetic',    icon:'🧬', label:'Penyakit Genetik'},
+  {id:'allergies',  icon:'⚠️', label:'Alergi & Intoleransi'},
+  {id:'analytics',  icon:'📊', label:'Analisis Data'},
+  {id:'settings',   icon:'⚙️', label:'Pengaturan'},
+];
+
+const DEFAULT_MEMBERS = [
+  {id:1,name:'Ayah',role:'Kepala Keluarga',pin:'1234',avatar:'👨',gender:'male',birthDate:'1975-05-15',bloodType:'O+',height:170,weight:72},
+  {id:2,name:'Ibu',role:'Ibu',pin:'5678',avatar:'👩',gender:'female',birthDate:'1978-08-20',bloodType:'A+',height:160,weight:58},
+  {id:3,name:'Anak 1',role:'Anak',pin:'1111',avatar:'👦',gender:'male',birthDate:'2005-03-10',bloodType:'O+',height:165,weight:55},
+  {id:4,name:'Anak 2',role:'Anak',pin:'2222',avatar:'👧',gender:'female',birthDate:'2010-07-25',bloodType:'A+',height:145,weight:40},
+];
+
+const mkHealth = () => ({
+  medicalRecords:[],labResults:[],exercise:[],symptoms:[],
+  menstruation:[],immunization:[],spo2:[],sleep:[],nutrition:[],
+  illness:[],doctorPlans:[],medications:[],conditions:[],lifestyle:[],
+  geneticDiseases:[],allergies:[]
+});
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+const S = {
+  screen: 'login',   // 'login' | 'app'
+  user: null,
+  module: 'dashboard',
+  sidebarCollapsed: false,
+  memberDropdown: false,
+  sheetUrl: '',
+  syncStatus: '',
+  syncLoading: false,
+  familyData: { members: [...DEFAULT_MEMBERS] },
+  healthData: {},
+
+  // Login flow
+  loginStep: 1,      // 1=sheet 2=member 3=pin
+  loginSheetUrl: '',
+  loginMemberId: null,
+  loginPin: '',
+  loginError: '',
+
+  _charts: {},
+};
+
+// Init empty health data
+DEFAULT_MEMBERS.forEach(m => { S.healthData[m.id] = mkHealth(); });
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+const uid = () => Date.now().toString(36) + Math.random().toString(36).substr(2,5);
+const today = () => new Date().toISOString().split('T')[0];
+const fmt = d => d ? new Date(d).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}) : '-';
+const fmtShort = d => d ? new Date(d).toLocaleDateString('id-ID',{day:'2-digit',month:'short'}) : '-';
+const age = dob => { if(!dob) return '-'; return Math.floor((Date.now()-new Date(dob).getTime())/31536000000)+' thn'; };
+const bmi = (h,w) => h&&w ? (w/((h/100)**2)).toFixed(1) : '-';
+const bmiLabel = v => { const n=parseFloat(v); if(!n) return ''; if(n<18.5) return 'Kurus'; if(n<25) return 'Normal'; if(n<30) return 'Gemuk'; return 'Obesitas'; };
+const bmiColor = v => { const l=bmiLabel(v); return l==='Normal'?'var(--green)':l==='Kurus'?'var(--acc2)':'var(--orange)'; };
+const colorFor = s => ({ringan:'var(--yellow)',sedang:'var(--orange)',parah:'var(--red)','sangat parah':'var(--red)',normal:'var(--green)',tinggi:'var(--red)',rendah:'var(--orange)',kritis:'var(--red)'})[s]||'var(--muted)';
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'show ' + type;
+  clearTimeout(el._t); el._t = setTimeout(() => el.className='', 3000);
+}
+
+function getH() { return S.user ? (S.healthData[S.user.id] || mkHealth()) : mkHealth(); }
+function setH(module, val) {
+  if(!S.user) return;
+  if(!S.healthData[S.user.id]) S.healthData[S.user.id] = mkHealth();
+  S.healthData[S.user.id][module] = val;
+  autoSync();
+}
+
+function predictMenstruation(records) {
+  if(!records||records.length<2) return null;
+  const sorted = [...records].filter(r=>r.type==='menstruasi').sort((a,b)=>new Date(b.startDate)-new Date(a.startDate));
+  if(sorted.length<1) return null;
+  const latest = sorted[0];
+  const avgCycle = sorted.slice(0,4).reduce((s,r)=>s+(r.cycle||28),0)/Math.min(4,sorted.length);
+  const nextStart = new Date(latest.startDate);
+  nextStart.setDate(nextStart.getDate()+Math.round(avgCycle));
+  const ovulation = new Date(nextStart);
+  ovulation.setDate(ovulation.getDate()-14);
+  const fertile1 = new Date(ovulation); fertile1.setDate(fertile1.getDate()-3);
+  const fertile2 = new Date(ovulation); fertile2.setDate(fertile2.getDate()+3);
+  return {
+    nextStart: nextStart.toISOString().split('T')[0],
+    ovulation: ovulation.toISOString().split('T')[0],
+    fertileStart: fertile1.toISOString().split('T')[0],
+    fertileEnd: fertile2.toISOString().split('T')[0],
+    avgCycle: Math.round(avgCycle)
+  };
+}
+
+// ══════════════════════════════════════════════
+//  GOOGLE SHEETS API LAYER
+// ══════════════════════════════════════════════
+// Expects an Apps Script Web App URL stored in S.sheetUrl
+// The Apps Script must handle GET ?action=getData and POST with JSON body
+
+async function sheetGet(action, params='') {
+  if(!S.sheetUrl) return null;
+  try {
+    const url = S.sheetUrl + (S.sheetUrl.includes('?')?'&':'?') + 'action=' + action + (params?'&'+params:'');
+    const r = await fetch(url);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const txt = await r.text();
+    // Handle JSONP or plain JSON
+    const clean = txt.trim().replace(/^\/\*.*?\*\//,'').trim();
+    return JSON.parse(clean);
+  } catch(e) { return null; }
+}
+
+async function sheetPost(body) {
+  if(!S.sheetUrl) return null;
+  try {
+    const r = await fetch(S.sheetUrl, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body),
+      mode:'no-cors' // Apps Script requires no-cors
+    });
+    return true;
+  } catch(e) { return null; }
+}
+
+let autoSyncTimer = null;
+function autoSync() {
+  clearTimeout(autoSyncTimer);
+  autoSyncTimer = setTimeout(() => syncToSheet(true), 3000);
+}
+
+async function syncToSheet(silent=false) {
+  if(!S.sheetUrl || !S.user) return;
+  S.syncStatus = '🔄 Menyinkronkan...';
+  if(!silent) renderApp();
+  await sheetPost({
+    action: 'saveData',
+    memberId: S.user.id,
+    familyData: S.familyData,
+    healthData: S.healthData,
+    savedAt: new Date().toISOString()
+  });
+  S.syncStatus = '✅ Tersinkronisasi ' + new Date().toLocaleTimeString('id-ID');
+  if(!silent) renderApp(); else {
+    const el = document.getElementById('sync-status-bar');
+    if(el) el.textContent = S.syncStatus;
+  }
+}
+
+async function syncFromSheet() {
+  if(!S.sheetUrl) return false;
+  S.syncStatus = '🔄 Memuat dari Spreadsheet...';
+  renderApp();
+  const data = await sheetGet('getData');
+  if(data && data.familyData && data.healthData) {
+    S.familyData = data.familyData;
+    S.healthData = data.healthData;
+    // Ensure health data exists for all members
+    S.familyData.members.forEach(m => { if(!S.healthData[m.id]) S.healthData[m.id]=mkHealth(); });
+    S.syncStatus = '✅ Data dimuat dari Spreadsheet';
+    toast('Data berhasil dimuat dari Spreadsheet!','success');
+    return true;
+  }
+  S.syncStatus = '⚠️ Tidak dapat terhubung ke Spreadsheet (menggunakan data lokal)';
+  toast('Tidak dapat terhubung ke Spreadsheet, menggunakan data lokal','');
+  return false;
+}
+
+// ══════════════════════════════════════════════
+//  RENDER ENGINE
+// ══════════════════════════════════════════════
+function render() {
+  if(S.screen === 'login') renderLogin();
+  else renderApp();
+}
+
+function renderLogin() {
+  document.getElementById('app').innerHTML = loginHTML();
+  attachLoginEvents();
+}
+
+function renderApp() {
+  document.getElementById('app').innerHTML = appShellHTML();
+  attachAppEvents();
+  renderModule();
+  destroyCharts();
+}
+
+function renderModule() {
+  const el = document.getElementById('content');
+  if(!el) return;
+  const fns = {
+    dashboard, medical, lab, exercise, symptoms, menstruation,
+    immunization, spo2View, sleep, nutrition, illness, doctor,
+    medications, conditions, lifestyle, genetic, allergies, analytics, settings
+  };
+  const fn = fns[S.module === 'spo2' ? 'spo2View' : S.module];
+  if(fn) { el.innerHTML = fn(); attachModuleEvents(); }
+}
+
+function destroyCharts() {
+  Object.values(S._charts).forEach(c => { try{c.destroy()}catch(e){} });
+  S._charts = {};
+}
+
+// ══════════════════════════════════════════════
+//  LOGIN SCREEN
+// ══════════════════════════════════════════════
+function loginHTML() {
+  const members = S.familyData.members;
+  return `
+<div id="login-screen">
+  <div class="login-box fade-up">
+    <div class="login-hero">
+      <span class="login-logo">🏥</span>
+      <div class="login-brand">FamilyHealth</div>
+      <p class="login-sub">Monitor kesehatan keluarga terpadu</p>
+    </div>
+    <div class="card" style="padding:28px">
+
+      <!-- Step 1: Sheet URL -->
+      <div class="login-step ${S.loginStep===1?'active':''}" id="ls-1">
+        <div class="step-label">Langkah 1 dari 3 — Koneksi Data</div>
+        <div class="form-stack">
+          <div class="form-group">
+            <label class="fl">URL Apps Script Google Sheets <span class="req">*</span></label>
+            <input type="url" id="inp-sheet-url" value="${esc(S.loginSheetUrl)}"
+              placeholder="https://script.google.com/macros/s/..."
+              style="font-size:12px">
+            <div class="sheet-input-info">
+              Masukkan URL Apps Script Web App yang sudah di-deploy dari Google Spreadsheet Anda.
+              Data akan dimuat dan disimpan ke Spreadsheet tersebut.<br>
+              <span style="color:var(--acc)">💡 Panduan setup ada di halaman Pengaturan setelah login.</span>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-full btn-lg" id="btn-sheet-next">
+            Lanjutkan →
+          </button>
+          <div class="error-msg" id="err-step1">${esc(S.loginError)}</div>
+          <div class="sync-status" id="sync-step1"></div>
+        </div>
+      </div>
+
+      <!-- Step 2: Member Select -->
+      <div class="login-step ${S.loginStep===2?'active':''}" id="ls-2">
+        <div class="step-label">Langkah 2 dari 3 — Pilih Profil</div>
+        <div class="member-grid">
+          ${members.map(m=>`
+          <div class="member-card ${S.loginMemberId===m.id?'selected':''}" 
+               data-member-id="${m.id}" onclick="selectMember(${m.id})">
+            <div class="member-card-av">${m.avatar}</div>
+            <div class="member-card-name">${esc(m.name)}</div>
+            <div class="member-card-role">${esc(m.role)}</div>
+          </div>`).join('')}
+        </div>
+        <button class="btn btn-primary btn-full" id="btn-member-next" ${!S.loginMemberId?'disabled':''}>
+          Lanjutkan →
+        </button>
+        <button class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%" 
+                onclick="S.loginStep=1;S.loginError='';render()">← Kembali</button>
+      </div>
+
+      <!-- Step 3: PIN -->
+      <div class="login-step ${S.loginStep===3?'active':''}" id="ls-3">
+        <div class="step-label">Langkah 3 dari 3 — Masukkan PIN</div>
+        ${S.loginMemberId ? (() => {
+          const m = S.familyData.members.find(x=>x.id===S.loginMemberId);
+          return `<div style="text-align:center;margin-bottom:16px">
+            <div style="font-size:36px">${m?.avatar||'👤'}</div>
+            <div style="font-weight:600;font-size:15px;margin-top:6px">${esc(m?.name||'')}</div>
+            <div style="font-size:12px;color:var(--muted2)">${esc(m?.role||'')}</div>
+          </div>`;
+        })() : ''}
+        <div class="form-group" style="margin-bottom:14px">
+          <label class="fl" style="text-align:center;display:block">PIN</label>
+          <input type="password" id="inp-pin" class="pin-input" maxlength="6"
+            placeholder="••••" autocomplete="off">
+        </div>
+        <button class="btn btn-primary btn-full btn-lg" id="btn-login">
+          Masuk 🚀
+        </button>
+        <div class="error-msg" id="err-step3">${esc(S.loginError)}</div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%"
+                onclick="S.loginStep=2;S.loginError='';render()">← Kembali</button>
+        <p class="login-hint">PIN default: Ayah=1234 · Ibu=5678 · Anak1=1111 · Anak2=2222</p>
+      </div>
+    </div>
+  </div>
+</div>`;
+}
+
+function attachLoginEvents() {
+  // Step 1
+  const btnSheet = document.getElementById('btn-sheet-next');
+  const inpSheet = document.getElementById('inp-sheet-url');
+  if(btnSheet) btnSheet.onclick = async () => {
+    const url = inpSheet?.value.trim();
+    S.loginSheetUrl = url;
+    if(!url) { S.loginError='URL Spreadsheet wajib diisi'; render(); return; }
+    // Try to load from sheet
+    S.loginError = '';
+    const el = document.getElementById('sync-step1');
+    if(el) el.textContent = '🔄 Memuat data dari Spreadsheet...';
+    S.sheetUrl = url;
+    const loaded = await syncFromSheet();
+    S.loginStep = 2; S.loginError = ''; render();
+  };
+  if(inpSheet) inpSheet.onkeydown = e => { if(e.key==='Enter') btnSheet?.click(); };
+
+  // Step 2
+  const btnMember = document.getElementById('btn-member-next');
+  if(btnMember) btnMember.onclick = () => {
+    if(!S.loginMemberId) return;
+    S.loginStep = 3; S.loginError = ''; render();
+  };
+
+  // Step 3
+  const btnLogin = document.getElementById('btn-login');
+  const inpPin = document.getElementById('inp-pin');
+  const doLogin = () => {
+    const pin = inpPin?.value;
+    const m = S.familyData.members.find(x=>x.id===S.loginMemberId);
+    if(!m) return;
+    if(m.pin === pin) {
+      S.user = m; S.screen = 'app'; S.module = 'dashboard';
+      S.loginPin = ''; S.loginError = '';
+      render();
+    } else {
+      S.loginError = 'PIN salah, coba lagi';
+      if(inpPin) inpPin.value='';
+      const el = document.getElementById('err-step3');
+      if(el) el.textContent = S.loginError;
+    }
+  };
+  if(btnLogin) btnLogin.onclick = doLogin;
+  if(inpPin) inpPin.onkeydown = e => { if(e.key==='Enter') doLogin(); };
+}
+
+function selectMember(id) {
+  S.loginMemberId = id; render();
+}
+
+// ══════════════════════════════════════════════
+//  APP SHELL
+// ══════════════════════════════════════════════
+function appShellHTML() {
+  const u = S.user;
+  const collapsed = S.sidebarCollapsed;
+  return `
+<div id="sidebar" class="${collapsed?'collapsed':''}">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">🏥</div>
+    <div class="sidebar-title">FamilyHealth</div>
+    <button class="sidebar-toggle" id="sidebar-toggle">${collapsed?'→':'←'}</button>
+  </div>
+  <div class="user-bar" id="user-bar">
+    <div class="user-avatar">${u?.avatar||'👤'}</div>
+    <div class="user-info">
+      <div class="user-name">${esc(u?.name||'')}</div>
+      <div class="user-role">${esc(u?.role||'')}</div>
+    </div>
+    <div class="user-caret">▾</div>
+    ${S.memberDropdown ? `
+    <div class="member-dropdown" id="member-dropdown">
+      ${S.familyData.members.filter(m=>m.id!==u?.id).map(m=>`
+      <div class="member-opt" onclick="switchMember(${m.id})">
+        <span>${m.avatar}</span><span>${esc(m.name)}</span>
+      </div>`).join('')}
+      <div class="member-opt danger" onclick="logout()">🚪 Keluar</div>
+    </div>` : ''}
+  </div>
+  <nav id="nav">
+    ${NAV_ITEMS.map(n=>`
+    <div class="nav-item ${S.module===n.id?'active':''}" onclick="setModule('${n.id}')" title="${esc(n.label)}">
+      <span class="nav-icon">${n.icon}</span>
+      <span class="nav-label">${esc(n.label)}</span>
+    </div>`).join('')}
+  </nav>
+  <div style="padding:10px 12px;border-top:1px solid var(--border);font-size:10px;color:var(--muted2);white-space:nowrap;overflow:hidden" id="sync-status-bar">
+    ${esc(S.syncStatus||'Siap')}
+  </div>
+</div>
+<div id="main">
+  <div id="content"></div>
+</div>`;
+}
+
+function attachAppEvents() {
+  document.getElementById('sidebar-toggle')?.addEventListener('click', e => {
+    e.stopPropagation(); S.sidebarCollapsed = !S.sidebarCollapsed; renderApp();
+  });
+  document.getElementById('user-bar')?.addEventListener('click', e => {
+    e.stopPropagation(); S.memberDropdown = !S.memberDropdown; renderApp();
+  });
+  document.addEventListener('click', closeDropdown, {once:true});
+}
+
+function closeDropdown() {
+  if(S.memberDropdown) { S.memberDropdown = false; renderApp(); }
+}
+
+function setModule(id) {
+  S.module = id; S.memberDropdown = false; destroyCharts();
+  const el = document.getElementById('content');
+  if(el) { el.style.animation='none'; el.offsetHeight; el.style.animation=''; }
+  renderModule();
+}
+
+function logout() {
+  S.user = null; S.screen = 'login'; S.loginStep = 1;
+  S.loginSheetUrl = ''; S.loginMemberId = null; S.loginPin = '';
+  S.loginError = ''; S.sheetUrl = ''; S.syncStatus = '';
+  S.memberDropdown = false; destroyCharts(); render();
+}
+
+function switchMember(id) {
+  S.memberDropdown = false;
+  const m = S.familyData.members.find(x=>x.id===id);
+  if(!m) return;
+  // Show PIN modal
+  openModal('🔄 Ganti Profil',`
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:36px">${m.avatar}</div>
+      <div style="font-weight:600;font-size:15px;margin-top:6px">${esc(m.name)}</div>
+    </div>
+    <div class="form-stack">
+      <div class="form-group">
+        <label class="fl">PIN</label>
+        <input type="password" id="sw-pin" class="pin-input" placeholder="••••" maxlength="6" autocomplete="off">
+      </div>
+      <div class="error-msg" id="sw-err"></div>
+    </div>
+  `, [{label:'Masuk', cls:'btn-primary', fn:`doSwitchMember(${id})`},{label:'Batal',cls:'btn-secondary',fn:'closeModal()'}]);
+  setTimeout(()=>document.getElementById('sw-pin')?.focus(),100);
+}
+
+function doSwitchMember(id) {
+  const m = S.familyData.members.find(x=>x.id===id);
+  const pin = document.getElementById('sw-pin')?.value;
+  if(m?.pin === pin) {
+    S.user = m; closeModal(); S.module = 'dashboard'; renderApp(); renderModule();
+  } else {
+    const el = document.getElementById('sw-err');
+    if(el) el.textContent = 'PIN salah';
+    const inp = document.getElementById('sw-pin'); if(inp) inp.value='';
+  }
+}
+
+// ══════════════════════════════════════════════
+//  MODAL SYSTEM
+// ══════════════════════════════════════════════
+function openModal(title, body, buttons=[], wide=false) {
+  const overlay = document.getElementById('modal-overlay');
+  const box = document.getElementById('modal-box');
+  const btns = buttons.map(b=>`<button class="btn ${b.cls}" onclick="${b.fn}">${b.label}</button>`).join('');
+  box.className = 'modal-box' + (wide?' wide':'');
+  box.innerHTML = `
+    <div class="modal-header">
+      <div class="modal-title">${title}</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    ${body}
+    ${btns?`<div class="modal-footer">${btns}</div>`:''}
+  `;
+  overlay.style.display='flex'; requestAnimationFrame(()=>overlay.classList.add('visible'));
+}
+
+function closeModal() {
+  const overlay = document.getElementById('modal-overlay');
+  overlay.classList.remove('visible');
+  setTimeout(()=>{ overlay.style.display='none'; document.getElementById('modal-box').innerHTML=''; }, 200);
+}
+
+function closeModalOnOverlay(e) { if(e.target===e.currentTarget) closeModal(); }
+
+// ══════════════════════════════════════════════
+//  GENERIC CRUD MODULE
+// ══════════════════════════════════════════════
+function crudModule({title, icon, module, items, renderItem, formFields, makeDefault, sortFn}) {
+  const sorted = sortFn ? [...items].sort(sortFn) : [...items].reverse();
+  return `
+<div>
+  <div class="section-head">
+    <div class="section-title">${icon} ${title}</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn btn-primary btn-sm" onclick="openAddModal('${module}')">+ Tambah</button>
+    </div>
+  </div>
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search-${module}" placeholder="Cari..." 
+      oninput="filterList('${module}',this.value)">
+  </div>
+  <div class="data-list" id="list-${module}">
+    ${sorted.length===0 ? `<div class="empty"><div class="empty-icon">${icon}</div><div class="empty-text">Belum ada data ${title}</div></div>` 
+    : sorted.map(item=>`
+      <div class="list-item" id="item-${item.id}">
+        <div class="list-body">${renderItem(item)}</div>
+        <div class="list-actions">
+          ${module==='exercise'||module==='nutrition'||module==='spo2'||module==='sleep' 
+            ? `<button class="btn btn-ghost btn-sm" title="Bagikan" onclick="shareItem('${module}','${item.id}')">↗</button>` : ''}
+          <button class="btn btn-ghost btn-sm" onclick="openEditModal('${module}','${item.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteItem('${module}','${item.id}')">🗑</button>
+        </div>
+      </div>`).join('')}
+  </div>
+</div>`;
+}
+
+// Form fields renderer
+function renderFormFields(fields, data={}) {
+  return fields.map(f => {
+    if(f.type==='checkbox') return `
+      <label class="checkbox-row">
+        <input type="checkbox" name="${f.name}" ${data[f.name]?'checked':''}>
+        ${f.label}
+      </label>`;
+    if(f.type==='select') return `
+      <div class="form-group">
+        <label class="fl">${f.label}${f.req?'<span class="req"> *</span>':''}</label>
+        <select name="${f.name}">
+          ${f.placeholder?`<option value="">${f.placeholder}</option>`:''}
+          ${f.options.map(o=>`<option value="${esc(o.value||o)}" ${(data[f.name]====(o.value||o))?'selected':''}>${esc(o.label||o)}</option>`).join('')}
+        </select>
+      </div>`;
+    if(f.type==='textarea') return `
+      <div class="form-group">
+        <label class="fl">${f.label}</label>
+        <textarea name="${f.name}" rows="${f.rows||3}" placeholder="${f.placeholder||''}">${esc(data[f.name]||'')}</textarea>
+      </div>`;
+    if(f.type==='range') return `
+      <div class="form-group">
+        <label class="fl">${f.label}: <strong id="range-val-${f.name}">${data[f.name]||f.min||1}</strong></label>
+        <input type="range" name="${f.name}" min="${f.min||1}" max="${f.max||10}" 
+          value="${data[f.name]||f.min||1}"
+          oninput="document.getElementById('range-val-${f.name}').textContent=this.value">
+      </div>`;
+    return `
+      <div class="form-group">
+        <label class="fl">${f.label}${f.req?'<span class="req"> *</span>':''}</label>
+        <input type="${f.type||'text'}" name="${f.name}" value="${esc(data[f.name]||f.default||'')}" placeholder="${f.placeholder||''}">
+      </div>`;
+  }).join('');
+}
+
+function collectForm(modal) {
+  const data = {};
+  modal.querySelectorAll('[name]').forEach(el => {
+    data[el.name] = el.type==='checkbox' ? el.checked : el.value;
+  });
+  return data;
+}
+
+let _currentFormModule = null;
+let _currentEditId = null;
+let _formFields = [];
+let _makeDefault = null;
+
+const MODULE_CONFIGS = {}; // Filled below
+
+function openAddModal(module) {
+  const cfg = MODULE_CONFIGS[module];
+  if(!cfg) return;
+  _currentFormModule = module; _currentEditId = null; _formFields = cfg.fields; _makeDefault = cfg.makeDefault;
+  const defaultData = cfg.makeDefault();
+  openModal(`+ Tambah ${cfg.title}`, `<div class="form-stack">${renderFormFields(cfg.fields, defaultData)}</div>`,
+    [{label:'Simpan',cls:'btn-primary',fn:'submitForm()'},{label:'Batal',cls:'btn-secondary',fn:'closeModal()'}], cfg.wide);
+}
+
+function openEditModal(module, id) {
+  const cfg = MODULE_CONFIGS[module];
+  if(!cfg) return;
+  const item = getH()[module]?.find(x=>x.id===id);
+  if(!item) return;
+  _currentFormModule = module; _currentEditId = id; _formFields = cfg.fields; _makeDefault = cfg.makeDefault;
+  openModal(`✏️ Edit ${cfg.title}`, `<div class="form-stack">${renderFormFields(cfg.fields, item)}</div>`,
+    [{label:'Simpan Perubahan',cls:'btn-primary',fn:'submitForm()'},{label:'Batal',cls:'btn-secondary',fn:'closeModal()'}], cfg.wide);
+}
+
+function submitForm() {
+  const modal = document.getElementById('modal-box');
+  if(!modal||!_currentFormModule) return;
+  const data = collectForm(modal);
+  const m = _currentFormModule;
+  const h = getH();
+  if(_currentEditId) {
+    setH(m, h[m].map(x=>x.id===_currentEditId?{...x,...data}:x));
+  } else {
+    setH(m, [...(h[m]||[]), {...(_makeDefault?_makeDefault():{}), ...data, id:uid()}]);
+  }
+  closeModal();
+  toast('Data berhasil disimpan ✓','success');
+  setTimeout(()=>renderModule(),100);
+}
+
+function deleteItem(module, id) {
+  if(!confirm('Hapus data ini?')) return;
+  const h = getH();
+  setH(module, h[module].filter(x=>x.id!==id));
+  document.getElementById('item-'+id)?.remove();
+  toast('Data dihapus','');
+}
+
+function filterList(module, q) {
+  const list = document.getElementById('list-'+module);
+  if(!list) return;
+  list.querySelectorAll('.list-item').forEach(el => {
+    el.style.display = el.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════════
+//  MODULE CONFIGS
+// ══════════════════════════════════════════════
+const BLOOD_TYPES = ['A+','A-','B+','B-','AB+','AB-','O+','O-'];
+const SEVERITY = ['ringan','sedang','parah','sangat parah'];
+const SEVERITY3 = ['ringan','sedang','parah'];
+
+MODULE_CONFIGS.medical = {
+  title:'Rekam Medis', wide:true,
+  fields:[
+    {name:'date',label:'Tanggal',type:'date',req:true},
+    {name:'doctor',label:'Dokter',placeholder:'Nama dokter'},
+    {name:'specialty',label:'Spesialisasi',placeholder:'Umum, Kardiologi...'},
+    {name:'hospital',label:'RS / Klinik'},
+    {name:'diagnosis',label:'Diagnosis',req:true,placeholder:'Hasil diagnosis'},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({date:today(),doctor:'',specialty:'',hospital:'',diagnosis:'',notes:''})
+};
+MODULE_CONFIGS.lab = {
+  title:'Hasil Lab', wide:true,
+  fields:[
+    {name:'date',label:'Tanggal',type:'date',req:true},
+    {name:'labName',label:'Nama Lab'},
+    {name:'testName',label:'Nama Tes',req:true,placeholder:'HbA1c, Darah Lengkap...'},
+    {name:'value',label:'Nilai',placeholder:'misal: 95'},
+    {name:'unit',label:'Satuan',placeholder:'mg/dL, g/dL...'},
+    {name:'normalRange',label:'Rentang Normal',placeholder:'70-110'},
+    {name:'status',label:'Status',type:'select',options:['normal','tinggi','rendah','kritis']},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({date:today(),status:'normal'})
+};
+MODULE_CONFIGS.exercise = {
+  title:'Latihan Fisik', wide:true,
+  fields:[
+    {name:'date',label:'Tanggal',type:'date',req:true},
+    {name:'type',label:'Jenis',type:'select',options:['Lari','Bersepeda','Renang','Gym/Fitness','Yoga','Badminton','Futsal','Jalan Kaki','Mendaki','Senam','Lainnya'],placeholder:'Pilih...'},
+    {name:'duration',label:'Durasi (menit)',type:'number'},
+    {name:'distance',label:'Jarak (km)',type:'number'},
+    {name:'calories',label:'Kalori Terbakar',type:'number'},
+    {name:'hr',label:'Heart Rate (bpm)',type:'number'},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({date:today()})
+};
+MODULE_CONFIGS.symptoms = {
+  title:'Gejala',
+  fields:[
+    {name:'date',label:'Tanggal',type:'date',req:true},
+    {name:'symptom',label:'Gejala',req:true,placeholder:'Sakit kepala, demam...'},
+    {name:'severity',label:'Keparahan',type:'select',options:SEVERITY},
+    {name:'bodyPart',label:'Bagian Tubuh',placeholder:'Kepala, perut, dada...'},
+    {name:'duration',label:'Durasi',placeholder:'2 hari, sejak kemarin...'},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({date:today(),severity:'ringan'})
+};
+MODULE_CONFIGS.menstruation = {
+  title:'Menstruasi/Nifas', wide:true,
+  fields:[
+    {name:'type',label:'Tipe',type:'select',options:[{value:'menstruasi',label:'Menstruasi'},{value:'nifas',label:'Nifas (Postpartum)'}]},
+    {name:'startDate',label:'Tanggal Mulai',type:'date',req:true},
+    {name:'endDate',label:'Tanggal Selesai',type:'date'},
+    {name:'cycle',label:'Panjang Siklus (hari)',type:'number',placeholder:'28'},
+    {name:'flow',label:'Aliran',type:'select',options:['sangat ringan','ringan','normal','berat','sangat berat']},
+    {name:'symptoms',label:'Gejala Penyerta',placeholder:'Kram, mual, nyeri...'},
+    {name:'postpartumDay',label:'Nifas Hari ke-',type:'number'},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({type:'menstruasi',startDate:today(),cycle:28,flow:'normal'})
+};
+MODULE_CONFIGS.immunization = {
+  title:'Imunisasi/Vaksin', wide:true,
+  fields:[
+    {name:'date',label:'Tanggal',type:'date',req:true},
+    {name:'vaccine',label:'Vaksin',req:true,placeholder:'BCG, Hepatitis B, COVID-19...'},
+    {name:'brand',label:'Merek/Produsen'},
+    {name:'dose',label:'Dosis ke-',type:'select',options:['1','2','3','Booster','Tahunan']},
+    {name:'clinic',label:'Fasilitas Kesehatan'},
+    {name:'nextDate',label:'Jadwal Dosis Berikutnya',type:'date'},
+    {name:'reaction',label:'Reaksi Pasca Vaksin',placeholder:'Tidak ada, demam ringan...'},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({date:today(),dose:'1'})
+};
+MODULE_CONFIGS.spo2 = {
+  title:'SpO2 & Detak Jantung',
+  fields:[
+    {name:'date',label:'Tanggal',type:'date',req:true},
+    {name:'time',label:'Waktu',type:'time'},
+    {name:'value',label:'SpO2 (%)',type:'number',req:true,placeholder:'95-100'},
+    {name:'hr',label:'Detak Jantung (bpm)',type:'number'},
+    {name:'activity',label:'Aktivitas',type:'select',options:['Istirahat','Setelah olahraga','Tidur','Setelah makan','Saat sakit']},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({date:today(),time:new Date().toTimeString().substr(0,5),activity:'Istirahat'})
+};
+MODULE_CONFIGS.sleep = {
+  title:'Pola Tidur',
+  fields:[
+    {name:'date',label:'Tanggal',type:'date',req:true},
+    {name:'bedTime',label:'Jam Tidur',type:'time'},
+    {name:'wakeTime',label:'Jam Bangun',type:'time'},
+    {name:'duration',label:'Durasi (jam)',type:'number',placeholder:'7.5'},
+    {name:'quality',label:'Kualitas',type:'select',options:['Sangat Baik','Baik','Sedang','Buruk']},
+    {name:'interruptions',label:'Berapa Kali Terbangun',type:'number',default:'0'},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({date:today(),bedTime:'22:00',wakeTime:'06:00',quality:'Baik',interruptions:0})
+};
+MODULE_CONFIGS.nutrition = {
+  title:'Makanan & Minuman', wide:true,
+  fields:[
+    {name:'date',label:'Tanggal',type:'date',req:true},
+    {name:'mealType',label:'Jenis Makan',type:'select',options:['Sarapan','Makan Siang','Makan Malam','Cemilan','Minuman']},
+    {name:'foods',label:'Makanan/Minuman',type:'textarea',placeholder:'Nasi goreng, ayam bakar, teh manis...',req:true},
+    {name:'calories',label:'Kalori (kkal)',type:'number'},
+    {name:'carbs',label:'Karbo (g)',type:'number'},
+    {name:'protein',label:'Protein (g)',type:'number'},
+    {name:'fat',label:'Lemak (g)',type:'number'},
+    {name:'water',label:'Air Minum (ml)',type:'number'},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({date:today(),mealType:'Sarapan'})
+};
+MODULE_CONFIGS.illness = {
+  title:'Riwayat Sakit', wide:true,
+  fields:[
+    {name:'startDate',label:'Mulai Sakit',type:'date',req:true},
+    {name:'endDate',label:'Sembuh/Selesai',type:'date'},
+    {name:'name',label:'Nama Penyakit',req:true,placeholder:'Flu, demam berdarah...'},
+    {name:'severity',label:'Keparahan',type:'select',options:[...SEVERITY,'Rawat Inap']},
+    {name:'treatment',label:'Penanganan',type:'textarea'},
+    {name:'recovery',label:'Kondisi Pemulihan',type:'textarea'},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({startDate:today(),severity:'ringan'})
+};
+MODULE_CONFIGS.doctorPlans = {
+  title:'Dokter & Diagnosa', wide:true,
+  fields:[
+    {name:'date',label:'Tanggal Kunjungan',type:'date',req:true},
+    {name:'time',label:'Waktu',type:'time'},
+    {name:'doctor',label:'Nama Dokter',req:true},
+    {name:'specialty',label:'Spesialisasi'},
+    {name:'location',label:'RS/Klinik'},
+    {name:'reason',label:'Alasan Kunjungan'},
+    {name:'diagnosis',label:'Diagnosis/Hasil'},
+    {name:'prescription',label:'Resep',type:'textarea'},
+    {name:'followUp',label:'Jadwal Kontrol Berikutnya',placeholder:'Tanggal atau keterangan'},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({date:today()})
+};
+MODULE_CONFIGS.medications = {
+  title:'Obat', wide:true,
+  fields:[
+    {name:'name',label:'Nama Obat',req:true},
+    {name:'dosage',label:'Dosis',placeholder:'500mg, 10ml...'},
+    {name:'frequency',label:'Frekuensi',placeholder:'3x sehari, pagi-malam...'},
+    {name:'startDate',label:'Tanggal Mulai',type:'date'},
+    {name:'endDate',label:'Tanggal Selesai',type:'date'},
+    {name:'prescribedBy',label:'Diresepkan oleh'},
+    {name:'purpose',label:'Kegunaan'},
+    {name:'active',label:'Sedang Digunakan',type:'checkbox'},
+    {name:'sideEffects',label:'Efek Samping'},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({startDate:today(),active:true})
+};
+MODULE_CONFIGS.conditions = {
+  title:'Kondisi & Cedera', wide:true,
+  fields:[
+    {name:'name',label:'Nama Kondisi/Cedera',req:true},
+    {name:'type',label:'Tipe',type:'select',options:['Kondisi','Cedera','Penyakit','Gangguan']},
+    {name:'startDate',label:'Tanggal Mulai',type:'date'},
+    {name:'endDate',label:'Tanggal Sembuh',type:'date'},
+    {name:'severity',label:'Keparahan',type:'select',options:SEVERITY3},
+    {name:'chronic',label:'Kondisi Kronis/Jangka Panjang',type:'checkbox'},
+    {name:'treatment',label:'Penanganan',type:'textarea'},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({type:'Kondisi',severity:'ringan',startDate:today()})
+};
+MODULE_CONFIGS.lifestyle = {
+  title:'Kebiasaan Hidup',
+  fields:[
+    {name:'date',label:'Tanggal',type:'date',req:true},
+    {name:'stressLevel',label:'Level Stres (1-10)',type:'range',min:1,max:10},
+    {name:'smoking',label:'Merokok Hari Ini',type:'checkbox'},
+    {name:'smokesPerDay',label:'Jumlah Rokok/Hari',type:'number',default:'0'},
+    {name:'alcohol',label:'Konsumsi Alkohol',type:'checkbox'},
+    {name:'screenTime',label:'Screen Time (jam)',type:'number',default:'0'},
+    {name:'outdoorTime',label:'Waktu di Luar (jam)',type:'number',default:'0'},
+    {name:'meditation',label:'Meditasi/Relaksasi',type:'checkbox'},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({date:today(),stressLevel:3,smokesPerDay:0,screenTime:0,outdoorTime:0})
+};
+MODULE_CONFIGS.geneticDiseases = {
+  title:'Penyakit Genetik',
+  fields:[
+    {name:'name',label:'Nama Penyakit',req:true,placeholder:'Diabetes, hipertensi, kanker...'},
+    {name:'relation',label:'Hubungan Keluarga',type:'select',options:['Ayah','Ibu','Kakek (Ayah)','Nenek (Ayah)','Kakek (Ibu)','Nenek (Ibu)','Paman','Bibi','Saudara Kandung','Diri Sendiri'],placeholder:'Pilih...'},
+    {name:'confirmed',label:'Saya Sendiri Terdiagnosis',type:'checkbox'},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({})
+};
+MODULE_CONFIGS.allergies = {
+  title:'Alergi & Intoleransi', wide:true,
+  fields:[
+    {name:'name',label:'Nama Alergen',req:true,placeholder:'Kacang, debu, penisilin...'},
+    {name:'type',label:'Tipe',type:'select',options:['Makanan','Obat','Lingkungan','Kontak','Serangga','Lainnya']},
+    {name:'severity',label:'Keparahan',type:'select',options:['Ringan','Sedang','Parah','Anafilaksis']},
+    {name:'symptoms',label:'Gejala',type:'textarea',placeholder:'Ruam, bengkak, sesak napas...'},
+    {name:'treatment',label:'Penanganan',type:'textarea',placeholder:'Antihistamin, epinefrin...'},
+    {name:'notes',label:'Catatan',type:'textarea'},
+  ],
+  makeDefault:()=>({type:'Makanan',severity:'Ringan'})
+};
+
+// Alias for doctor
+MODULE_CONFIGS.doctor = MODULE_CONFIGS.doctorPlans;
+
+// ══════════════════════════════════════════════
+//  TAG HELPER
+// ══════════════════════════════════════════════
+function tag(text, color='var(--muted)') {
+  return `<span class="tag" style="background:${color}20;color:${color}">${esc(text)}</span>`;
+}
+
+// ══════════════════════════════════════════════
+//  MODULE RENDERERS
+// ══════════════════════════════════════════════
+
+// ── DASHBOARD ──
+function dashboard() {
+  const u = S.user; const h = getH();
+  const bv = bmi(u.height, u.weight);
+  const latestSpo2 = [...h.spo2].sort((a,b)=>new Date(b.date+b.time)-new Date(a.date+a.time))[0];
+  const latestSleep = [...h.sleep].sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+  const activeMeds = h.medications.filter(m=>m.active||m.active==='true');
+  const upcomingDoc = h.doctorPlans.filter(p=>new Date(p.date)>=new Date()).sort((a,b)=>new Date(a.date)-new Date(b.date))[0];
+  const menPred = u.gender==='female' ? predictMenstruation(h.menstruation) : null;
+  const totalCal = h.exercise.reduce((s,e)=>s+(parseFloat(e.calories)||0),0);
+
+  // Family alerts
+  const alerts = [];
+  S.familyData.members.forEach(m => {
+    const mh = S.healthData[m.id]||mkHealth();
+    (mh.spo2||[]).filter(s=>parseFloat(s.value)<95).slice(-1).forEach(s=>
+      alerts.push({av:m.avatar,name:m.name,text:`SpO2 rendah: ${s.value}%`,color:'var(--red)'}));
+    (mh.doctorPlans||[]).filter(p=>{const d=(new Date(p.date)-new Date())/86400000;return d>=0&&d<=7;}).slice(0,1).forEach(p=>
+      alerts.push({av:m.avatar,name:m.name,text:`Jadwal dokter: ${fmt(p.date)}`,color:'var(--orange)'}));
+  });
+
+  // Chart data
+  const exChart = [...h.exercise].sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(-7)
+    .map(e=>({label:fmtShort(e.date),cal:parseFloat(e.calories)||0,dur:parseFloat(e.duration)||0}));
+
+  const spo2Chart = [...h.spo2].sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(-10)
+    .map(s=>({label:fmtShort(s.date),val:parseFloat(s.value)||0}));
+
+  setTimeout(()=>{
+    drawBar('chart-ex', exChart.map(x=>x.label), [
+      {label:'Kalori',data:exChart.map(x=>x.cal),color:'rgba(0,212,170,0.8)'},
+      {label:'Menit',data:exChart.map(x=>x.dur),color:'rgba(14,165,233,0.8)'},
+    ]);
+    if(spo2Chart.length>1) drawLine('chart-spo2', spo2Chart.map(x=>x.label), [
+      {label:'SpO2 %',data:spo2Chart.map(x=>x.val),color:'var(--acc)'}
+    ], {min:85,max:100});
+  },50);
+
+  return `
+<div>
+  <div style="margin-bottom:24px">
+    <div style="font-size:22px;font-weight:700">Selamat datang, ${esc(u.name)} ${u.avatar}</div>
+    <div style="color:var(--muted2);font-size:13px;margin-top:4px">${new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
+    ${S.syncStatus?`<div style="font-size:11px;color:var(--muted2);margin-top:4px" id="sync-status-bar">${esc(S.syncStatus)}</div>`:''}
+  </div>
+
+  <div class="stat-grid">
+    ${statCard('⚖️','BMI',bv,bmiLabel(bv),bmiColor(bv))}
+    ${statCard('💓','SpO2 Terakhir',latestSpo2?latestSpo2.value+'%':'-',latestSpo2?'HR: '+(latestSpo2.hr||'-')+' bpm':'Belum ada data',latestSpo2&&parseFloat(latestSpo2.value)>=95?'var(--green)':'var(--red)')}
+    ${statCard('😴','Tidur Terakhir',latestSleep?latestSleep.duration+'j':'-',latestSleep?.quality||'Belum ada data','var(--purple)')}
+    ${statCard('💊','Obat Aktif',activeMeds.length,activeMeds[0]?.name||'Tidak ada','var(--pink)')}
+    ${statCard('🏃','Total Latihan',h.exercise.length,totalCal+' kkal total','var(--acc2)')}
+    ${menPred?statCard('🩷','Haid Berikutnya',fmt(menPred.nextStart),'Siklus ~'+menPred.avgCycle+' hari','var(--pink)'):''}
+  </div>
+
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px">
+    <div class="card">
+      <div class="card-title">🏃 Aktivitas Latihan (7 Hari Terakhir)</div>
+      ${exChart.length>0?`<div class="chart-wrap"><canvas id="chart-ex"></canvas></div>`
+        :`<div class="empty"><div class="empty-icon">🏃</div><div class="empty-text">Belum ada data latihan</div></div>`}
+    </div>
+    <div class="card">
+      <div class="card-title">📊 Info Kesehatan</div>
+      ${[
+        ['🩸 Golongan Darah',u.bloodType||'-','var(--red)'],
+        ['📏 Tinggi',u.height?u.height+' cm':'-','var(--acc2)'],
+        ['⚖️ Berat',u.weight?u.weight+' kg':'-','var(--orange)'],
+        ['🎂 Usia',age(u.birthDate),'var(--purple)'],
+        ['⚠️ Alergi',h.allergies.length||'Tidak ada','var(--yellow)'],
+        ['🏥 Penyakit Kronis',h.conditions.filter(c=>c.chronic||c.chronic==='true').length||'Tidak ada','var(--pink)'],
+      ].map(([l,v,c])=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:12px;color:var(--muted2)">${l}</span>
+          <span style="font-size:13px;font-weight:600;color:${c}">${esc(v)}</span>
+        </div>`).join('')}
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card">
+      <div class="card-title">💓 Tren SpO2</div>
+      ${spo2Chart.length>1?`<div class="chart-wrap"><canvas id="chart-spo2"></canvas></div>`
+        :`<div class="empty"><div class="empty-icon">💓</div><div class="empty-text">Belum ada data SpO2</div></div>`}
+    </div>
+    <div class="card">
+      <div class="card-title">⚠️ Notifikasi Keluarga</div>
+      ${alerts.length===0
+        ?`<div class="empty"><div class="empty-icon">✅</div><div class="empty-text">Semua kondisi keluarga baik</div></div>`
+        :alerts.map(a=>`
+          <div style="padding:8px 10px;background:var(--card2);border-radius:8px;margin-bottom:6px;border-left:3px solid ${a.color}">
+            <div style="font-size:12px;font-weight:600">${a.av} ${esc(a.name)}</div>
+            <div style="font-size:11px;color:var(--muted2)">${esc(a.text)}</div>
+          </div>`).join('')}
+      ${upcomingDoc?`
+        <div style="margin-top:8px;padding:10px;background:rgba(14,165,233,.08);border:1px solid rgba(14,165,233,.2);border-radius:8px">
+          <div style="font-size:11px;color:var(--acc2);font-weight:600;margin-bottom:4px">📅 Jadwal Dokter Terdekat</div>
+          <div style="font-size:13px;font-weight:600">dr. ${esc(upcomingDoc.doctor)}</div>
+          <div style="font-size:12px;color:var(--muted2)">${fmt(upcomingDoc.date)} ${upcomingDoc.time||''} • ${esc(upcomingDoc.location||'')}</div>
+        </div>`:''}
+    </div>
+  </div>
+</div>`;
+}
+
+function statCard(icon,label,value,sub,color='var(--acc)') {
+  return `<div class="stat-card">
+    <div class="stat-icon" style="background:${color}18">${icon}</div>
+    <div>
+      <div class="stat-label">${label}</div>
+      <div class="stat-value" style="color:${color}">${esc(String(value))}</div>
+      ${sub?`<div class="stat-sub">${esc(String(sub))}</div>`:''}
+    </div>
+  </div>`;
+}
+
+// ── MEDICAL ──
+function medical() {
+  const h = getH();
+  return crudModule({
+    title:'Rekam Medis', icon:'📋', module:'medical', items:h.medicalRecords,
+    renderItem: item => `
+      <div class="badge-row">${tag(fmt(item.date),'var(--acc2)')}${item.specialty?tag(item.specialty,'var(--purple)'):''}</div>
+      <div class="list-primary">${esc(item.diagnosis||'Tanpa diagnosis')}</div>
+      <div class="list-secondary">
+        ${item.doctor?`<span>👨‍⚕️ ${esc(item.doctor)}</span>`:''}
+        ${item.hospital?`<span>🏥 ${esc(item.hospital)}</span>`:''}
+      </div>
+      ${item.notes?`<div class="list-meta">${esc(item.notes)}</div>`:''}
+    `
+  });
+}
+
+// ── LAB ──
+function lab() {
+  const h = getH();
+  return crudModule({
+    title:'Hasil Laboratorium', icon:'🔬', module:'lab', items:h.labResults,
+    sortFn:(a,b)=>new Date(b.date)-new Date(a.date),
+    renderItem: item => `
+      <div class="badge-row">${tag(fmt(item.date),'var(--acc2)')}${tag(item.status||'normal',colorFor(item.status))}</div>
+      <div class="list-primary">${esc(item.testName)}</div>
+      <div class="list-secondary">
+        <span class="mono" style="color:var(--acc)">${esc(item.value||'')} ${esc(item.unit||'')}</span>
+        ${item.normalRange?`<span style="color:var(--muted2)">(Normal: ${esc(item.normalRange)})</span>`:''}
+        ${item.labName?`<span>🏥 ${esc(item.labName)}</span>`:''}
+      </div>
+    `
+  });
+}
+
+// ── EXERCISE ──
+function exercise() {
+  const h = getH();
+  const totalCal = h.exercise.reduce((s,e)=>s+(parseFloat(e.calories)||0),0);
+  const thisWeek = h.exercise.filter(e=>(Date.now()-new Date(e.date).getTime())<7*86400000)
+                             .reduce((s,e)=>s+(parseFloat(e.calories)||0),0);
+  const types={};h.exercise.forEach(e=>{types[e.type]=(types[e.type]||0)+1;});
+  const fav = Object.entries(types).sort((a,b)=>b[1]-a[1])[0]?.[0]||'-';
+
+  return `<div>
+    <div class="stat-grid">${[
+      statCard('🔥','Kalori Minggu Ini',thisWeek,'kkal','var(--orange)'),
+      statCard('📅','Total Sesi',h.exercise.length,'semua waktu','var(--acc)'),
+      statCard('🏆','Olahraga Favorit',fav,'','var(--purple)'),
+    ].join('')}</div>
+    ${crudModule({
+      title:'Latihan Fisik', icon:'🏃', module:'exercise', items:h.exercise,
+      sortFn:(a,b)=>new Date(b.date)-new Date(a.date),
+      renderItem: item => `
+        <div class="badge-row">${item.type?tag(item.type,'var(--acc)'):''} ${tag(fmt(item.date),'var(--muted2)')}</div>
+        <div class="list-secondary" style="margin-top:4px;font-size:13px;gap:14px">
+          ${item.duration?`<span>⏱️ <b>${item.duration}</b> menit</span>`:''}
+          ${item.distance?`<span>📏 <b>${item.distance}</b> km</span>`:''}
+          ${item.calories?`<span>🔥 <b>${item.calories}</b> kkal</span>`:''}
+          ${item.hr?`<span>💓 <b>${item.hr}</b> bpm</span>`:''}
+        </div>
+        ${item.notes?`<div class="list-meta">${esc(item.notes)}</div>`:''}
+      `
+    })}
+  </div>`;
+}
+
+// ── SYMPTOMS ──
+function symptoms() {
+  const h = getH();
+  return crudModule({
+    title:'Gejala', icon:'🤒', module:'symptoms', items:h.symptoms,
+    sortFn:(a,b)=>new Date(b.date)-new Date(a.date),
+    renderItem: item => `
+      <div class="badge-row">${tag(item.severity||'',colorFor(item.severity))} ${tag(fmt(item.date),'var(--muted2)')}</div>
+      <div class="list-primary">${esc(item.symptom)}</div>
+      <div class="list-secondary">
+        ${item.bodyPart?`<span>📍 ${esc(item.bodyPart)}</span>`:''}
+        ${item.duration?`<span>⏱️ ${esc(item.duration)}</span>`:''}
+      </div>
+      ${item.notes?`<div class="list-meta">${esc(item.notes)}</div>`:''}
+    `
+  });
+}
+
+// ── MENSTRUATION ──
+function menstruation() {
+  const h = getH(); const u = S.user;
+  const pred = predictMenstruation(h.menstruation);
+  const genderNote = u.gender!=='female' ? `<div class="card" style="border-color:rgba(244,114,182,.2);margin-bottom:16px">
+    <p style="color:var(--muted);font-size:13px">⚠️ Modul ini untuk anggota perempuan. Data tetap bisa dicatat jika diperlukan.</p></div>` : '';
+
+  const cycleData = h.menstruation.filter(r=>r.type==='menstruasi').slice(-8).map((m,i)=>({
+    label:`Siklus ${i+1}`, val:parseFloat(m.cycle)||28
+  }));
+
+  setTimeout(()=>{
+    if(cycleData.length>1) drawLine('chart-cycle', cycleData.map(x=>x.label), [
+      {label:'Hari Siklus',data:cycleData.map(x=>x.val),color:'var(--pink)'}
+    ],{min:20,max:40});
+  },50);
+
+  return `<div>
+    ${genderNote}
+    <div class="section-head">
+      <div class="section-title">🩷 Menstruasi & Nifas</div>
+      <button class="btn btn-primary btn-sm" onclick="openAddModal('menstruation')">+ Tambah</button>
+    </div>
+    ${pred?`
+    <div class="pred-box">
+      <div class="pred-title">🔮 Prediksi Siklus Berikutnya</div>
+      <div class="pred-grid">
+        <div><div class="pred-label">Menstruasi Berikutnya</div><div class="pred-val" style="color:var(--pink)">${fmt(pred.nextStart)}</div></div>
+        <div><div class="pred-label">Prediksi Ovulasi</div><div class="pred-val" style="color:var(--purple)">${fmt(pred.ovulation)}</div></div>
+        <div><div class="pred-label">Rata-rata Siklus</div><div class="pred-val" style="color:var(--acc)">${pred.avgCycle} hari</div></div>
+        <div><div class="pred-label">Masa Subur Mulai</div><div class="pred-val" style="color:var(--green)">${fmt(pred.fertileStart)}</div></div>
+        <div><div class="pred-label">Masa Subur Selesai</div><div class="pred-val" style="color:var(--green)">${fmt(pred.fertileEnd)}</div></div>
+      </div>
+    </div>`:''}
+    ${cycleData.length>1?`<div class="card" style="margin-bottom:16px">
+      <div class="card-title">📈 Pola Siklus</div>
+      <div class="chart-wrap"><canvas id="chart-cycle"></canvas></div>
+    </div>`:''}
+    <div class="search-bar"><span class="search-icon">🔍</span>
+      <input type="text" id="search-menstruation" placeholder="Cari..." oninput="filterList('menstruation',this.value)"></div>
+    <div class="data-list" id="list-menstruation">
+    ${h.menstruation.length===0?`<div class="empty"><div class="empty-icon">🩷</div><div class="empty-text">Belum ada data</div></div>`
+    :[...h.menstruation].sort((a,b)=>new Date(b.startDate)-new Date(a.startDate)).map(item=>`
+      <div class="list-item" id="item-${item.id}">
+        <div class="list-body">
+          <div class="badge-row">${tag(item.type||'menstruasi',item.type==='nifas'?'var(--purple)':'var(--pink)')} 
+          ${tag(fmt(item.startDate)+(item.endDate?` → ${fmt(item.endDate)}`:' → ?'),'var(--muted2)')}</div>
+          <div class="list-secondary" style="margin-top:4px">
+            <span>🩸 ${esc(item.flow||'-')}</span>
+            ${item.cycle?`<span>🔄 ${item.cycle} hari</span>`:''}
+            ${item.symptoms?`<span>😣 ${esc(item.symptoms)}</span>`:''}
+          </div>
+        </div>
+        <div class="list-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openEditModal('menstruation','${item.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteItem('menstruation','${item.id}')">🗑</button>
+        </div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ── IMMUNIZATION ──
+function immunization() {
+  const h = getH();
+  const upcoming = h.immunization.filter(i=>i.nextDate&&new Date(i.nextDate)>=new Date())
+    .sort((a,b)=>new Date(a.nextDate)-new Date(b.nextDate));
+  return `<div>
+    ${upcoming.length?`<div class="card" style="border-color:rgba(251,191,36,.3);margin-bottom:16px">
+      <div class="card-title" style="color:var(--yellow)">⏰ Jadwal Vaksin Mendatang</div>
+      ${upcoming.map(u=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:13px">${esc(u.vaccine)} — Dosis ${esc(u.dose||'')}</span>
+          ${tag(fmt(u.nextDate),'var(--yellow)')}
+        </div>`).join('')}
+    </div>`:''}
+    ${crudModule({
+      title:'Imunisasi & Vaksin', icon:'💉', module:'immunization', items:h.immunization,
+      sortFn:(a,b)=>new Date(b.date)-new Date(a.date),
+      renderItem: item => `
+        <div class="badge-row">${tag(item.vaccine||'','var(--green)')} ${tag('Dosis '+(item.dose||'1'),'var(--muted2)')} ${tag(fmt(item.date),'var(--acc2)')}</div>
+        <div class="list-secondary">
+          ${item.brand?`<span>🏷️ ${esc(item.brand)}</span>`:''}
+          ${item.clinic?`<span>🏥 ${esc(item.clinic)}</span>`:''}
+        </div>
+        ${item.nextDate?`<div style="font-size:12px;color:var(--yellow);margin-top:4px">📅 Dosis berikutnya: ${fmt(item.nextDate)}</div>`:''}
+        ${item.reaction?`<div style="font-size:12px;color:var(--orange);margin-top:2px">⚠️ Reaksi: ${esc(item.reaction)}</div>`:''}
+      `
+    })}
+  </div>`;
+}
+
+// ── SPO2 ──
+function spo2View() {
+  const h = getH();
+  const sorted = [...h.spo2].sort((a,b)=>new Date(a.date+a.time)-new Date(b.date+b.time));
+  const avg = sorted.length ? (sorted.reduce((s,x)=>s+(parseFloat(x.value)||0),0)/sorted.length).toFixed(1) : '-';
+  const low = sorted.filter(s=>parseFloat(s.value)<95).length;
+  const chart14 = sorted.slice(-14).map(s=>({label:fmtShort(s.date),spo2:parseFloat(s.value)||0,hr:parseFloat(s.hr)||0}));
+
+  setTimeout(()=>{
+    if(chart14.length>1) drawLine('chart-spo2-main', chart14.map(x=>x.label),[
+      {label:'SpO2 %',data:chart14.map(x=>x.spo2),color:'var(--acc)'},
+      {label:'HR bpm',data:chart14.map(x=>x.hr),color:'var(--red)'},
+    ],{min:60,max:105});
+  },50);
+
+  return `<div>
+    <div class="stat-grid">
+      ${statCard('💓','SpO2 Rata-rata',avg!=='-'?avg+'%':'-','','var(--acc)')}
+      ${statCard('❤️','HR Terakhir',h.spo2.length?h.spo2[h.spo2.length-1]?.hr||'-':'-','bpm','var(--red)')}
+      ${statCard('⚠️','SpO2 Rendah',low,'kejadian < 95%',low>0?'var(--red)':'var(--green)')}
+    </div>
+    ${chart14.length>1?`<div class="card" style="margin-bottom:16px">
+      <div class="card-title">📈 Tren SpO2 & Detak Jantung (14 Hari)</div>
+      <div class="chart-wrap tall"><canvas id="chart-spo2-main"></canvas></div>
+    </div>`:''}
+    ${crudModule({
+      title:'SpO2 & Detak Jantung', icon:'💓', module:'spo2', items:h.spo2,
+      sortFn:(a,b)=>new Date(b.date+b.time)-new Date(a.date+a.time),
+      renderItem: item => `
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:11px;color:var(--muted2)">${fmt(item.date)} ${item.time||''}</div>
+            <div class="mono" style="font-size:26px;font-weight:700;color:${parseFloat(item.value)>=95?'var(--green)':parseFloat(item.value)>=90?'var(--orange)':'var(--red)'}">${esc(item.value)}%</div>
+            <div style="font-size:10px;color:var(--muted2)">SpO2</div>
+          </div>
+          ${item.hr?`<div>
+            <div class="mono" style="font-size:26px;font-weight:700;color:var(--red)">${esc(item.hr)}</div>
+            <div style="font-size:10px;color:var(--muted2)">bpm</div>
+          </div>`:''}
+          <div>${tag(item.activity||'','var(--muted)')}</div>
+        </div>
+      `
+    })}
+  </div>`;
+}
+
+// ── SLEEP ──
+function sleep() {
+  const h = getH();
+  const avg = h.sleep.length ? (h.sleep.reduce((s,x)=>s+(parseFloat(x.duration)||0),0)/h.sleep.length).toFixed(1) : '-';
+  const chart = [...h.sleep].sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(-14)
+    .map(s=>({label:fmtShort(s.date),jam:parseFloat(s.duration)||0}));
+  setTimeout(()=>{
+    if(chart.length>1) drawArea('chart-sleep', chart.map(x=>x.label), chart.map(x=>x.jam),'var(--purple)');
+  },50);
+  return `<div>
+    <div class="stat-grid">
+      ${statCard('😴','Durasi Rata-rata',avg!=='-'?avg+'j':'-','per malam','var(--purple)')}
+      ${statCard('📅','Total Catatan',h.sleep.length,'','var(--acc)')}
+      ${statCard('⭐','Kualitas Terbaik',(()=>{const g=h.sleep.filter(s=>s.quality==='Sangat Baik'||s.quality==='Baik');return g.length;})(),'malam tidur baik','var(--green)')}
+    </div>
+    ${chart.length>1?`<div class="card" style="margin-bottom:16px">
+      <div class="card-title">📈 Durasi Tidur 14 Hari</div>
+      <div class="chart-wrap"><canvas id="chart-sleep"></canvas></div>
+    </div>`:''}
+    ${crudModule({
+      title:'Pola Tidur', icon:'😴', module:'sleep', items:h.sleep,
+      sortFn:(a,b)=>new Date(b.date)-new Date(a.date),
+      renderItem: item => `
+        <div class="badge-row">${tag(item.quality||'','var(--purple)')} ${tag(fmt(item.date),'var(--muted2)')}</div>
+        <div class="list-secondary" style="margin-top:4px;font-size:13px;gap:14px">
+          <span>🌙 ${item.bedTime||'?'} → ☀️ ${item.wakeTime||'?'}</span>
+          <span style="font-weight:700;color:${parseFloat(item.duration)>=7?'var(--green)':'var(--orange)'}">${item.duration||'?'}j</span>
+          ${item.interruptions>0?`<span style="color:var(--muted2)">⚡ ${item.interruptions}x</span>`:''}
+        </div>
+      `
+    })}
+  </div>`;
+}
+
+// ── NUTRITION ──
+function nutrition() {
+  const h = getH();
+  const todayData = h.nutrition.filter(n=>n.date===today());
+  const todayCal = todayData.reduce((s,n)=>s+(parseFloat(n.calories)||0),0);
+  const todayWater = todayData.reduce((s,n)=>s+(parseFloat(n.water)||0),0);
+  const macros = [
+    {l:'Karbo',v:todayData.reduce((s,n)=>s+(parseFloat(n.carbs)||0),0)},
+    {l:'Protein',v:todayData.reduce((s,n)=>s+(parseFloat(n.protein)||0),0)},
+    {l:'Lemak',v:todayData.reduce((s,n)=>s+(parseFloat(n.fat)||0),0)},
+  ].filter(m=>m.v>0);
+
+  setTimeout(()=>{
+    if(macros.length) drawPie('chart-macro',macros.map(m=>m.l),macros.map(m=>m.v));
+  },50);
+
+  return `<div>
+    <div class="stat-grid">
+      ${statCard('🔥','Kalori Hari Ini',todayCal,'kkal','var(--orange)')}
+      ${statCard('💧','Air Hari Ini',todayWater+' ml',`Target: 2000 ml`,'var(--acc2)')}
+      ${statCard('📝','Entri Hari Ini',todayData.length,'','var(--green)')}
+    </div>
+    ${macros.length?`<div class="card" style="margin-bottom:16px">
+      <div class="card-title">🥗 Makronutrien Hari Ini</div>
+      <div style="display:flex;align-items:center;gap:20px">
+        <div style="width:130px;height:130px"><canvas id="chart-macro"></canvas></div>
+        <div>${macros.map(m=>`<div style="font-size:13px;margin-bottom:6px">${m.l}: <b>${m.v}g</b></div>`).join('')}</div>
+      </div>
+    </div>`:''}
+    ${crudModule({
+      title:'Makanan & Minuman', icon:'🥗', module:'nutrition', items:h.nutrition,
+      sortFn:(a,b)=>new Date(b.date)-new Date(a.date),
+      renderItem: item => `
+        <div class="badge-row">${tag(item.mealType||'','var(--green)')} ${tag(fmt(item.date),'var(--muted2)')}</div>
+        <div class="list-primary" style="font-weight:500">${esc(item.foods)}</div>
+        <div class="list-secondary" style="font-size:12px;gap:12px">
+          ${item.calories?`<span>🔥 ${item.calories} kkal</span>`:''}
+          ${item.carbs?`<span>🌾 ${item.carbs}g</span>`:''}
+          ${item.protein?`<span>🥩 ${item.protein}g</span>`:''}
+          ${item.water?`<span>💧 ${item.water}ml</span>`:''}
+        </div>
+      `
+    })}
+  </div>`;
+}
+
+// ── ILLNESS ──
+function illness() {
+  const h = getH();
+  return crudModule({
+    title:'Riwayat Sakit', icon:'🤧', module:'illness', items:h.illness,
+    sortFn:(a,b)=>new Date(b.startDate)-new Date(a.startDate),
+    renderItem: item => `
+      <div class="badge-row">${tag(item.severity||'',colorFor(item.severity))} ${tag(fmt(item.startDate)+(item.endDate?` → ${fmt(item.endDate)}`:' → sakit'),'var(--muted2)')}</div>
+      <div class="list-primary">${esc(item.name)}</div>
+      ${item.treatment?`<div style="font-size:12px;color:var(--muted2);margin-top:2px">💊 ${esc(item.treatment)}</div>`:''}
+      ${item.recovery?`<div style="font-size:12px;color:var(--green);margin-top:2px">✅ ${esc(item.recovery)}</div>`:''}
+    `
+  });
+}
+
+// ── DOCTOR ──
+function doctor() {
+  const h = getH();
+  const now = new Date();
+  return crudModule({
+    title:'Dokter & Diagnosa', icon:'👨‍⚕️', module:'doctor', items:h.doctorPlans||[],
+    sortFn:(a,b)=>new Date(b.date)-new Date(a.date),
+    renderItem: item => {
+      const past = new Date(item.date)<now;
+      return `
+        <div class="badge-row">${tag(past?'Sudah':'Mendatang',past?'var(--muted)':'var(--green)')} ${tag(fmt(item.date)+' '+( item.time||''),'var(--acc2)')}</div>
+        <div class="list-primary">dr. ${esc(item.doctor)} ${item.specialty?`<span style="font-weight:400;color:var(--muted2)">— ${esc(item.specialty)}</span>`:''}</div>
+        <div class="list-secondary">
+          ${item.location?`<span>📍 ${esc(item.location)}</span>`:''}
+          ${item.reason?`<span>📝 ${esc(item.reason)}</span>`:''}
+        </div>
+        ${item.diagnosis?`<div style="font-size:12px;color:var(--acc);margin-top:4px">🩺 ${esc(item.diagnosis)}</div>`:''}
+        ${item.prescription?`<div style="font-size:12px;color:var(--pink);margin-top:2px">💊 ${esc(item.prescription)}</div>`:''}
+      `;
+    }
+  });
+}
+
+// ── MEDICATIONS ──
+function medications() {
+  const h = getH();
+  return `<div>
+    <div class="stat-grid">
+      ${statCard('💊','Obat Aktif',h.medications.filter(m=>m.active||m.active==='true').length,'sedang digunakan','var(--pink)')}
+      ${statCard('📦','Total Obat',h.medications.length,'semua riwayat','var(--muted)')}
+    </div>
+    ${crudModule({
+      title:'Obat', icon:'💊', module:'medications', items:h.medications,
+      sortFn:(a,b)=>(b.active?1:0)-(a.active?1:0),
+      renderItem: item => `
+        <div class="badge-row">${tag((item.active||item.active==='true')?'Aktif':'Selesai',(item.active||item.active==='true')?'var(--green)':'var(--muted)')}
+        ${item.prescribedBy?tag('dr. '+item.prescribedBy,'var(--acc2)'):''}</div>
+        <div class="list-primary">${esc(item.name)} <span style="font-weight:400;color:var(--muted2);font-size:13px">${esc(item.dosage||'')}</span></div>
+        <div class="list-secondary">
+          ${item.frequency?`<span>⏰ ${esc(item.frequency)}</span>`:''}
+          ${item.startDate?`<span>📅 ${fmt(item.startDate)}${item.endDate?` → ${fmt(item.endDate)}`:''}</span>`:''}
+        </div>
+        ${item.purpose?`<div class="list-meta">Untuk: ${esc(item.purpose)}</div>`:''}
+        ${item.sideEffects?`<div style="font-size:12px;color:var(--orange);margin-top:2px">⚠️ ESO: ${esc(item.sideEffects)}</div>`:''}
+      `
+    })}
+  </div>`;
+}
+
+// ── CONDITIONS ──
+function conditions() {
+  const h = getH();
+  return crudModule({
+    title:'Kondisi & Cedera', icon:'🩹', module:'conditions', items:h.conditions,
+    renderItem: item => `
+      <div class="badge-row">${tag(item.type||'','var(--acc2)')} ${(item.chronic||item.chronic==='true')?tag('Kronis','var(--red)'):''} ${tag(item.severity||'',colorFor(item.severity))}</div>
+      <div class="list-primary">${esc(item.name)}</div>
+      <div class="list-secondary">
+        ${item.startDate?`<span>📅 ${fmt(item.startDate)}${item.endDate?` → ${fmt(item.endDate)}`:''}</span>`:''}
+      </div>
+      ${item.treatment?`<div class="list-meta">💊 ${esc(item.treatment)}</div>`:''}
+    `
+  });
+}
+
+// ── LIFESTYLE ──
+function lifestyle() {
+  const h = getH();
+  const stressData = [...h.lifestyle].sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(-14)
+    .map(l=>({label:fmtShort(l.date),val:parseFloat(l.stressLevel)||0}));
+  setTimeout(()=>{
+    if(stressData.length>1) drawLine('chart-stress',stressData.map(x=>x.label),[
+      {label:'Level Stres',data:stressData.map(x=>x.val),color:'var(--orange)'}
+    ],{min:0,max:10});
+  },50);
+  return `<div>
+    ${stressData.length>1?`<div class="card" style="margin-bottom:16px">
+      <div class="card-title">📈 Tren Level Stres</div>
+      <div class="chart-wrap"><canvas id="chart-stress"></canvas></div>
+    </div>`:''}
+    ${crudModule({
+      title:'Kebiasaan Hidup', icon:'🌿', module:'lifestyle', items:h.lifestyle,
+      sortFn:(a,b)=>new Date(b.date)-new Date(a.date),
+      renderItem: item => `
+        <div class="badge-row">${tag(fmt(item.date),'var(--muted2)')}</div>
+        <div class="list-secondary" style="margin-top:6px;gap:12px">
+          <span>😤 Stres: <b style="color:${parseFloat(item.stressLevel)>6?'var(--red)':'var(--green)'}">${item.stressLevel||'-'}/10</b></span>
+          ${(item.smoking||item.smoking==='true')&&item.smokesPerDay?`${tag('🚬 '+item.smokesPerDay+' bk/hari','var(--red)')}`:'' }
+          ${(item.alcohol||item.alcohol==='true')?tag('🍺 Alkohol','var(--orange)'):''}
+          ${item.screenTime?`<span>📱 ${item.screenTime}j layar</span>`:''}
+          ${item.outdoorTime?`<span>🌳 ${item.outdoorTime}j luar</span>`:''}
+          ${(item.meditation||item.meditation==='true')?tag('🧘 Meditasi','var(--purple)'):''}
+        </div>
+      `
+    })}
+  </div>`;
+}
+
+// ── GENETIC ──
+function genetic() {
+  const h = getH();
+  return crudModule({
+    title:'Penyakit Genetik Keluarga', icon:'🧬', module:'geneticDiseases', items:h.geneticDiseases,
+    renderItem: item => `
+      <div class="badge-row">${tag((item.confirmed||item.confirmed==='true')?'Saya Terdiagnosis':'Riwayat Keluarga',(item.confirmed||item.confirmed==='true')?'var(--red)':'var(--orange)')}
+      ${item.relation?tag(item.relation,'var(--acc2)'):''}</div>
+      <div class="list-primary">${esc(item.name)}</div>
+      ${item.notes?`<div class="list-meta">${esc(item.notes)}</div>`:''}
+    `
+  });
+}
+
+// ── ALLERGIES ──
+function allergies() {
+  const h = getH();
+  const severe = h.allergies.filter(a=>a.severity==='Anafilaksis'||a.severity==='Parah');
+  return `<div>
+    ${severe.length?`<div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);border-radius:10px;padding:14px;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:600;color:var(--red);margin-bottom:8px">🚨 Alergi Berbahaya</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${severe.map(a=>tag('⚠️ '+a.name,'var(--red)')).join('')}
+      </div>
+    </div>`:''}
+    ${crudModule({
+      title:'Alergi & Intoleransi', icon:'⚠️', module:'allergies', items:h.allergies,
+      renderItem: item => `
+        <div class="badge-row">${tag(item.type||'','var(--red)')} ${tag(item.severity||'',colorFor((item.severity||'').toLowerCase()))}</div>
+        <div class="list-primary">${esc(item.name)}</div>
+        ${item.symptoms?`<div class="list-secondary">🤒 ${esc(item.symptoms)}</div>`:''}
+        ${item.treatment?`<div style="font-size:12px;color:var(--green);margin-top:2px">💊 ${esc(item.treatment)}</div>`:''}
+      `
+    })}
+  </div>`;
+}
+
+// ── ANALYTICS ──
+function analytics() {
+  const h = getH(); const u = S.user;
+  const avgSpo2 = h.spo2.length?(h.spo2.reduce((s,x)=>s+(parseFloat(x.value)||0),0)/h.spo2.length):0;
+  const avgSleep = h.sleep.length?(h.sleep.reduce((s,x)=>s+(parseFloat(x.duration)||0),0)/h.sleep.length):0;
+  const score = Math.min(100,Math.round(
+    (avgSpo2>=95?25:avgSpo2>=90?15:5)+
+    (avgSleep>=7?25:avgSleep>=6?15:5)+
+    (h.exercise.length>=12?25:h.exercise.length*2)+
+    (h.allergies.length===0?10:5)+
+    (h.conditions.filter(c=>c.chronic||c.chronic==='true').length===0?15:5)
+  ));
+  const scoreColor = score>=80?'var(--green)':score>=60?'var(--yellow)':'var(--red)';
+  const exByType = {};h.exercise.forEach(e=>{exByType[e.type]=(exByType[e.type]||0)+1;});
+  const exTypeKeys = Object.keys(exByType);
+  const monthCal = {};h.exercise.forEach(e=>{const m=e.date?.substr(0,7);if(m){monthCal[m]=(monthCal[m]||0)+(parseFloat(e.calories)||0);}});
+  const monthCalArr = Object.entries(monthCal).sort().slice(-6);
+
+  setTimeout(()=>{
+    if(exTypeKeys.length) drawPie('chart-types',exTypeKeys,exTypeKeys.map(k=>exByType[k]));
+    if(monthCalArr.length>1) drawBar('chart-monthly-cal',monthCalArr.map(x=>x[0]),[
+      {label:'Kalori',data:monthCalArr.map(x=>x[1]),color:'rgba(0,212,170,0.8)'}
+    ]);
+  },50);
+
+  const modules = [
+    ['📋','Rekam Medis',h.medicalRecords.length,'var(--acc)'],
+    ['🔬','Hasil Lab',h.labResults.length,'var(--acc2)'],
+    ['💉','Vaksin',h.immunization.length,'var(--green)'],
+    ['💊','Obat',h.medications.length,'var(--pink)'],
+    ['⚠️','Alergi',h.allergies.length,'var(--red)'],
+    ['🧬','Genetik',h.geneticDiseases.length,'var(--purple)'],
+    ['🩹','Kondisi',h.conditions.length,'var(--orange)'],
+    ['🤒','Gejala',h.symptoms.length,'var(--yellow)'],
+  ];
+
+  return `<div>
+    <div class="section-title" style="margin-bottom:20px">📊 Analisis Kesehatan — ${u.avatar} ${esc(u.name)}</div>
+    
+    <!-- Score -->
+    <div class="card" style="margin-bottom:20px;border-color:${scoreColor}30">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">
+        <div>
+          <div style="font-size:13px;color:var(--muted2);margin-bottom:6px">Skor Kesehatan Keseluruhan</div>
+          <div style="font-size:52px;font-weight:800;color:${scoreColor};line-height:1">${score}</div>
+          <div style="font-size:13px;color:var(--muted2)">dari 100 poin</div>
+          <div style="margin-top:8px;font-size:12px;color:var(--muted)">
+            Berdasarkan SpO2, kualitas tidur, aktivitas fisik, dan riwayat kesehatan
+          </div>
+        </div>
+        <div>
+          <div style="width:160px;height:16px;background:var(--card2);border-radius:8px;overflow:hidden">
+            <div style="width:${score}%;height:100%;background:${scoreColor};border-radius:8px;transition:width .5s"></div>
+          </div>
+          <div style="font-size:11px;color:var(--muted2);margin-top:6px;text-align:right">${score>=80?'Sangat Baik':score>=60?'Baik':score>=40?'Cukup':'Perlu Perhatian'}</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div class="card">
+        <div class="card-title">🏃 Distribusi Jenis Olahraga</div>
+        ${exTypeKeys.length?`<div style="height:200px"><canvas id="chart-types"></canvas></div>`
+          :`<div class="empty"><div class="empty-icon">🏃</div><div class="empty-text">Belum ada data</div></div>`}
+      </div>
+      <div class="card">
+        <div class="card-title">📈 Kalori Terbakar / Bulan</div>
+        ${monthCalArr.length>1?`<div class="chart-wrap"><canvas id="chart-monthly-cal"></canvas></div>`
+          :`<div class="empty"><div class="empty-icon">🔥</div><div class="empty-text">Belum ada data</div></div>`}
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="card">
+      <div class="card-title">📦 Ringkasan Data</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px">
+        ${modules.map(([ic,lb,ct,cl])=>`
+          <div style="background:var(--card2);border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:20px">${ic}</div>
+            <div style="font-size:20px;font-weight:700;color:${cl};margin:4px 0">${ct}</div>
+            <div style="font-size:11px;color:var(--muted2)">${lb}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── SETTINGS ──
+function settings() {
+  const appsScriptCode = `// ═══ FamilyHealth Monitor — Apps Script Backend ═══
+// Tempel kode ini di Extensions → Apps Script
+// lalu Deploy → New Deployment → Web App
+// Execute as: Me | Access: Anyone
+
+const SHEET_NAME = 'HealthData';
+const FAMILY_SHEET = 'FamilyData';
+
+function doGet(e) {
+  try {
+    const action = e.parameter.action;
+    if (action === 'getData') {
+      return getData();
+    }
+    return resp({status:'ok',message:'FamilyHealth API'});
+  } catch(err) {
+    return resp({status:'error',message:err.toString()});
+  }
+}
+
+function doPost(e) {
+  try {
+    const body = JSON.parse(e.postData.contents);
+    if (body.action === 'saveData') {
+      return saveData(body);
+    }
+    return resp({status:'ok'});
+  } catch(err) {
+    return resp({status:'error',message:err.toString()});
+  }
+}
+
+function getData() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) return resp({status:'empty'});
+  const data = sheet.getRange(1,1).getValue();
+  if (!data) return resp({status:'empty'});
+  return resp(JSON.parse(data));
+}
+
+function saveData(body) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+  
+  // Store as JSON in cell A1
+  sheet.getRange(1,1).setValue(JSON.stringify({
+    familyData: body.familyData,
+    healthData: body.healthData,
+    lastSaved: new Date().toISOString()
+  }));
+  
+  // Also write readable log to row 3+
+  let logSheet = ss.getSheetByName('SyncLog');
+  if (!logSheet) logSheet = ss.insertSheet('SyncLog');
+  logSheet.appendRow([new Date(), body.memberId, 'sync', body.savedAt]);
+  
+  return resp({status:'saved'});
+}
+
+function resp(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+  const exportData = () => {
+    const data = {version:VERSION, familyData:S.familyData, healthData:S.healthData, exportedAt:new Date().toISOString()};
+    const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download=`familyhealth_${today()}.json`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return `<div>
+    <div class="section-title" style="margin-bottom:20px">⚙️ Pengaturan & Panduan</div>
+
+    <div class="tab-bar" id="settings-tabs">
+      <button class="tab-btn active" data-tab="guide">📋 Panduan Setup</button>
+      <button class="tab-btn" data-tab="export">💾 Ekspor/Impor</button>
+      <button class="tab-btn" data-tab="family">👨‍👩‍👧‍👦 Kelola Keluarga</button>
+      <button class="tab-btn" data-tab="sync">🔄 Sinkronisasi</button>
+    </div>
+
+    <!-- GUIDE TAB -->
+    <div id="tab-guide" class="tab-content" style="display:block">
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">🔧 Setup Google Sheets Integration</div>
+        <div style="font-size:13px;color:var(--muted2);margin-bottom:16px">
+          Ikuti langkah berikut untuk menghubungkan aplikasi ke Google Spreadsheet Anda:
+        </div>
+        ${[
+          ['Buka', 'Google Sheets → buat Spreadsheet baru → beri nama "FamilyHealth"'],
+          ['Buka Apps Script', 'Klik menu Extensions → Apps Script'],
+          ['Tempel Kode', 'Hapus kode default, tempel kode di bawah ini, lalu klik Save (💾)'],
+          ['Deploy', 'Klik Deploy → New Deployment → pilih Web App → Execute as: Me → Access: Anyone → Deploy'],
+          ['Salin URL', 'Salin URL Web App yang muncul'],
+          ['Login', 'Gunakan URL tersebut saat login ke aplikasi ini'],
+        ].map(([t,d],i)=>`
+          <div class="guide-step">
+            <div class="step-num">${i+1}</div>
+            <div><b>${t}</b> — <span style="color:var(--muted2)">${d}</span></div>
+          </div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">📄 Kode Apps Script (copy semua)</div>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+          <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('gs-code').textContent);toast('Kode disalin!','success')">📋 Salin Kode</button>
+        </div>
+        <div class="code-block" id="gs-code">${esc(appsScriptCode)}</div>
+      </div>
+    </div>
+
+    <!-- EXPORT TAB -->
+    <div id="tab-export" class="tab-content" style="display:none">
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">📦 Ekspor Data</div>
+        <p style="font-size:13px;color:var(--muted2);margin-bottom:14px">Unduh backup penuh semua data keluarga dalam format JSON.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="doExportJSON()">💾 Ekspor JSON (Semua Data)</button>
+          ${S.familyData.members.map(m=>`
+            <button class="btn btn-secondary btn-sm" onclick="doExportCSV(${m.id})">${m.avatar} ${esc(m.name)} CSV</button>`).join('')}
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">📂 Impor Data</div>
+        <p style="font-size:13px;color:var(--muted2);margin-bottom:14px">Impor file JSON yang sebelumnya diekspor dari aplikasi ini.</p>
+        <label class="btn btn-secondary" style="cursor:pointer">
+          📁 Pilih File JSON
+          <input type="file" accept=".json" style="display:none" onchange="doImportJSON(this)">
+        </label>
+      </div>
+      <div class="card">
+        <div class="card-title">↗️ Berbagi Aktivitas</div>
+        <p style="font-size:13px;color:var(--muted2)">Gunakan tombol ↗ pada setiap entri Latihan, SpO2, Tidur, atau Nutrisi untuk menyalin caption siap posting ke media sosial.</p>
+        <div style="margin-top:12px;background:var(--card2);border-radius:8px;padding:12px;font-size:12px;color:var(--muted2);font-style:italic">
+          Contoh: "🏃 Lari pagi 5km dalam 30 menit! 🔥 320 kkal terbakar 💓 HR: 145 bpm #RunningChallenge #HealthyLifestyle"
+        </div>
+      </div>
+    </div>
+
+    <!-- FAMILY TAB -->
+    <div id="tab-family" class="tab-content" style="display:none">
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">👨‍👩‍👧‍👦 Anggota Keluarga</div>
+        ${S.familyData.members.map(m=>`
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:38px;height:38px;background:rgba(0,212,170,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px">${m.avatar}</div>
+              <div>
+                <div style="font-weight:600;font-size:14px">${esc(m.name)}</div>
+                <div style="font-size:11px;color:var(--muted2)">${esc(m.role)} · ${age(m.birthDate)} · ${m.bloodType||'?'}</div>
+              </div>
+            </div>
+            ${tag(m.id===S.user?.id?'Login Saat Ini':'Anggota',m.id===S.user?.id?'var(--acc)':'var(--muted)')}
+          </div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">+ Tambah Anggota</div>
+        <div class="form-stack" id="new-member-form">
+          <div class="grid2">
+            <div class="form-group"><label class="fl">Nama <span class="req">*</span></label><input type="text" id="nm-name" placeholder="Nama anggota"></div>
+            <div class="form-group"><label class="fl">Peran</label><input type="text" id="nm-role" placeholder="Anak, Nenek..."></div>
+            <div class="form-group"><label class="fl">PIN (4-6 digit) <span class="req">*</span></label><input type="password" id="nm-pin" maxlength="6"></div>
+            <div class="form-group"><label class="fl">Gender</label>
+              <select id="nm-gender"><option value="male">Laki-laki</option><option value="female">Perempuan</option></select></div>
+            <div class="form-group"><label class="fl">Tanggal Lahir</label><input type="date" id="nm-birthdate"></div>
+            <div class="form-group"><label class="fl">Golongan Darah</label>
+              <select id="nm-blood"><option value="">Pilih...</option>${BLOOD_TYPES.map(b=>`<option>${b}</option>`).join('')}</select></div>
+          </div>
+          <div>
+            <label class="fl" style="display:block;margin-bottom:6px">Avatar</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              ${['👨','👩','👦','👧','👴','👵','👶','🧑'].map(av=>`
+                <button type="button" class="avatar-pick" data-av="${av}" onclick="pickAvatar(this,'${av}')"
+                  style="width:38px;height:38px;font-size:20px;background:var(--card2);border:1px solid var(--border);border-radius:8px;cursor:pointer">${av}</button>`).join('')}
+            </div>
+            <input type="hidden" id="nm-avatar" value="👤">
+          </div>
+          <button class="btn btn-primary" onclick="addMember()">+ Tambah Anggota</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SYNC TAB -->
+    <div id="tab-sync" class="tab-content" style="display:none">
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">🔗 Status Koneksi</div>
+        <div style="padding:12px;background:var(--card2);border-radius:8px;font-family:var(--mono);font-size:12px;color:var(--acc);word-break:break-all">
+          ${esc(S.sheetUrl||'Tidak ada URL')}
+        </div>
+        <div style="margin-top:10px;font-size:13px;color:${S.sheetUrl?'var(--green)':'var(--red)'}">
+          ${S.sheetUrl?'✅ URL Apps Script tersimpan untuk sesi ini':'❌ Tidak ada koneksi (login ulang dengan URL untuk menghubungkan)'}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🔄 Sinkronisasi Manual</div>
+        <p style="font-size:13px;color:var(--muted2);margin-bottom:14px">
+          Data disinkronkan otomatis 3 detik setelah setiap perubahan. Gunakan tombol di bawah untuk sinkron manual.
+        </p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="syncToSheet()" ${!S.sheetUrl?'disabled':''}>📤 Kirim ke Spreadsheet</button>
+          <button class="btn btn-secondary" onclick="syncFromSheet().then(()=>renderModule())" ${!S.sheetUrl?'disabled':''}>📥 Muat dari Spreadsheet</button>
+        </div>
+        ${S.syncStatus?`<div style="margin-top:10px;font-size:12px;color:var(--muted2)">${esc(S.syncStatus)}</div>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════
+//  MODULE EVENT HANDLERS
+// ══════════════════════════════════════════════
+function attachModuleEvents() {
+  // Settings tabs
+  document.querySelectorAll('#settings-tabs .tab-btn').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('#settings-tabs .tab-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(t=>t.style.display='none');
+      const tab = document.getElementById('tab-'+btn.dataset.tab);
+      if(tab) tab.style.display='block';
+    };
+  });
+}
+
+// Settings actions (global)
+function doExportJSON() {
+  const data = {version:VERSION, familyData:S.familyData, healthData:S.healthData, exportedAt:new Date().toISOString()};
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=url; a.download=`familyhealth_${today()}.json`; a.click(); URL.revokeObjectURL(url);
+  toast('Data diekspor!','success');
+}
+
+function doExportCSV(memberId) {
+  const m = S.familyData.members.find(x=>x.id===memberId);
+  const h = S.healthData[memberId]||{};
+  const rows = [['Modul','Tanggal','Data']];
+  Object.entries(h).forEach(([mod,items])=>{
+    if(Array.isArray(items)) items.forEach(item=>
+      rows.push([mod,item.date||item.startDate||'',JSON.stringify(item)]));
+  });
+  const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=`${m?.name||'member'}_${today()}.csv`; a.click();
+  URL.revokeObjectURL(url); toast('CSV diekspor!','success');
+}
+
+function doImportJSON(input) {
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      if(d.familyData && d.healthData) {
+        S.familyData = d.familyData; S.healthData = d.healthData;
+        toast('Data berhasil diimpor!','success'); renderModule();
+      } else toast('Format file tidak valid','error');
+    } catch { toast('File rusak atau format salah','error'); }
+  };
+  reader.readAsText(file);
+}
+
+function pickAvatar(el, av) {
+  document.querySelectorAll('.avatar-pick').forEach(b=>b.style.borderColor='var(--border)');
+  el.style.borderColor='var(--acc)';
+  const inp = document.getElementById('nm-avatar'); if(inp) inp.value = av;
+}
+
+function addMember() {
+  const name = document.getElementById('nm-name')?.value?.trim();
+  const pin = document.getElementById('nm-pin')?.value;
+  if(!name||!pin) { toast('Nama dan PIN wajib diisi','error'); return; }
+  const id = Math.max(...S.familyData.members.map(m=>m.id))+1;
+  const newM = {
+    id, name,
+    role: document.getElementById('nm-role')?.value||'Anggota',
+    pin,
+    avatar: document.getElementById('nm-avatar')?.value||'👤',
+    gender: document.getElementById('nm-gender')?.value||'male',
+    birthDate: document.getElementById('nm-birthdate')?.value||'',
+    bloodType: document.getElementById('nm-blood')?.value||'',
+    height:'', weight:'',
+  };
+  S.familyData.members.push(newM);
+  S.healthData[id] = mkHealth();
+  autoSync(); toast('Anggota berhasil ditambahkan!','success'); renderModule();
+}
+
+// ── SHARE ──
+function shareItem(module, id) {
+  const h = getH();
+  const item = h[module]?.find(x=>x.id===id);
+  if(!item) return;
+  let text = '';
+  if(module==='exercise') text = `🏃 Aktivitas ${item.type||''} saya!\n📅 ${fmt(item.date)}\n⏱️ ${item.duration||'?'} menit${item.distance?`\n📏 ${item.distance} km`:''}${item.calories?`\n🔥 ${item.calories} kkal terbakar`:''}${item.hr?`\n💓 HR: ${item.hr} bpm`:''}\n${item.notes||''}\n#HealthyLifestyle #FamilyHealth`;
+  else if(module==='nutrition') text = `🥗 Makan ${item.mealType||''} saya!\n📅 ${fmt(item.date)}\n🍽️ ${item.foods}${item.calories?`\n🔥 ${item.calories} kkal`:''}\n#HealthyEating #CleanFood`;
+  else if(module==='spo2') text = `💓 Status kesehatan hari ini!\n📅 ${fmt(item.date)} ${item.time||''}\nSpO2: ${item.value}% • HR: ${item.hr||'?'} bpm\n#HealthMonitor`;
+  else if(module==='sleep') text = `😴 Tidur ${item.duration||'?'} jam semalam!\n📅 ${fmt(item.date)}\nKualitas: ${item.quality||'-'}\n#SleepWell #HealthyHabits`;
+  if(text) {
+    navigator.clipboard?.writeText(text).then(()=>toast('Caption disalin! Siap dibagikan ke media sosial 🎉','success'))
+    .catch(()=>{ prompt('Salin teks ini:',text); });
+  }
+}
+
+// ══════════════════════════════════════════════
+//  CHART HELPERS
+// ══════════════════════════════════════════════
+const CHART_DEFAULTS = {
+  color:'rgba(255,255,255,0.1)',
+  tick:{color:'#5A7A90',font:{size:10,family:'DM Sans'}},
+  tooltip:{background:'#0F1D30',border:'#1F3348',bodyColor:'#E8F0F5',titleColor:'#E8F0F5'},
+};
+
+function mkChartOpts(extra={}) {
+  return {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#8BA3B5',font:{size:11}}}, tooltip:{backgroundColor:CHART_DEFAULTS.tooltip.background,borderColor:CHART_DEFAULTS.tooltip.border,borderWidth:1,bodyColor:CHART_DEFAULTS.tooltip.bodyColor,titleColor:CHART_DEFAULTS.tooltip.titleColor}},
+    scales:{x:{grid:{color:CHART_DEFAULTS.color},ticks:CHART_DEFAULTS.tick},y:{grid:{color:CHART_DEFAULTS.color},ticks:CHART_DEFAULTS.tick}},
+    ...extra
+  };
+}
+
+function drawBar(id, labels, datasets) {
+  const el = document.getElementById(id); if(!el) return;
+  if(S._charts[id]) S._charts[id].destroy();
+  const COLS=['rgba(0,212,170,0.8)','rgba(14,165,233,0.8)','rgba(167,139,250,0.8)','rgba(244,114,182,0.8)'];
+  S._charts[id] = new Chart(el, {type:'bar',data:{labels,datasets:datasets.map((d,i)=>({...d,backgroundColor:d.color||COLS[i%COLS.length],borderRadius:4,borderSkipped:false}))},options:mkChartOpts()});
+}
+
+function drawLine(id, labels, datasets, yRange={}) {
+  const el=document.getElementById(id); if(!el) return;
+  if(S._charts[id]) S._charts[id].destroy();
+  const COLS=['var(--acc)','var(--red)','var(--purple)','var(--orange)'];
+  const opts = mkChartOpts();
+  if(yRange.min!==undefined) opts.scales.y.min=yRange.min;
+  if(yRange.max!==undefined) opts.scales.y.max=yRange.max;
+  S._charts[id] = new Chart(el,{type:'line',data:{labels,datasets:datasets.map((d,i)=>({...d,borderColor:d.color||COLS[i%COLS.length],backgroundColor:(d.color||COLS[i%COLS.length]).replace('var(--acc)','rgba(0,212,170,0.1)').replace('var(--red)','rgba(248,113,113,0.1)').replace('var(--purple)','rgba(167,139,250,0.1)').replace('var(--orange)','rgba(251,146,60,0.1)'),fill:false,tension:.35,pointRadius:3,pointHoverRadius:5}))},options:opts});
+}
+
+function drawArea(id, labels, data, color) {
+  const el=document.getElementById(id); if(!el) return;
+  if(S._charts[id]) S._charts[id].destroy();
+  S._charts[id] = new Chart(el,{type:'line',data:{labels,datasets:[{label:'Jam',data,borderColor:color,backgroundColor:color.replace('var(--purple)','rgba(167,139,250,0.15)'),fill:true,tension:.4,pointRadius:3}]},options:mkChartOpts()});
+}
+
+function drawPie(id, labels, data) {
+  const el=document.getElementById(id); if(!el) return;
+  if(S._charts[id]) S._charts[id].destroy();
+  const cols=['rgba(0,212,170,.8)','rgba(14,165,233,.8)','rgba(244,114,182,.8)','rgba(251,146,60,.8)','rgba(167,139,250,.8)','rgba(251,191,36,.8)','rgba(74,222,128,.8)','rgba(248,113,113,.8)'];
+  S._charts[id] = new Chart(el,{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:cols,borderColor:'var(--card)',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#8BA3B5',font:{size:10},boxWidth:10,padding:6}},tooltip:{backgroundColor:'#0F1D30',borderColor:'#1F3348',borderWidth:1,bodyColor:'#E8F0F5',titleColor:'#E8F0F5'}}}});
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+// Add seed data
+(function seedData() {
+  const h2 = S.healthData[2];
+  h2.menstruation = [
+    {id:'m1',type:'menstruasi',startDate:'2025-01-05',endDate:'2025-01-09',cycle:28,flow:'normal',symptoms:'nyeri ringan',notes:''},
+    {id:'m2',type:'menstruasi',startDate:'2025-02-02',endDate:'2025-02-06',cycle:28,flow:'normal',symptoms:'',notes:''},
+    {id:'m3',type:'menstruasi',startDate:'2025-03-02',endDate:'2025-03-07',cycle:29,flow:'berat',symptoms:'kram perut',notes:''},
+  ];
+  const h1 = S.healthData[1];
+  h1.exercise = [
+    {id:'e1',date:'2025-03-01',type:'Lari',duration:30,distance:5,calories:320,hr:145,notes:'Pagi cerah'},
+    {id:'e2',date:'2025-03-04',type:'Bersepeda',duration:45,distance:12,calories:400,hr:130,notes:''},
+    {id:'e3',date:'2025-03-07',type:'Gym/Fitness',duration:60,distance:'',calories:350,hr:140,notes:'Chest day'},
+  ];
+  h1.spo2 = [
+    {id:'s1',date:'2025-03-01',time:'07:30',value:98,hr:72,activity:'Istirahat',notes:''},
+    {id:'s2',date:'2025-03-02',time:'08:00',value:97,hr:74,activity:'Istirahat',notes:''},
+    {id:'s3',date:'2025-03-03',time:'07:45',value:99,hr:68,activity:'Istirahat',notes:''},
+    {id:'s4',date:'2025-03-05',time:'07:30',value:96,hr:76,activity:'Istirahat',notes:''},
+  ];
+})();
+
+render();
+</script>
+</body>
+</html>
