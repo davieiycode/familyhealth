@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Family Health Monitor</title>
+<title>FamilyHealth Monitor</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
@@ -126,6 +126,7 @@ button,input,select,textarea{font-family:var(--font)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 .fade-up{animation:fadeUp .25s ease forwards}
 
 /* ════ LAYOUT ═══════════════════════════════ */
@@ -528,38 +529,43 @@ input[type=range]{width:100%;accent-color:var(--acc);cursor:pointer}
 .mc2-name{font-weight:600;font-size:13px}
 .mc2-role{font-size:11px;color:var(--muted2);margin-top:2px}
 
-/* ── PIN INPUT — completely rebuilt ──────── */
-/* Uses 4–6 individual boxes that are purely visual  */
-/* One hidden <input> captures the real value        */
-.pin-visual{
-  display:flex;gap:10px;justify-content:center;
-  margin:10px 0 6px;position:relative;
+/* ── PIN DOTS ─────────────────────────────── */
+.pin-dots{
+  display:flex;gap:14px;justify-content:center;
+  margin:12px 0 8px;
 }
-.pin-cell{
-  width:50px;height:58px;
-  border:2px solid var(--border);border-radius:var(--rs);
-  background:var(--card2);
+.pin-dot{
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid var(--border2);
+  background:transparent;
+  transition:background .15s,border-color .15s,transform .12s;
+}
+.pin-dot.filled{
+  background:var(--acc);border-color:var(--acc);
+  transform:scale(1.1);
+}
+/* ── NUMPAD ──────────────────────────────── */
+.numpad{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:10px;margin-top:14px;max-width:280px;margin-left:auto;margin-right:auto;
+}
+.np-btn{
+  height:58px;border-radius:var(--rs);
+  border:1px solid var(--border);
+  background:var(--card2);color:var(--text);
+  font-size:22px;font-weight:600;cursor:pointer;
+  transition:background .12s,transform .1s;
   display:flex;align-items:center;justify-content:center;
-  font-size:26px;font-family:var(--mono);
-  transition:border-color .18s,box-shadow .18s;
-  position:relative;cursor:pointer;
+  -webkit-user-select:none;user-select:none;
+  touch-action:manipulation;
 }
-.pin-cell.filled::after{
-  content:'●';font-size:16px;color:var(--text);
+.np-btn:hover{background:var(--card3)}
+.np-btn:active{transform:scale(.91);background:var(--border2)}
+.np-btn.np-del{font-size:18px;color:var(--muted)}
+.np-btn.np-ok{
+  background:var(--acc);color:var(--bg);border-color:var(--acc);font-size:16px;
 }
-.pin-cell.focused{
-  border-color:var(--acc);
-  box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 24%,transparent);
-}
-/* The real hidden input — overlays the whole .pin-visual */
-.pin-real{
-  position:absolute;inset:0;width:100%;height:100%;
-  opacity:0;cursor:pointer;font-size:16px;
-  /* Don't use display:none or visibility:hidden — browser won't focus */
-  color:transparent;background:transparent;border:none;outline:none;
-  -webkit-user-select:auto;user-select:auto;
-  caret-color:transparent;letter-spacing:0;
-}
+.np-btn.np-ok:hover{filter:brightness(1.1)}
 
 .err-msg{color:var(--red);font-size:12px;text-align:center;min-height:18px;margin-top:2px}
 .hint{font-size:11px;color:var(--muted2);text-align:center;margin-top:10px;line-height:1.7}
@@ -839,6 +845,152 @@ function statCard(icon,label,value,sub,color) {
   return '<div class="stat-card"><div class="stat-icon" style="background:'+c+'18">'+icon+'</div><div><div class="stat-label">'+esc(label)+'</div><div class="stat-value" style="color:'+c+'">'+esc(String(value||'-'))+'</div>'+(sub?'<div class="stat-sub">'+esc(String(sub))+'</div>':'')+'</div></div>';
 }
 
+// ════════════════════════════════════════════════
+//  GOOGLE OAUTH — PKCE flow (no client secret needed)
+//  Uses Google Sheets REST API directly after auth
+// ════════════════════════════════════════════════
+
+// Fill in your OAuth Client ID from Google Cloud Console
+// APIs & Services → Credentials → Web Application
+// Authorized redirect URIs: same origin as this file
+const GOOG_CLIENT_ID = localStorage.getItem('fh-client-id') || '';
+const GOOG_SCOPES    = 'https://www.googleapis.com/auth/spreadsheets';
+const SHEETS_FILE_KEY = 'fh-sheet-file-id'; // Google Sheets file ID
+
+let _oauthToken = null;
+let _oauthExpiry = 0;
+
+// ── Token helpers ──
+function oauthGetToken()  { return _oauthToken; }
+function oauthIsExpired() { return Date.now() > _oauthExpiry - 60000; }
+function oauthClear()     { _oauthToken=null; _oauthExpiry=0; S.syncStatus='⚠️ Perlu login ulang'; renderSyncBar(); }
+
+function oauthSaveToken(tok, expiresIn) {
+  _oauthToken = tok;
+  _oauthExpiry = Date.now() + (expiresIn||3600)*1000;
+}
+
+// ── PKCE helpers ──
+async function pkceChallenge() {
+  const arr = new Uint8Array(32);
+  crypto.getRandomValues(arr);
+  const verifier = btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
+  const challenge = btoa(String.fromCharCode(...new Uint8Array(hash))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+  return { verifier, challenge };
+}
+
+// ── Start OAuth (popup) ──
+async function oauthLogin() {
+  const clientId = GOOG_CLIENT_ID || localStorage.getItem('fh-client-id');
+  if (!clientId) {
+    openOAuthSetupModal();
+    return;
+  }
+  const { verifier, challenge } = await pkceChallenge();
+  sessionStorage.setItem('pkce_verifier', verifier);
+
+  const redirect = location.origin + location.pathname;
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: redirect,
+    response_type: 'code',
+    scope: GOOG_SCOPES,
+    access_type: 'offline',
+    prompt: 'consent',
+    code_challenge: challenge,
+    code_challenge_method: 'S256',
+    state: 'fh_oauth',
+  });
+  const url = 'https://accounts.google.com/o/oauth2/v2/auth?' + params;
+  // Open as popup on desktop, redirect on mobile
+  const isMob = window.innerWidth < 768;
+  if (!isMob) {
+    const w = window.open(url, 'goog_oauth', 'width=520,height=620,top=100,left=200');
+    // Poll for popup close + token in URL
+    const check = setInterval(() => {
+      try {
+        if (w.closed) { clearInterval(check); return; }
+        const u = new URL(w.location.href);
+        if (u.searchParams.get('code') && u.searchParams.get('state') === 'fh_oauth') {
+          clearInterval(check);
+          w.close();
+          exchangeCode(u.searchParams.get('code'), redirect);
+        }
+      } catch(e) {} // cross-origin — wait
+    }, 400);
+  } else {
+    location.href = url; // redirect flow for mobile
+  }
+}
+
+// ── Exchange code for token ──
+async function exchangeCode(code, redirect) {
+  const clientId = localStorage.getItem('fh-client-id');
+  const verifier = sessionStorage.getItem('pkce_verifier');
+  if (!clientId || !verifier) { toast('OAuth gagal — client ID tidak ada', 'error'); return; }
+  S.syncStatus = '🔄 Verifikasi OAuth…'; renderSyncBar();
+  try {
+    // Exchange via Apps Script proxy (avoids CORS + keeps secret server-side)
+    if (S.sheetUrl) {
+      const r = await fetch(S.sheetUrl, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        mode: 'no-cors',
+        body: JSON.stringify({ action: 'exchangeCode', code, redirect, verifier })
+      });
+      // no-cors can't read response, so poll for token
+      toast('Kode OAuth dikirim. Coba sinkronisasi dalam 5 detik…', 'warn');
+      setTimeout(() => syncFromSheet(), 4000);
+    } else {
+      toast('Set URL Apps Script dulu sebelum OAuth', 'warn');
+    }
+  } catch(e) {
+    S.syncStatus = '❌ OAuth gagal'; renderSyncBar();
+    toast('OAuth gagal: ' + e.message, 'error');
+  }
+}
+
+// ── Handle redirect callback (mobile flow) ──
+function handleOAuthCallback() {
+  const u = new URL(location.href);
+  const code = u.searchParams.get('code');
+  const state = u.searchParams.get('state');
+  if (code && state === 'fh_oauth') {
+    history.replaceState({}, '', location.pathname); // clean URL
+    const redirect = location.origin + location.pathname;
+    exchangeCode(code, redirect);
+  }
+}
+
+function openOAuthSetupModal() {
+  openModal('🔑 Setup Google OAuth',
+    '<div class="fs" style="font-size:13px;color:var(--muted2)">'
+    +'<p>Untuk sinkronisasi dengan Google Sheets via OAuth:</p>'
+    +'<ol style="margin-left:16px;line-height:2">'
+    +'<li>Buka <b>console.cloud.google.com</b></li>'
+    +'<li>Buat project → APIs & Services → Credentials</li>'
+    +'<li>Create OAuth 2.0 Client ID → Web Application</li>'
+    +'<li>Authorized redirect URIs: <code style="color:var(--acc);background:var(--card2);padding:2px 6px;border-radius:4px">'+location.origin+location.pathname+'</code></li>'
+    +'<li>Salin Client ID, tempel di bawah</li>'
+    +'</ol>'
+    +'<div class="form-group" style="margin-top:8px">'
+    +'<label class="fl">Google OAuth Client ID</label>'
+    +'<input id="oauth-client-id" type="text" placeholder="xxxxxx.apps.googleusercontent.com" value="'+esc(localStorage.getItem('fh-client-id')||'')+'">'
+    +'</div></div>',
+    [{label:'Simpan & Login',cls:'btn-primary',fn:'saveClientIdAndLogin()'},{label:'Batal',cls:'btn-secondary',fn:'closeModal()'}]
+  );
+}
+
+function saveClientIdAndLogin() {
+  const v = document.getElementById('oauth-client-id')?.value?.trim();
+  if (!v) { toast('Client ID tidak boleh kosong','error'); return; }
+  localStorage.setItem('fh-client-id', v);
+  closeModal();
+  toast('Client ID disimpan ✓','success');
+  setTimeout(oauthLogin, 300);
+}
+
 // ═══════════════════════════════════════════════
 //  GOOGLE SHEETS
 // ═══════════════════════════════════════════════
@@ -849,7 +1001,15 @@ async function syncToSheet(silent) {
   if(!S.sheetUrl) return;
   if(!silent){ S.syncStatus='🔄 Menyinkronkan...'; renderSyncBar(); }
   try {
-    await fetch(S.sheetUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saveData',familyData:S.familyData,healthData:S.healthData,savedAt:new Date().toISOString()}),mode:'no-cors'});
+    const tok = oauthGetToken();
+    const body = JSON.stringify({action:'saveData',familyData:S.familyData,healthData:S.healthData,savedAt:new Date().toISOString()});
+    if(tok && !oauthIsExpired()) {
+      // Direct Sheets API via OAuth
+      await fetch(S.sheetUrl,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+tok},body,mode:'cors'});
+    } else {
+      // Fallback: Apps Script no-cors (no auth needed server-side)
+      await fetch(S.sheetUrl,{method:'POST',headers:{'Content-Type':'application/json'},body,mode:'no-cors'});
+    }
   } catch(e){}
   S.syncStatus='✅ '+new Date().toLocaleTimeString('id-ID');
   renderSyncBar();
@@ -859,8 +1019,13 @@ async function syncFromSheet() {
   if(!S.sheetUrl) return false;
   S.syncStatus='🔄 Memuat...'; renderSyncBar();
   try {
-    const r=await fetch(S.sheetUrl+(S.sheetUrl.includes('?')?'&':'?')+'action=getData',{mode:'cors'});
-    if(!r.ok) throw new Error();
+    const tok = oauthGetToken();
+    const headers = tok && !oauthIsExpired() ? {'Authorization':'Bearer '+tok} : {};
+    const r=await fetch(S.sheetUrl+(S.sheetUrl.includes('?')?'&':'?')+'action=getData',{mode:'cors',headers});
+    if(!r.ok) {
+      if(r.status===401) { oauthClear(); toast('Sesi OAuth kadaluarsa, login ulang','warn'); }
+      throw new Error('HTTP '+r.status);
+    }
     const d=await r.json();
     if(d&&d.familyData&&d.healthData){
       S.familyData=d.familyData; S.healthData=d.healthData;
@@ -881,7 +1046,7 @@ function renderSyncBar() {
 // ═══════════════════════════════════════════════
 //  RENDER ENGINE
 // ═══════════════════════════════════════════════
-function render() { loadTheme(); S.screen==='login' ? renderLogin() : renderApp(); }
+function render() { loadTheme(); handleOAuthCallback(); S.screen==='login' ? renderLogin() : renderApp(); }
 
 function renderLogin() {
   document.getElementById('app').innerHTML = buildLoginStep();
@@ -972,30 +1137,28 @@ function buildLoginStep() {
     body = `
       <div class="slabel">Langkah 3 dari 3 — PIN</div>
       ${selM ? `
-        <div style="text-align:center;margin-bottom:16px">
+        <div style="text-align:center;margin-bottom:14px">
           <div style="font-size:36px;line-height:1.2">${selM.avatar}</div>
-          <div style="font-weight:700;font-size:16px;margin-top:6px">${esc(selM.name)}</div>
-          ${selM.isAdmin ? `<div style="margin-top:5px">${tag('Admin','var(--yellow)')}</div>` : ''}
+          <div style="font-weight:700;font-size:16px;margin-top:5px">${esc(selM.name)}</div>
+          ${selM.isAdmin ? `<div style="margin-top:4px">${tag('Admin','var(--yellow)')}</div>` : ''}
         </div>` : ''}
-      <div class="form-group">
-        <label class="fl" style="text-align:center;display:block;margin-bottom:6px">Masukkan PIN</label>
-        <div class="pin-visual" id="pin-visual">
-          <div class="pin-cell" id="pc0"></div>
-          <div class="pin-cell" id="pc1"></div>
-          <div class="pin-cell" id="pc2"></div>
-          <div class="pin-cell" id="pc3"></div>
-          <input class="pin-real" id="pin-real" type="tel" maxlength="6"
-            inputmode="numeric" pattern="[0-9]*" autocomplete="off" autocorrect="off"
-            autocapitalize="none" spellcheck="false">
-        </div>
+      <label class="fl" style="display:block;text-align:center;margin-bottom:2px">Masukkan PIN</label>
+      <div class="pin-dots" id="pin-dots">
+        <div class="pin-dot" id="pd0"></div>
+        <div class="pin-dot" id="pd1"></div>
+        <div class="pin-dot" id="pd2"></div>
+        <div class="pin-dot" id="pd3"></div>
       </div>
-      <button id="btn-login" class="btn btn-primary btn-full btn-lg" style="margin-top:8px">
-        Masuk 🚀
-      </button>
       <div id="err3" class="err-msg">${esc(S.loginError)}</div>
-      <button class="btn btn-ghost btn-sm btn-full" style="margin-top:8px"
+      <div class="numpad" id="numpad">
+        ${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="np-btn" onclick="npPress('${n}')">${n}</button>`).join('')}
+        <button class="np-btn np-del" onclick="npBack()">⌫</button>
+        <button class="np-btn" onclick="npPress('0')">0</button>
+        <button class="np-btn np-ok" onclick="npConfirm()">OK ✓</button>
+      </div>
+      <button class="btn btn-ghost btn-sm btn-full" style="margin-top:12px"
         onclick="loginGoStep(2)">← Kembali</button>
-      <p class="hint">Default PIN: Ayah 1234 · Ibu 5678 · Anak1 1111 · Anak2 2222</p>`;
+      <p class="hint">Default: Ayah 1234 · Ibu 5678 · Anak1 1111 · Anak2 2222</p>`;
   }
 
   return `
@@ -1004,7 +1167,7 @@ function buildLoginStep() {
         <div class="login-hero">
           <span class="login-logo">🏥</span>
           <div class="login-brand">FamilyHealth</div>
-          <p class="login-sub">Monitor kesehatan keluarga terpadu<br>by Rafieiy & Claude.AI</p>
+          <p class="login-sub">Monitor kesehatan keluarga terpadu</p>
         </div>
         <div class="card" style="padding:24px">
           <div class="step-dots">${dots}</div>
@@ -1043,48 +1206,68 @@ function bindLoginStep() {
   }
 
   if (step === 3) {
-    const real = document.getElementById('pin-real');
-    const btn  = document.getElementById('btn-login');
-
-    const updateCells = () => {
-      const v = real?.value || '';
-      for (let i = 0; i < 4; i++) {
-        const cell = document.getElementById('pc' + i);
-        if (!cell) continue;
-        cell.classList.toggle('filled', i < v.length);
-        cell.classList.toggle('focused', i === Math.min(v.length, 3));
-      }
-    };
-
-    const doLogin = () => {
-      const pin = real?.value;
-      const m = S.familyData.members.find(x => x.id === S.loginMemberId);
-      if (!m) return;
-      if (m.pin === pin) {
-        S.user = m; S.screen = 'app'; S.module = 'dashboard'; S.loginError = '';
-        renderApp();
-      } else {
-        S.loginError = 'PIN salah ❌';
-        if (real) real.value = '';
-        updateCells();
-        const e = document.getElementById('err3');
-        if (e) { e.textContent = 'PIN salah ❌'; }
-        if (real) real.focus();
-      }
-    };
-
-    if (real) {
-      real.oninput = () => { updateCells(); if (real.value.length >= 4) doLogin(); };
-      real.onkeydown = e => e.key === 'Enter' && doLogin();
-      // Click anywhere on pin-visual to focus
-      document.getElementById('pin-visual')?.addEventListener('click', () => real.focus());
-      // Focus immediately — single focused input, no competition
-      setTimeout(() => { if (real) real.focus(); }, 60);
-    }
-    if (btn) btn.onclick = doLogin;
-    updateCells();
+    // Numpad PIN — no text input at all, pure button-driven
+    window._pinVal = '';
+    updatePinDots();
   }
 }
+
+// ── Numpad PIN functions ─────────────────────────
+window._pinVal = '';
+
+function updatePinDots() {
+  const v = window._pinVal || '';
+  for (let i = 0; i < 4; i++) {
+    const d = document.getElementById('pd' + i);
+    if (d) d.classList.toggle('filled', i < v.length);
+  }
+}
+
+function npPress(n) {
+  if ((window._pinVal||'').length >= 6) return;
+  window._pinVal = (window._pinVal||'') + n;
+  updatePinDots();
+  // Auto-confirm at 4 digits (standard PIN length)
+  if (window._pinVal.length === 4) {
+    setTimeout(npConfirm, 120);
+  }
+}
+
+function npBack() {
+  window._pinVal = (window._pinVal||'').slice(0, -1);
+  updatePinDots();
+  const e = document.getElementById('err3');
+  if (e) e.textContent = '';
+}
+
+function npConfirm() {
+  const pin = window._pinVal || '';
+  const m = S.familyData.members.find(x => x.id === S.loginMemberId);
+  if (!m) return;
+  if (m.pin === pin) {
+    window._pinVal = '';
+    S.user = m; S.screen = 'app'; S.module = 'dashboard'; S.loginError = '';
+    renderApp();
+  } else {
+    S.loginError = 'PIN salah ❌';
+    window._pinVal = '';
+    updatePinDots();
+    const e = document.getElementById('err3');
+    if (e) { e.textContent = 'PIN salah ❌'; }
+    // Shake numpad
+    const np = document.getElementById('numpad');
+    if (np) { np.style.animation='shake .3s ease'; setTimeout(()=>{ np.style.animation=''; },350); }
+  }
+}
+
+// Also allow keyboard for desktop
+document.addEventListener('keydown', function(e) {
+  if (S.screen !== 'login' || S.loginStep !== 3) return;
+  if (e.key >= '0' && e.key <= '9') npPress(e.key);
+  else if (e.key === 'Backspace') npBack();
+  else if (e.key === 'Enter') npConfirm();
+});
+
 
 function loginGoStep(n) {
   S.loginStep = n;
@@ -1225,20 +1408,49 @@ function doSwitchModal(id) {
     ); return;
   }
   const m=S.familyData.members.find(x=>x.id===id); if(!m) return;
-  openModal('🔄 Ganti Profil',
-    '<div style="text-align:center;margin-bottom:14px"><div style="font-size:34px">'+m.avatar+'</div><div style="font-weight:600;font-size:15px;margin-top:5px">'+esc(m.name)+'</div></div>'
-    +'<div class="form-group"><label class="fl">PIN</label><input type="password" id="sw-pin" class="pin-input" placeholder="••••" maxlength="6" autocomplete="off"></div>'
-    +'<div class="err-msg" id="sw-err"></div>',
-    [{label:'Masuk',cls:'btn-primary',fn:'doSwitch('+id+')'}]
+  window._swTarget = id;
+  window._pinVal = '';
+  openModal('🔄 Ganti ke ' + esc(m.name),
+    '<div style="text-align:center;margin-bottom:12px"><div style="font-size:36px">'+m.avatar+'</div>'
+    +'<div style="font-weight:700;font-size:15px;margin-top:5px">'+esc(m.name)+'</div></div>'
+    +'<label class="fl" style="display:block;text-align:center;margin-bottom:2px">Masukkan PIN</label>'
+    +'<div class="pin-dots" id="pin-dots"><div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div><div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div></div>'
+    +'<div class="err-msg" id="sw-err"></div>'
+    +'<div class="numpad" id="numpad" style="margin-top:10px">'
+    +'<button class="np-btn" onclick="swNpPress(1)">1</button><button class="np-btn" onclick="swNpPress(2)">2</button><button class="np-btn" onclick="swNpPress(3)">3</button>'
+    +'<button class="np-btn" onclick="swNpPress(4)">4</button><button class="np-btn" onclick="swNpPress(5)">5</button><button class="np-btn" onclick="swNpPress(6)">6</button>'
+    +'<button class="np-btn" onclick="swNpPress(7)">7</button><button class="np-btn" onclick="swNpPress(8)">8</button><button class="np-btn" onclick="swNpPress(9)">9</button>'
+    +'<button class="np-btn np-del" onclick="swNpBack()">⌫</button>'
+    +'<button class="np-btn" onclick="swNpPress(0)">0</button>'
+    +'<button class="np-btn np-ok" onclick="doSwitch('+id+')">OK ✓</button>'
+    +'</div>',
+    []
   );
-  setTimeout(()=>document.getElementById('sw-pin')?.focus(),80);
 }
 
+// sw numpad helpers
+function swNpPress(n) {
+  if ((window._pinVal||'').length >= 6) return;
+  window._pinVal = (window._pinVal||'') + n;
+  updatePinDots();
+  if (window._pinVal.length === 4) setTimeout(()=>doSwitch(window._swTarget), 120);
+}
+function swNpBack() {
+  window._pinVal = (window._pinVal||'').slice(0,-1);
+  updatePinDots();
+  const e=document.getElementById('sw-err'); if(e) e.textContent='';
+}
 function doSwitch(id) {
   const m=S.familyData.members.find(x=>x.id===id);
-  const pin=document.getElementById('sw-pin')?.value;
-  if(m?.pin===pin){ S.user=m; closeModal(); S.module='dashboard'; renderApp(); }
-  else{ const e=document.getElementById('sw-err'); if(e) e.textContent='PIN salah'; const i=document.getElementById('sw-pin'); if(i) i.value=''; }
+  const pin=window._pinVal||'';
+  if(m?.pin===pin){
+    window._pinVal=''; S.user=m; closeModal(); S.module='dashboard'; renderApp();
+  } else {
+    window._pinVal=''; updatePinDots();
+    const e=document.getElementById('sw-err'); if(e) e.textContent='PIN salah ❌';
+    const np=document.getElementById('numpad');
+    if(np){np.style.animation='shake .3s ease';setTimeout(()=>{np.style.animation='';},350);}
+  }
 }
 
 // ═══════════════════════════════════════════════
@@ -2526,10 +2738,42 @@ function buildFamilyTab() {
   +'</div>';
 }
 
+function saveNewSheetUrl() {
+  const v = document.getElementById('new-sheet-url')?.value?.trim();
+  if (v) { S.sheetUrl = v; localStorage.setItem('fh-url', v); toast('URL disimpan ✓', 'success'); renderModule(); }
+}
+function doManualSync() {
+  syncToSheet().then(() => toast('Tersinkronisasi! ✓', 'success'));
+}
+
+
 function buildSyncTab() {
+  const hasToken = oauthGetToken() && !oauthIsExpired();
+  const clientId = localStorage.getItem('fh-client-id') || '';
   return '<div style="display:flex;flex-direction:column;gap:14px">'
-  +'<div class="card"><div class="card-title">🔗 Status Koneksi</div><div style="background:var(--card2);border-radius:7px;padding:11px;font-family:var(--mono);font-size:12px;color:var(--acc);word-break:break-all">'+esc(S.sheetUrl||'Tidak ada URL')+'</div><div style="margin-top:8px;font-size:13px;color:'+(S.sheetUrl?'var(--green)':'var(--red)')+'">'+( S.sheetUrl?'✅ Terhubung':'❌ Tidak ada koneksi')+'</div>'+(S.syncStatus?'<div style="font-size:12px;color:var(--muted2);margin-top:6px">'+esc(S.syncStatus)+'</div>':'')+'</div>'
-  +'<div class="card"><div class="card-title">🔄 Sinkronisasi Manual</div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" '+(S.sheetUrl?'':'disabled')+' onclick="syncToSheet().then(()=>toast(\'Tersinkronisasi!\',\'success\'))">📤 Kirim ke Spreadsheet</button><button class="btn btn-secondary" '+(S.sheetUrl?'':'disabled')+' onclick="syncFromSheet().then(()=>renderModule())">📥 Muat dari Spreadsheet</button></div></div>'
+  +'<div class="card" style="border-color:'+(hasToken?'rgba(50,215,75,.3)':'rgba(255,69,58,.2)')+'">'
+  +'<div class="card-title">🔑 Google OAuth</div>'
+  +'<div style="font-size:13px;color:var(--muted2);margin-bottom:10px">Login Google diperlukan sebelum sinkronisasi untuk keamanan. Token akan kadaluarsa otomatis.</div>'
+  +(hasToken
+    ?'<div style="color:var(--green);font-size:13px;font-weight:600;margin-bottom:10px">✅ Terautentikasi</div><button class="btn btn-danger btn-sm" onclick="oauthClear();renderModule()">Logout OAuth</button>'
+    :'<button class="btn btn-primary" onclick="oauthLogin()">🔑 Login dengan Google</button>'
+  )
+  +'<div style="margin-top:10px"><button class="btn btn-secondary btn-sm" onclick="openOAuthSetupModal()">⚙️ Setup Client ID</button></div>'
+  +'</div>'
+  +'<div class="card"><div class="card-title">🔗 Apps Script URL</div>'
+  +'<div style="background:var(--card2);border-radius:7px;padding:10px;font-family:var(--mono);font-size:11px;color:var(--acc);word-break:break-all">'+esc(S.sheetUrl||'Belum diset')+'</div>'
+  +'<div style="margin-top:8px;font-size:13px;color:'+(S.sheetUrl?'var(--green)':'var(--red)')+'">'+( S.sheetUrl?'✅ URL tersimpan':'❌ Belum ada URL')+'</div>'
+  +'<div style="margin-top:8px"><label class="fl">Ubah URL</label>'
+  +'<div style="display:flex;gap:8px;margin-top:5px"><input id="new-sheet-url" type="url" value="'+esc(S.sheetUrl||'')+'" placeholder="https://script.google.com/macros/s/..." style="font-size:11px">'
+  +'<button class="btn btn-secondary btn-sm" onclick="saveNewSheetUrl()">💾</button></div>'
+  +'</div></div>'
+  +'<div class="card"><div class="card-title">🔄 Sinkronisasi Manual</div>'
+  +'<div style="display:flex;gap:10px;flex-wrap:wrap">'
+  +'<button class="btn btn-primary" '+(S.sheetUrl?'':'disabled')+' onclick="doManualSync()">📤 Kirim</button>'
+  +'<button class="btn btn-secondary" '+(S.sheetUrl?'':'disabled')+' onclick="syncFromSheet().then(()=>renderModule())">📥 Muat</button>'
+  +'</div>'
+  +(S.syncStatus?'<div style="font-size:12px;color:var(--muted2);margin-top:8px">'+esc(S.syncStatus)+'</div>':'')
+  +'</div>'
   +'</div>';
 }
 
@@ -2635,6 +2879,8 @@ function doImportJSON(input) {
 // ═══════════════════════════════════════════════
 //  SEED DATA
 // ═══════════════════════════════════════════════
+(function initUrl(){ const u=localStorage.getItem('fh-url'); if(u&&!S.sheetUrl) S.sheetUrl=u; })();
+
 (function seed(){
   const h2=S.healthData[2];
   h2.menstruation=[
