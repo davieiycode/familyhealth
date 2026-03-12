@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="FamilyHealth - Track child growth, immunizations, symptoms, medications & habits. Inspired by PrimaKu & Guava Health.">
+  <meta name="theme-color" content="#0f1624">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FamilyHealth">
+  <title>FamilyHealth — Family Health Tracker</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap">
+</head>
+<body>
+
+<!-- ===== DESKTOP SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar__header">
+    <div class="sidebar__logo">🌿</div>
+    <div class="sidebar__brand">Family<span>Health</span></div>
+  </div>
+  <nav class="sidebar__nav">
+    <button class="sidebar__item active" data-page="pageHome"><span class="material-symbols-rounded">home</span> Dashboard</button>
+    <button class="sidebar__item" data-page="pageChild"><span class="material-symbols-rounded">child_care</span> Tumbuh Kembang</button>
+    <button class="sidebar__item" data-page="pageVaccine"><span class="material-symbols-rounded">vaccines</span> Imunisasi</button>
+    <button class="sidebar__item" data-page="pageSymptoms"><span class="material-symbols-rounded">sick</span> Gejala & Symptom</button>
+    <button class="sidebar__item" data-page="pageHabits"><span class="material-symbols-rounded">self_improvement</span> Kebiasaan Harian</button>
+    <button class="sidebar__item" data-page="pageVitals"><span class="material-symbols-rounded">monitor_heart</span> Vital Signs</button>
+    <div class="sidebar__divider"></div>
+    <button class="sidebar__item" data-page="pageArticles"><span class="material-symbols-rounded">article</span> Artikel Kesehatan</button>
+    <button class="sidebar__item" data-page="pageProfile"><span class="material-symbols-rounded">person</span> Profil Keluarga</button>
+  </nav>
+  <div class="sidebar__footer">
+    <div class="sidebar__user">
+      <div class="sidebar__user-avatar">R</div>
+      <div class="sidebar__user-info">
+        <div class="sidebar__user-name">Keluarga Rafiei</div>
+        <div class="sidebar__user-email">rafiei@familyhealth.app</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="app-shell" id="app">
+
+  <!-- ===== TOP BAR ===== -->
+  <header class="top-bar" id="topBar">
+    <div class="top-bar__left">
+      <div>
+        <p class="top-bar__greeting" id="greetingText">Selamat Sore</p>
+        <h1 class="top-bar__title">Family<span>Health</span></h1>
+      </div>
+    </div>
+    <div class="top-bar__actions">
+      <button class="icon-btn" id="btnNotifications" aria-label="Notifikasi">
+        <span class="material-symbols-rounded">notifications</span>
+        <span class="notification-dot"></span>
+      </button>
+      <button class="icon-btn avatar" id="btnAvatar" aria-label="Profil">R</button>
+    </div>
+  </header>
+
+  <!-- ===== PAGE: HOME ===== -->
+  <main class="page active" id="pageHome">
+    <section class="health-hero home-full-width" id="healthHero">
+      <p class="health-hero__label">Skor Kesehatan Keluarga</p>
+      <div class="health-hero__score-row">
+        <span class="health-hero__score" id="healthScore">0</span>
+        <span class="health-hero__max">/ 100</span>
+      </div>
+      <p class="health-hero__status" id="healthStatus">Baik — Keluarga Anda dalam kondisi sehat! 💪</p>
+      <div class="health-hero__progress"><div class="health-hero__progress-fill" id="healthProgressFill" style="width:0%"></div></div>
+    </section>
+
+    <section class="quick-actions home-full-width">
+      <p class="quick-actions__title">Menu Cepat</p>
+      <div class="quick-actions__grid">
+        <button class="quick-action" data-action="child" id="qaChild">
+          <div class="quick-action__icon quick-action__icon--child"><span class="material-symbols-rounded">child_care</span></div>
+          <span class="quick-action__label">Tumbuh Kembang</span>
+        </button>
+        <button class="quick-action" data-action="vaccine" id="qaVaccine">
+          <div class="quick-action__icon quick-action__icon--vaccine"><span class="material-symbols-rounded">vaccines</span></div>
+          <span class="quick-action__label">Imunisasi</span>
+        </button>
+        <button class="quick-action" data-action="symptom" id="qaSymptom">
+          <div class="quick-action__icon quick-action__icon--symptoms"><span class="material-symbols-rounded">sick</span></div>
+          <span class="quick-action__label">Gejala</span>
+        </button>
+        <button class="quick-action" data-action="medication" id="qaMedication">
+          <div class="quick-action__icon quick-action__icon--meds"><span class="material-symbols-rounded">medication</span></div>
+          <span class="quick-action__label">Obat</span>
+        </button>
+        <button class="quick-action" data-action="habits" id="qaHabits">
+          <div class="quick-action__icon quick-action__icon--habits"><span class="material-symbols-rounded">self_improvement</span></div>
+          <span class="quick-action__label">Kebiasaan</span>
+        </button>
+        <button class="quick-action" data-action="vitals" id="qaVitals">
+          <div class="quick-action__icon quick-action__icon--vitals"><span class="material-symbols-rounded">monitor_heart</span></div>
+          <span class="quick-action__label">Vital Signs</span>
+        </button>
+        <button class="quick-action" data-action="growth" id="qaGrowth">
+          <div class="quick-action__icon quick-action__icon--growth"><span class="material-symbols-rounded">trending_up</span></div>
+          <span class="quick-action__label">Grafik Tumbuh</span>
+        </button>
+        <button class="quick-action" data-action="articles" id="qaArticles">
+          <div class="quick-action__icon quick-action__icon--article"><span class="material-symbols-rounded">article</span></div>
+          <span class="quick-action__label">Artikel</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Children Profiles -->
+    <section class="child-profiles home-full-width">
+      <div class="section-header"><h2 class="section-header__title">Profil Anak</h2><button class="section-header__action" id="btnAddChild">+ Tambah</button></div>
+      <div class="child-profiles-grid" id="childProfiles">
+        <div class="child-card active-child" data-child="1">
+          <div class="child-avatar child-avatar--boy">👦</div>
+          <div class="child-info">
+            <p class="child-info__name">Ahmad Rafiei Jr.</p>
+            <p class="child-info__age">2 tahun 4 bulan</p>
+            <div class="child-info__stats">
+              <span class="child-info__stat">BB: <strong>12.5 kg</strong></span>
+              <span class="child-info__stat">TB: <strong>87 cm</strong></span>
+              <span class="child-info__stat">LK: <strong>48 cm</strong></span>
+            </div>
+          </div>
+        </div>
+        <div class="child-card" data-child="2">
+          <div class="child-avatar child-avatar--girl">👧</div>
+          <div class="child-info">
+            <p class="child-info__name">Aisyah Rafiei</p>
+            <p class="child-info__age">6 bulan</p>
+            <div class="child-info__stats">
+              <span class="child-info__stat">BB: <strong>7.2 kg</strong></span>
+              <span class="child-info__stat">TB: <strong>65 cm</strong></span>
+              <span class="child-info__stat">LK: <strong>42 cm</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Today Summary -->
+    <section class="today-log">
+      <div class="section-header"><h2 class="section-header__title">Ringkasan Hari Ini</h2><button class="section-header__action">Semua</button></div>
+      <div class="log-card"><div class="log-card__icon log-card__icon--vaccine"><span class="material-symbols-rounded">vaccines</span></div><div class="log-card__content"><p class="log-card__title">Imunisasi Berikutnya</p><p class="log-card__desc">DPT-HB-Hib 4 — Ahmad Jr.</p></div><span class="log-card__badge log-card__badge--warning">15 Mar</span></div>
+      <div class="log-card"><div class="log-card__icon log-card__icon--mood"><span class="material-symbols-rounded">sentiment_satisfied</span></div><div class="log-card__content"><p class="log-card__title">Mood Keluarga</p><p class="log-card__desc">Semua ceria dan sehat hari ini</p></div><span class="log-card__badge log-card__badge--good">Baik</span></div>
+      <div class="log-card"><div class="log-card__icon log-card__icon--sleep"><span class="material-symbols-rounded">bedtime</span></div><div class="log-card__content"><p class="log-card__title">Tidur</p><p class="log-card__desc">7j 30m • Deep sleep 2j 15m</p></div><span class="log-card__value">7.5j</span></div>
+      <div class="log-card"><div class="log-card__icon log-card__icon--water"><span class="material-symbols-rounded">water_drop</span></div><div class="log-card__content"><p class="log-card__title">Air Minum</p><p class="log-card__desc">5 dari 8 gelas</p></div><span class="log-card__value">5/8</span></div>
+    </section>
+
+    <!-- Dynamic Entries (from CRUD) -->
+    <section class="today-log">
+      <div class="section-header"><h2 class="section-header__title">Entri Kesehatan</h2><button class="section-header__action">+ Tambah</button></div>
+      <div id="entryListDynamic"></div>
+    </section>
+
+    <!-- Medication -->
+    <section class="med-reminders">
+      <div class="section-header"><h2 class="section-header__title">Pengingat Obat</h2><button class="section-header__action">Kelola</button></div>
+      <div class="med-card"><div class="med-card__pill"><span class="material-symbols-rounded">pill</span></div><div class="med-card__info"><p class="med-card__name">Vitamin D3</p><p class="med-card__dose">1000 IU • 1 kapsul</p><p class="med-card__time">08:00 — Pagi</p></div><button class="med-card__check taken"><span class="material-symbols-rounded">check</span></button></div>
+      <div class="med-card"><div class="med-card__pill"><span class="material-symbols-rounded">pill</span></div><div class="med-card__info"><p class="med-card__name">Omega-3</p><p class="med-card__dose">500mg • 1 softgel</p><p class="med-card__time">12:00 — Siang</p></div><button class="med-card__check"><span class="material-symbols-rounded">check</span></button></div>
+      <div id="medListDynamic"></div>
+    </section>
+
+    <!-- Articles -->
+    <section class="articles-section home-full-width">
+      <div class="section-header"><h2 class="section-header__title">Artikel Kesehatan</h2><button class="section-header__action" data-action="articles">Semua →</button></div>
+      <div class="article-scroll" id="articleScroll">
+        <div class="article-card"><div class="article-card__img" style="background:linear-gradient(135deg,#1a3a35,#1e2d4d)"><span class="article-card__cat">MPASI</span></div><div class="article-card__body"><p class="article-card__title">Resep MPASI 6 Bulan: Puree Wortel dan Kentang</p><p class="article-card__meta">dr. Sari, SpA • 5 min baca</p></div></div>
+        <div class="article-card"><div class="article-card__img" style="background:linear-gradient(135deg,#3d2234,#1e2d4d)"><span class="article-card__cat">Imunisasi</span></div><div class="article-card__body"><p class="article-card__title">Jadwal Imunisasi Lengkap untuk Anak 0-18 Tahun</p><p class="article-card__meta">IDAI • 8 min baca</p></div></div>
+        <div class="article-card"><div class="article-card__img" style="background:linear-gradient(135deg,#1e2d4d,#1a3a35)"><span class="article-card__cat">Tumbuh Kembang</span></div><div class="article-card__body"><p class="article-card__title">Milestone Perkembangan Anak Usia 2 Tahun</p><p class="article-card__meta">dr. Budi, SpA • 6 min baca</p></div></div>
+        <div class="article-card"><div class="article-card__img" style="background:linear-gradient(135deg,#2d1a3a,#1a3a35)"><span class="article-card__cat">Nutrisi</span></div><div class="article-card__body"><p class="article-card__title">Kebutuhan Gizi Harian Balita Usia 1-3 Tahun</p><p class="article-card__meta">dr. Rina, SpGK • 4 min baca</p></div></div>
+      </div>
+    </section>
+
+    <!-- Weekly Insights -->
+    <section class="insights home-full-width">
+      <div class="section-header"><h2 class="section-header__title">Insight Mingguan</h2><button class="section-header__action">Detail</button></div>
+      <div class="insights-grid">
+        <div class="insight-card"><div class="insight-card__header"><span class="material-symbols-rounded insight-card__icon">bedtime</span><span class="insight-card__title">Pola Tidur — 7 Hari</span></div><div class="insight-card__chart" id="sleepChart"></div><div class="chart-labels" id="sleepLabels"></div></div>
+        <div class="insight-card"><div class="insight-card__header"><span class="material-symbols-rounded insight-card__icon">directions_walk</span><span class="insight-card__title">Langkah — 7 Hari</span></div><div class="insight-card__chart" id="stepsChart"></div><div class="chart-labels" id="stepsLabels"></div></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== PAGE: CHILD GROWTH (PRIMAKU) ===== -->
+  <main class="page" id="pageChild">
+    <div class="chip-group"><button class="chip active">Berat Badan</button><button class="chip">Tinggi Badan</button><button class="chip">Lingkar Kepala</button><button class="chip">Perkembangan</button></div>
+    <section class="child-profiles"><div class="section-header"><h2 class="section-header__title">Pilih Anak</h2></div>
+      <div class="child-profiles-grid" id="childProfilesGrowth">
+        <div class="child-card active-child" data-child="1"><div class="child-avatar child-avatar--boy">👦</div><div class="child-info"><p class="child-info__name">Ahmad Rafiei Jr.</p><p class="child-info__age">2 tahun 4 bulan</p><div class="child-info__stats"><span class="child-info__stat">BB: <strong>12.5 kg</strong></span><span class="child-info__stat">TB: <strong>87 cm</strong></span></div></div></div>
+        <div class="child-card" data-child="2"><div class="child-avatar child-avatar--girl">👧</div><div class="child-info"><p class="child-info__name">Aisyah Rafiei</p><p class="child-info__age">6 bulan</p><div class="child-info__stats"><span class="child-info__stat">BB: <strong>7.2 kg</strong></span><span class="child-info__stat">TB: <strong>65 cm</strong></span></div></div></div>
+      </div>
+    </section>
+    <section class="growth-chart-container"><h3>📈 Grafik Pertumbuhan Berat Badan</h3><p>Berdasarkan standar WHO untuk anak laki-laki usia 0-5 tahun</p>
+      <div class="growth-chart" id="growthChart">
+        <div class="growth-curve"><svg viewBox="0 0 400 200"><path d="M0,180 C50,170 100,155 150,140 200,125 250,105 300,85 350,60 400,40" fill="none" stroke="#3a4050" stroke-width="1.5" stroke-dasharray="4"/><path d="M0,160 C50,148 100,130 150,112 200,95 250,75 300,55 350,30 400,10" fill="none" stroke="#3a4050" stroke-width="1.5" stroke-dasharray="4"/><path d="M0,200 C50,192 100,180 150,168 200,155 250,140 300,125 350,105 400,85" fill="none" stroke="#3a4050" stroke-width="1.5" stroke-dasharray="4"/><polyline points="0,190 50,178 100,162 150,148 200,135 250,118 280,110" fill="none" stroke="#7dd3c0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="growth-dot" style="left:70%;top:55%" title="12.5 kg"></div>
+          <div class="growth-dot" style="left:50%;top:67%" title="11.2 kg"></div>
+          <div class="growth-dot" style="left:35%;top:74%" title="10.1 kg"></div>
+          <div class="growth-dot" style="left:25%;top:81%" title="9.0 kg"></div>
+        </div>
+        <div class="growth-chart__labels-x"><span>0</span><span>6bln</span><span>12bln</span><span>18bln</span><span>24bln</span><span>30bln</span></div>
+      </div>
+    </section>
+    <div class="growth-input">
+      <div class="input-field"><label class="input-field__label">Berat (kg)</label><input class="input-field__input" type="number" placeholder="12.5" step="0.1"></div>
+      <div class="input-field"><label class="input-field__label">Tinggi (cm)</label><input class="input-field__input" type="number" placeholder="87" step="0.1"></div>
+      <div class="input-field"><label class="input-field__label">L. Kepala (cm)</label><input class="input-field__input" type="number" placeholder="48" step="0.1"></div>
+    </div>
+    <div style="padding:0 16px;margin-top:12px"><button class="md-btn md-btn--filled md-btn--full" id="btnSaveGrowth"><span class="material-symbols-rounded">save</span> Simpan Data Pertumbuhan</button></div>
+
+    <!-- Growth History (Dynamic) -->
+    <section class="today-log" style="margin-top:20px">
+      <div class="section-header"><h2 class="section-header__title">Riwayat Pertumbuhan</h2></div>
+      <div id="growthHistory"></div>
+    </section>
+
+    <!-- Development Milestones -->
+    <section class="today-log" style="margin-top:20px">
+      <div class="section-header"><h2 class="section-header__title">Milestone Perkembangan</h2></div>
+      <div class="log-card"><div class="log-card__icon log-card__icon--child"><span class="material-symbols-rounded">directions_run</span></div><div class="log-card__content"><p class="log-card__title">Motorik Kasar</p><p class="log-card__desc">Bisa berlari dan melompat dengan dua kaki</p></div><span class="log-card__badge log-card__badge--good">Sesuai</span></div>
+      <div class="log-card"><div class="log-card__icon log-card__icon--child"><span class="material-symbols-rounded">draw</span></div><div class="log-card__content"><p class="log-card__title">Motorik Halus</p><p class="log-card__desc">Mencoret-coret dengan krayon</p></div><span class="log-card__badge log-card__badge--good">Sesuai</span></div>
+      <div class="log-card"><div class="log-card__icon log-card__icon--child"><span class="material-symbols-rounded">record_voice_over</span></div><div class="log-card__content"><p class="log-card__title">Bicara & Bahasa</p><p class="log-card__desc">Mengucapkan 50+ kata, kalimat 2 kata</p></div><span class="log-card__badge log-card__badge--good">Sesuai</span></div>
+      <div class="log-card"><div class="log-card__icon log-card__icon--child"><span class="material-symbols-rounded">groups</span></div><div class="log-card__content"><p class="log-card__title">Sosial & Emosional</p><p class="log-card__desc">Mulai bermain bersama teman sebaya</p></div><span class="log-card__badge log-card__badge--warning">Stimulasi</span></div>
+    </section>
+  </main>
+
+  <!-- ===== PAGE: VACCINE (PRIMAKU) ===== -->
+  <main class="page" id="pageVaccine">
+    <div class="chip-group"><button class="chip active">Semua</button><button class="chip">Sudah</button><button class="chip">Akan Datang</button><button class="chip">Terlewat</button></div>
+    <section class="vaccine-timeline">
+      <div class="section-header"><h2 class="section-header__title">Jadwal Imunisasi — Ahmad Jr.</h2></div>
+      <div class="vaccine-card vaccine-card--done"><div class="vaccine-card__icon vaccine-card__icon--done"><span class="material-symbols-rounded">vaccines</span></div><div class="vaccine-card__info"><p class="vaccine-card__name">Hepatitis B (Dosis 1)</p><p class="vaccine-card__detail">Saat lahir • 12 Jan 2024</p></div><span class="vaccine-card__status vaccine-card__status--done">✓ Selesai</span></div>
+      <div class="vaccine-card vaccine-card--done"><div class="vaccine-card__icon vaccine-card__icon--done"><span class="material-symbols-rounded">vaccines</span></div><div class="vaccine-card__info"><p class="vaccine-card__name">BCG</p><p class="vaccine-card__detail">1 bulan • 12 Feb 2024</p></div><span class="vaccine-card__status vaccine-card__status--done">✓ Selesai</span></div>
+      <div class="vaccine-card vaccine-card--done"><div class="vaccine-card__icon vaccine-card__icon--done"><span class="material-symbols-rounded">vaccines</span></div><div class="vaccine-card__info"><p class="vaccine-card__name">DPT-HB-Hib (Dosis 1)</p><p class="vaccine-card__detail">2 bulan • 12 Mar 2024</p></div><span class="vaccine-card__status vaccine-card__status--done">✓ Selesai</span></div>
+      <div class="vaccine-card vaccine-card--done"><div class="vaccine-card__icon vaccine-card__icon--done"><span class="material-symbols-rounded">vaccines</span></div><div class="vaccine-card__info"><p class="vaccine-card__name">Polio (IPV Dosis 1)</p><p class="vaccine-card__detail">2 bulan • 12 Mar 2024</p></div><span class="vaccine-card__status vaccine-card__status--done">✓ Selesai</span></div>
+      <div class="vaccine-card vaccine-card--upcoming"><div class="vaccine-card__icon vaccine-card__icon--upcoming"><span class="material-symbols-rounded">vaccines</span></div><div class="vaccine-card__info"><p class="vaccine-card__name">DPT-HB-Hib (Dosis 4 / Booster)</p><p class="vaccine-card__detail">18 bulan • 15 Mar 2026</p></div><span class="vaccine-card__status vaccine-card__status--upcoming">⏰ 3 hari lagi</span></div>
+      <div class="vaccine-card vaccine-card--upcoming"><div class="vaccine-card__icon vaccine-card__icon--upcoming"><span class="material-symbols-rounded">vaccines</span></div><div class="vaccine-card__info"><p class="vaccine-card__name">Campak-Rubella (MR Dosis 2)</p><p class="vaccine-card__detail">18 bulan • 20 Mar 2026</p></div><span class="vaccine-card__status vaccine-card__status--upcoming">⏰ 8 hari lagi</span></div>
+      <div class="vaccine-card vaccine-card--missed"><div class="vaccine-card__icon vaccine-card__icon--missed"><span class="material-symbols-rounded">vaccines</span></div><div class="vaccine-card__info"><p class="vaccine-card__name">Influenza (Tahunan)</p><p class="vaccine-card__detail">Seharusnya Feb 2026</p></div><span class="vaccine-card__status vaccine-card__status--missed">⚠ Terlewat</span></div>
+    </section>
+
+    <section class="vaccine-timeline">
+      <div class="section-header"><h2 class="section-header__title">Jadwal Imunisasi — Aisyah</h2></div>
+      <div class="vaccine-card vaccine-card--done"><div class="vaccine-card__icon vaccine-card__icon--done"><span class="material-symbols-rounded">vaccines</span></div><div class="vaccine-card__info"><p class="vaccine-card__name">Hepatitis B (Dosis 1)</p><p class="vaccine-card__detail">Saat lahir • 12 Sep 2025</p></div><span class="vaccine-card__status vaccine-card__status--done">✓ Selesai</span></div>
+      <div class="vaccine-card vaccine-card--done"><div class="vaccine-card__icon vaccine-card__icon--done"><span class="material-symbols-rounded">vaccines</span></div><div class="vaccine-card__info"><p class="vaccine-card__name">BCG + Polio 1</p><p class="vaccine-card__detail">1 bulan • 12 Okt 2025</p></div><span class="vaccine-card__status vaccine-card__status--done">✓ Selesai</span></div>
+      <div class="vaccine-card vaccine-card--upcoming"><div class="vaccine-card__icon vaccine-card__icon--upcoming"><span class="material-symbols-rounded">vaccines</span></div><div class="vaccine-card__info"><p class="vaccine-card__name">DPT-HB-Hib 3 + Polio 4</p><p class="vaccine-card__detail">6 bulan • 12 Apr 2026</p></div><span class="vaccine-card__status vaccine-card__status--upcoming">⏰ 1 bulan lagi</span></div>
+    </section>
+
+    <!-- Dynamic Vaccines -->
+    <section class="vaccine-timeline">
+      <div class="section-header"><h2 class="section-header__title">Imunisasi Tambahan (Custom)</h2></div>
+      <div id="vaccineListDynamic"></div>
+    </section>
+  </main>
+
+  <!-- ===== PAGE: SYMPTOMS ===== -->
+  <main class="page" id="pageSymptoms">
+    <div class="chip-group"><button class="chip active">Semua</button><button class="chip">Hari Ini</button><button class="chip">Minggu Ini</button><button class="chip">Bulan Ini</button></div>
+    <div class="symptom-desktop-grid">
+      <section class="symptom-entry">
+        <h2 class="symptom-entry__title">Catat Gejala</h2>
+        <div class="severity-picker"><p class="severity-picker__label">Tingkat Keparahan</p><div class="severity-slider"><span class="severity-dot active" data-level="1">1</span><span class="severity-dot" data-level="2">2</span><span class="severity-dot" data-level="3">3</span><span class="severity-dot" data-level="4">4</span><span class="severity-dot" data-level="5">5</span></div></div>
+        <p class="severity-picker__label" style="margin-bottom:10px">Gejala Umum</p>
+        <div class="symptom-tags" id="symptomTags">
+          <button class="symptom-tag" data-tag="headache">🤕 Sakit Kepala</button><button class="symptom-tag" data-tag="fatigue">😴 Kelelahan</button><button class="symptom-tag" data-tag="nausea">🤢 Mual</button><button class="symptom-tag" data-tag="pain">💥 Nyeri</button><button class="symptom-tag" data-tag="dizzy">😵 Pusing</button><button class="symptom-tag" data-tag="cough">🤧 Batuk</button><button class="symptom-tag" data-tag="fever">🌡️ Demam</button><button class="symptom-tag" data-tag="insomnia">🌙 Insomnia</button><button class="symptom-tag" data-tag="diarrhea">🚽 Diare</button><button class="symptom-tag" data-tag="rash">🔴 Ruam</button><button class="symptom-tag" data-tag="sore_throat">😣 Sakit Tenggorokan</button><button class="symptom-tag" data-tag="chest_pain">💔 Nyeri Dada</button>
+        </div>
+        <div class="input-field"><label class="input-field__label" for="symptomNote">Catatan</label><textarea class="input-field__input" id="symptomNote" rows="3" placeholder="Jelaskan keluhan Anda..."></textarea></div>
+        <button class="md-btn md-btn--filled md-btn--full" id="btnSaveSymptom"><span class="material-symbols-rounded">save</span> Simpan Log Gejala</button>
+      </section>
+      <section class="today-log" style="margin-top:0;padding:0">
+        <div class="section-header" style="padding:0"><h2 class="section-header__title">Riwayat Gejala</h2></div>
+        <div id="symptomHistory"></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- ===== PAGE: HABITS ===== -->
+  <main class="page" id="pageHabits">
+    <div class="chip-group"><button class="chip active">Harian</button><button class="chip">Mingguan</button><button class="chip">Bulanan</button></div>
+    <section class="habit-tracker">
+      <div class="habit-ring-container">
+        <div class="habit-ring"><div class="habit-ring__circle"><svg width="72" height="72" viewBox="0 0 72 72"><circle class="bg" cx="36" cy="36" r="30"/><circle cx="36" cy="36" r="30" stroke="var(--md-info)" stroke-dasharray="188.5" stroke-dashoffset="56.5"/></svg><span class="habit-ring__value" style="color:var(--md-info)">💧</span></div><span class="habit-ring__label">Air</span></div>
+        <div class="habit-ring"><div class="habit-ring__circle"><svg width="72" height="72" viewBox="0 0 72 72"><circle class="bg" cx="36" cy="36" r="30"/><circle cx="36" cy="36" r="30" stroke="var(--md-success)" stroke-dasharray="188.5" stroke-dashoffset="37.7"/></svg><span class="habit-ring__value" style="color:var(--md-success)">🚶</span></div><span class="habit-ring__label">Langkah</span></div>
+        <div class="habit-ring"><div class="habit-ring__circle"><svg width="72" height="72" viewBox="0 0 72 72"><circle class="bg" cx="36" cy="36" r="30"/><circle cx="36" cy="36" r="30" stroke="var(--md-tertiary)" stroke-dasharray="188.5" stroke-dashoffset="94.25"/></svg><span class="habit-ring__value" style="color:var(--md-tertiary)">🧘</span></div><span class="habit-ring__label">Meditasi</span></div>
+      </div>
+      <div class="section-header"><h2 class="section-header__title">Kebiasaan Hari Ini</h2><button class="section-header__action">+ Tambah</button></div>
+      <div class="habit-list" id="habitList">
+        <div class="habit-item"><div class="habit-item__icon" style="background:rgba(125,184,211,0.15);color:var(--md-info)"><span class="material-symbols-rounded">water_drop</span></div><div class="habit-item__info"><p class="habit-item__name">Minum Air</p><p class="habit-item__progress-text">5 dari 8 gelas</p><div class="habit-item__bar"><div class="habit-item__bar-fill" style="width:62.5%;background:var(--md-info)"></div></div></div><button class="habit-item__action"><span class="material-symbols-rounded">add</span></button></div>
+        <div class="habit-item"><div class="habit-item__icon" style="background:rgba(125,211,154,0.15);color:var(--md-success)"><span class="material-symbols-rounded">directions_walk</span></div><div class="habit-item__info"><p class="habit-item__name">Jalan 8000 Langkah</p><p class="habit-item__progress-text">6.240 dari 8.000</p><div class="habit-item__bar"><div class="habit-item__bar-fill" style="width:78%;background:var(--md-success)"></div></div></div><button class="habit-item__action"><span class="material-symbols-rounded">add</span></button></div>
+        <div class="habit-item"><div class="habit-item__icon" style="background:rgba(246,184,212,0.15);color:var(--md-tertiary)"><span class="material-symbols-rounded">self_improvement</span></div><div class="habit-item__info"><p class="habit-item__name">Meditasi</p><p class="habit-item__progress-text">10 dari 20 menit</p><div class="habit-item__bar"><div class="habit-item__bar-fill" style="width:50%;background:var(--md-tertiary)"></div></div></div><button class="habit-item__action"><span class="material-symbols-rounded">add</span></button></div>
+        <div class="habit-item"><div class="habit-item__icon" style="background:rgba(246,214,123,0.15);color:var(--md-warning)"><span class="material-symbols-rounded">restaurant</span></div><div class="habit-item__info"><p class="habit-item__name">Makan Buah</p><p class="habit-item__progress-text">2 dari 3 porsi</p><div class="habit-item__bar"><div class="habit-item__bar-fill" style="width:66%;background:var(--md-warning)"></div></div></div><button class="habit-item__action"><span class="material-symbols-rounded">add</span></button></div>
+        <div class="habit-item"><div class="habit-item__icon" style="background:rgba(180,201,255,0.15);color:var(--md-secondary)"><span class="material-symbols-rounded">bedtime</span></div><div class="habit-item__info"><p class="habit-item__name">Tidur Jam 10 Malam</p><p class="habit-item__progress-text">Streak: 5 hari 🔥</p><div class="habit-item__bar"><div class="habit-item__bar-fill" style="width:100%;background:var(--md-secondary)"></div></div></div><button class="habit-item__action"><span class="material-symbols-rounded">check</span></button></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== PAGE: VITALS ===== -->
+  <main class="page" id="pageVitals">
+    <div class="chip-group"><button class="chip active">Hari Ini</button><button class="chip">Minggu</button><button class="chip">Bulan</button></div>
+    <section class="vitals-page">
+      <div class="vitals-grid">
+        <div class="vital-card"><div class="vital-card__header"><span class="vital-card__label">Detak Jantung</span><span class="material-symbols-rounded vital-card__icon" style="color:var(--md-tertiary)">favorite</span></div><div class="vital-card__value" style="color:var(--md-tertiary)">72</div><span class="vital-card__unit">bpm</span><div class="vital-card__trend vital-card__trend--stable"><span class="material-symbols-rounded" style="font-size:16px">trending_flat</span> Normal</div><div class="vital-mini-chart" id="hrChart"></div></div>
+        <div class="vital-card"><div class="vital-card__header"><span class="vital-card__label">Tekanan Darah</span><span class="material-symbols-rounded vital-card__icon" style="color:var(--md-info)">bloodtype</span></div><div class="vital-card__value" style="color:var(--md-info)">120/80</div><span class="vital-card__unit">mmHg</span><div class="vital-card__trend vital-card__trend--stable"><span class="material-symbols-rounded" style="font-size:16px">trending_flat</span> Optimal</div><div class="vital-mini-chart" id="bpChart"></div></div>
+      </div>
+      <div class="vital-card" style="margin-top:12px"><div class="vital-card__header"><span class="vital-card__label">Oksigen Darah (SpO₂)</span><span class="material-symbols-rounded vital-card__icon" style="color:var(--md-primary)">air</span></div><div class="vital-card__value" style="color:var(--md-primary)">98%</div><span class="vital-card__unit">saturasi</span><div class="vital-card__trend vital-card__trend--up"><span class="material-symbols-rounded" style="font-size:16px">trending_up</span> Sangat Baik</div><div class="vital-mini-chart" id="spo2Chart"></div></div>
+      <div class="vitals-grid" style="margin-top:12px">
+        <div class="vital-card"><div class="vital-card__header"><span class="vital-card__label">Berat Badan</span><span class="material-symbols-rounded vital-card__icon" style="color:var(--md-warning)">scale</span></div><div class="vital-card__value" style="color:var(--md-warning)">68.5</div><span class="vital-card__unit">kg</span><div class="vital-card__trend vital-card__trend--down"><span class="material-symbols-rounded" style="font-size:16px">trending_down</span> -0.3 kg</div></div>
+        <div class="vital-card"><div class="vital-card__header"><span class="vital-card__label">Suhu Tubuh</span><span class="material-symbols-rounded vital-card__icon" style="color:var(--md-success)">thermostat</span></div><div class="vital-card__value" style="color:var(--md-success)">36.6</div><span class="vital-card__unit">°C</span><div class="vital-card__trend vital-card__trend--stable"><span class="material-symbols-rounded" style="font-size:16px">trending_flat</span> Normal</div></div>
+      </div>
+
+      <!-- ADD VITAL FORM -->
+      <div class="vital-card" style="margin-top:16px;border:1px dashed var(--md-primary)">
+        <h3 style="font-size:0.9rem;font-weight:700;margin-bottom:12px"><span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;color:var(--md-primary)">add_circle</span> Tambah Data Vital</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div class="input-field" style="margin:0"><label class="input-field__label">Tipe</label><select class="input-field__input" id="vitalType"><option>Detak Jantung</option><option>Tekanan Darah</option><option>SpO₂</option><option>Berat Badan</option><option>Suhu Tubuh</option><option>Gula Darah</option></select></div>
+          <div class="input-field" style="margin:0"><label class="input-field__label">Nilai</label><input class="input-field__input" id="vitalValue" placeholder="cth: 120/80"></div>
+          <div class="input-field" style="margin:0"><label class="input-field__label">Satuan</label><input class="input-field__input" id="vitalUnit" placeholder="cth: bpm, mmHg"></div>
+        </div>
+        <button class="md-btn md-btn--tonal md-btn--full" id="btnSaveVital" style="margin-top:10px"><span class="material-symbols-rounded">save</span> Simpan</button>
+      </div>
+
+      <!-- Vital History -->
+      <div style="margin-top:16px">
+        <div class="section-header" style="padding:0"><h2 class="section-header__title">Riwayat Vital</h2></div>
+        <div id="vitalHistory"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== PAGE: ARTICLES ===== -->
+  <main class="page" id="pageArticles">
+    <div class="chip-group"><button class="chip active">Semua</button><button class="chip">MPASI</button><button class="chip">Imunisasi</button><button class="chip">Tumbuh Kembang</button><button class="chip">Nutrisi</button><button class="chip">Parenting</button></div>
+    <section class="today-log">
+      <div class="log-card"><div class="log-card__icon log-card__icon--child"><span class="material-symbols-rounded">restaurant</span></div><div class="log-card__content"><p class="log-card__title">Resep MPASI 6 Bulan: Puree Wortel dan Kentang</p><p class="log-card__desc">dr. Sari, SpA • 5 min baca</p></div><span class="log-card__badge log-card__badge--info">MPASI</span></div>
+      <div class="log-card"><div class="log-card__icon log-card__icon--vaccine"><span class="material-symbols-rounded">vaccines</span></div><div class="log-card__content"><p class="log-card__title">Jadwal Imunisasi Lengkap 0-18 Tahun (IDAI 2025)</p><p class="log-card__desc">IDAI • 8 min baca</p></div><span class="log-card__badge log-card__badge--info">Imunisasi</span></div>
+      <div class="log-card"><div class="log-card__icon log-card__icon--child"><span class="material-symbols-rounded">child_care</span></div><div class="log-card__content"><p class="log-card__title">Milestone Perkembangan Anak Usia 2 Tahun</p><p class="log-card__desc">dr. Budi, SpA • 6 min baca</p></div><span class="log-card__badge log-card__badge--info">Tumbuh Kembang</span></div>
+      <div class="log-card"><div class="log-card__icon log-card__icon--exercise"><span class="material-symbols-rounded">nutrition</span></div><div class="log-card__content"><p class="log-card__title">Kebutuhan Gizi Harian Balita 1-3 Tahun</p><p class="log-card__desc">dr. Rina, SpGK • 4 min baca</p></div><span class="log-card__badge log-card__badge--info">Nutrisi</span></div>
+      <div class="log-card"><div class="log-card__icon log-card__icon--mood"><span class="material-symbols-rounded">psychology</span></div><div class="log-card__content"><p class="log-card__title">Mengelola Tantrum pada Anak Usia 2-3 Tahun</p><p class="log-card__desc">dr. Lina, SpKJ • 7 min baca</p></div><span class="log-card__badge log-card__badge--info">Parenting</span></div>
+      <div class="log-card"><div class="log-card__icon log-card__icon--sleep"><span class="material-symbols-rounded">bedtime</span></div><div class="log-card__content"><p class="log-card__title">Tips Agar Anak Tidur Nyenyak di Malam Hari</p><p class="log-card__desc">dr. Andi, SpA • 5 min baca</p></div><span class="log-card__badge log-card__badge--info">Parenting</span></div>
+    </section>
+  </main>
+
+  <!-- ===== PAGE: PROFILE ===== -->
+  <main class="page" id="pageProfile">
+    <section class="profile-page">
+      <div class="profile-header">
+        <div class="profile-avatar">R</div>
+        <h2 class="profile-name" id="profileName">Keluarga Rafiei</h2>
+        <p class="profile-email">rafiei@familyhealth.app</p>
+      </div>
+      <div class="profile-stats">
+        <div class="profile-stat"><div class="profile-stat__value">32</div><p class="profile-stat__label">Hari Streak</p></div>
+        <div class="profile-stat"><div class="profile-stat__value">156</div><p class="profile-stat__label">Total Log</p></div>
+        <div class="profile-stat"><div class="profile-stat__value">2</div><p class="profile-stat__label">Anak</p></div>
+      </div>
+      <div class="profile-menu">
+        <button class="profile-menu-item" id="menuEmergency"><span class="material-symbols-rounded" style="color:var(--md-error)">emergency</span><span class="profile-menu-item__text">Kartu Darurat</span><span class="material-symbols-rounded profile-menu-item__arrow">chevron_right</span></button>
+        <button class="profile-menu-item" id="menuRecords"><span class="material-symbols-rounded">folder_shared</span><span class="profile-menu-item__text">Rekam Medis</span><span class="material-symbols-rounded profile-menu-item__arrow">chevron_right</span></button>
+        <button class="profile-menu-item" id="menuDevices"><span class="material-symbols-rounded">watch</span><span class="profile-menu-item__text">Perangkat Terhubung</span><span class="material-symbols-rounded profile-menu-item__arrow">chevron_right</span></button>
+        <button class="profile-menu-item" id="menuVisitPrep"><span class="material-symbols-rounded">clinical_notes</span><span class="profile-menu-item__text">Persiapan Kunjungan Dokter</span><span class="material-symbols-rounded profile-menu-item__arrow">chevron_right</span></button>
+        <button class="profile-menu-item" id="menuExport"><span class="material-symbols-rounded">download</span><span class="profile-menu-item__text">Ekspor Data Kesehatan</span><span class="material-symbols-rounded profile-menu-item__arrow">chevron_right</span></button>
+        <button class="profile-menu-item" id="menuSettings"><span class="material-symbols-rounded">settings</span><span class="profile-menu-item__text">Pengaturan</span><span class="material-symbols-rounded profile-menu-item__arrow">chevron_right</span></button>
+        <button class="profile-menu-item" id="menuHelp"><span class="material-symbols-rounded">help</span><span class="profile-menu-item__text">Bantuan & Masukan</span><span class="material-symbols-rounded profile-menu-item__arrow">chevron_right</span></button>
+      </div>
+
+      <!-- GOOGLE SHEETS SYNC SETTINGS -->
+      <div class="sheets-settings" style="margin-top:20px">
+        <div class="vital-card" style="border-color:var(--md-primary)">
+          <div class="vital-card__header"><span class="vital-card__label" style="font-weight:700;font-size:0.95rem">🔗 Sinkronisasi Google Sheets</span><span class="material-symbols-rounded vital-card__icon" style="color:var(--md-primary)">cloud_sync</span></div>
+          <p style="font-size:0.75rem;color:var(--md-on-surface-variant);margin-bottom:12px">Hubungkan ke Google Spreadsheet untuk backup & sinkronisasi data kesehatan keluarga Anda.</p>
+          <div class="input-field"><label class="input-field__label">URL Google Apps Script Web App</label><input class="input-field__input" id="inputSheetUrl" placeholder="https://script.google.com/macros/s/xxxxx/exec"></div>
+          <div id="syncStatus" style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="material-symbols-rounded" style="font-size:18px;color:var(--md-outline)">cloud_off</span><span id="syncStatusText" style="font-size:0.75rem;color:var(--md-on-surface-variant)">Belum terhubung</span></div>
+          <div style="display:flex;gap:8px">
+            <button class="md-btn md-btn--outlined" id="btnSaveSheetUrl" style="flex:1"><span class="material-symbols-rounded">save</span> Simpan URL</button>
+            <button class="md-btn md-btn--outlined" id="btnTestConnection" style="flex:1"><span class="material-symbols-rounded">wifi_tethering</span> Test Koneksi</button>
+          </div>
+          <button class="md-btn md-btn--filled md-btn--full" id="btnSyncSheets" style="margin-top:10px"><span class="material-symbols-rounded">sync</span> Sinkronkan ke Google Sheets</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FAB -->
+  <button class="fab" id="fab" aria-label="Tambah entri baru"><span class="material-symbols-rounded">add</span></button>
+
+  <!-- BOTTOM NAV (Mobile) -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-item active" data-page="pageHome" id="navHome"><div class="nav-item__indicator"></div><span class="material-symbols-rounded" style="font-variation-settings:'FILL' 1">home</span><span class="nav-item__label">Beranda</span></button>
+    <button class="nav-item" data-page="pageChild" id="navChild"><div class="nav-item__indicator"></div><span class="material-symbols-rounded">child_care</span><span class="nav-item__label">Anak</span></button>
+    <button class="nav-item" data-page="pageVaccine" id="navVaccine"><div class="nav-item__indicator"></div><span class="material-symbols-rounded">vaccines</span><span class="nav-item__label">Imunisasi</span></button>
+    <button class="nav-item" data-page="pageSymptoms" id="navSymptoms"><div class="nav-item__indicator"></div><span class="material-symbols-rounded">sick</span><span class="nav-item__label">Gejala</span></button>
+    <button class="nav-item" data-page="pageHabits" id="navHabits"><div class="nav-item__indicator"></div><span class="material-symbols-rounded">self_improvement</span><span class="nav-item__label">Kebiasaan</span></button>
+    <button class="nav-item" data-page="pageProfile" id="navMore"><div class="nav-item__indicator"></div><span class="material-symbols-rounded">more_horiz</span><span class="nav-item__label">Lainnya</span></button>
+  </nav>
+
+  <!-- MODAL: ADD NEW (Two-step: type picker → form) -->
+  <div class="modal-overlay" id="modalAdd">
+    <div class="bottom-sheet bottom-sheet--lg">
+      <div class="bottom-sheet__handle"></div>
+
+      <!-- STEP 1: Entry Type Picker -->
+      <div id="entryStep1">
+        <h3 class="bottom-sheet__title">Tambah Entri Baru</h3>
+        <p class="entry-picker-subtitle">Pilih jenis data yang ingin dicatat</p>
+        <div class="entry-type-grid">
+          <button class="entry-type-btn" data-type="tekanan_darah"><span class="entry-type-icon" style="background:rgba(246,184,212,0.15);color:#f6b8d4"><span class="material-symbols-rounded">bloodtype</span></span><span class="entry-type-label">Tekanan Darah</span></button>
+          <button class="entry-type-btn" data-type="gula_darah"><span class="entry-type-icon" style="background:rgba(246,214,123,0.15);color:#f6d67b"><span class="material-symbols-rounded">water_drop</span></span><span class="entry-type-label">Gula Darah</span></button>
+          <button class="entry-type-btn" data-type="detak_jantung"><span class="entry-type-icon" style="background:rgba(246,184,212,0.15);color:#f6b8d4"><span class="material-symbols-rounded">favorite</span></span><span class="entry-type-label">Detak Jantung</span></button>
+          <button class="entry-type-btn" data-type="berat_badan"><span class="entry-type-icon" style="background:rgba(125,211,154,0.15);color:#7dd39a"><span class="material-symbols-rounded">scale</span></span><span class="entry-type-label">Berat Badan</span></button>
+          <button class="entry-type-btn" data-type="suhu_tubuh"><span class="entry-type-icon" style="background:rgba(246,214,123,0.15);color:#f6d67b"><span class="material-symbols-rounded">thermostat</span></span><span class="entry-type-label">Suhu Tubuh</span></button>
+          <button class="entry-type-btn" data-type="spo2"><span class="entry-type-icon" style="background:rgba(125,211,192,0.15);color:#7dd3c0"><span class="material-symbols-rounded">air</span></span><span class="entry-type-label">Oksigen (SpO₂)</span></button>
+          <button class="entry-type-btn" data-type="obat"><span class="entry-type-icon" style="background:rgba(180,201,255,0.15);color:#b4c9ff"><span class="material-symbols-rounded">pill</span></span><span class="entry-type-label">Obat / Suplemen</span></button>
+          <button class="entry-type-btn" data-type="aktivitas"><span class="entry-type-icon" style="background:rgba(125,211,154,0.15);color:#7dd39a"><span class="material-symbols-rounded">directions_run</span></span><span class="entry-type-label">Aktivitas Fisik</span></button>
+          <button class="entry-type-btn" data-type="latihan"><span class="entry-type-icon" style="background:rgba(125,184,211,0.15);color:#7db8d3"><span class="material-symbols-rounded">fitness_center</span></span><span class="entry-type-label">Latihan</span></button>
+          <button class="entry-type-btn" data-type="tidur"><span class="entry-type-icon" style="background:rgba(180,201,255,0.15);color:#b4c9ff"><span class="material-symbols-rounded">bedtime</span></span><span class="entry-type-label">Tidur</span></button>
+          <button class="entry-type-btn" data-type="nutrisi"><span class="entry-type-icon" style="background:rgba(246,214,123,0.15);color:#f6d67b"><span class="material-symbols-rounded">restaurant</span></span><span class="entry-type-label">Nutrisi / Makanan</span></button>
+          <button class="entry-type-btn" data-type="cairan"><span class="entry-type-icon" style="background:rgba(125,184,211,0.15);color:#7db8d3"><span class="material-symbols-rounded">local_drink</span></span><span class="entry-type-label">Cairan</span></button>
+          <button class="entry-type-btn" data-type="mood"><span class="entry-type-icon" style="background:rgba(246,184,212,0.15);color:#f6b8d4"><span class="material-symbols-rounded">mood</span></span><span class="entry-type-label">Mood</span></button>
+          <button class="entry-type-btn" data-type="gejala"><span class="entry-type-icon" style="background:rgba(255,180,171,0.15);color:#ffb4ab"><span class="material-symbols-rounded">sick</span></span><span class="entry-type-label">Gejala</span></button>
+          <button class="entry-type-btn" data-type="lab"><span class="entry-type-icon" style="background:rgba(125,211,192,0.15);color:#7dd3c0"><span class="material-symbols-rounded">biotech</span></span><span class="entry-type-label">Hasil Lab</span></button>
+          <button class="entry-type-btn" data-type="pertumbuhan"><span class="entry-type-icon" style="background:rgba(125,211,154,0.15);color:#7dd39a"><span class="material-symbols-rounded">child_care</span></span><span class="entry-type-label">Pertumbuhan Anak</span></button>
+          <button class="entry-type-btn" data-type="imunisasi"><span class="entry-type-icon" style="background:rgba(180,201,255,0.15);color:#b4c9ff"><span class="material-symbols-rounded">vaccines</span></span><span class="entry-type-label">Imunisasi</span></button>
+          <button class="entry-type-btn" data-type="catatan"><span class="entry-type-icon" style="background:rgba(255,255,255,0.08);color:var(--md-on-surface-variant)"><span class="material-symbols-rounded">edit_note</span></span><span class="entry-type-label">Catatan Umum</span></button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Dynamic form (populated by JS) -->
+      <div id="entryStep2" style="display:none">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+          <button class="icon-btn" id="btnBackToTypes" aria-label="Kembali"><span class="material-symbols-rounded">arrow_back</span></button>
+          <h3 class="bottom-sheet__title" id="entryFormTitle" style="margin:0">Form</h3>
+        </div>
+        <div id="entryFormContainer"></div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="md-btn md-btn--outlined" id="btnCancelEntry" style="flex:1">Batal</button>
+          <button class="md-btn md-btn--filled" id="btnSaveEntry" style="flex:1"><span class="material-symbols-rounded">save</span> Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT -->
+  <div class="modal-overlay" id="modalEdit">
+    <div class="bottom-sheet">
+      <div class="bottom-sheet__handle"></div>
+      <h3 class="bottom-sheet__title">✏️ Edit Data</h3>
+      <input type="hidden" id="editId"><input type="hidden" id="editStore">
+      <div id="editFieldsContainer"></div>
+      <div style="display:flex;gap:10px;margin-top:12px"><button class="md-btn md-btn--outlined" id="btnCancelEdit" style="flex:1">Batal</button><button class="md-btn md-btn--filled" id="btnSaveEdit" style="flex:1"><span class="material-symbols-rounded">save</span> Simpan Perubahan</button></div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRM DELETE -->
+  <div class="modal-overlay" id="modalConfirm">
+    <div class="bottom-sheet" style="max-width:400px;text-align:center;padding:24px 20px 32px">
+      <span class="material-symbols-rounded" style="font-size:48px;color:var(--md-error);margin-bottom:12px">delete_forever</span>
+      <h3 class="bottom-sheet__title" style="margin-bottom:8px">Hapus Data?</h3>
+      <p style="font-size:0.82rem;color:var(--md-on-surface-variant);margin-bottom:20px">Data yang dihapus tidak dapat dikembalikan. Yakin ingin menghapus?</p>
+      <div style="display:flex;gap:10px"><button class="md-btn md-btn--outlined" id="btnConfirmNo" style="flex:1">Batal</button><button class="md-btn md-btn--filled" id="btnConfirmYes" style="flex:1;background:var(--md-error);color:var(--md-on-error)"><span class="material-symbols-rounded">delete</span> Hapus</button></div>
+    </div>
+  </div>
+
+  <div class="snackbar" id="snackbar"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
