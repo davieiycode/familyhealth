@@ -6,6 +6,7 @@
   const $ = (s, p = document) => p.querySelector(s);
   const $$ = (s, p = document) => [...p.querySelectorAll(s)];
   const uid = () => Date.now().toString(36) + Math.random().toString(36).substr(2, 6);
+  const generateId = uid;
 
   // ===== DATA LAYER (localStorage) =====
   const DB = {
@@ -58,6 +59,24 @@
       add(entry) { const all = DB._get('vaccines'); entry.id = entry.id || uid(); entry.date = entry.date || new Date().toISOString(); all.unshift(entry); DB._set('vaccines', all); return entry; },
       update(id, data) { const all = DB._get('vaccines'); const i = all.findIndex(e => e.id === id); if (i >= 0) { Object.assign(all[i], data); DB._set('vaccines', all); } return all[i]; },
       delete(id) { DB._set('vaccines', DB._get('vaccines').filter(e => e.id !== id)); },
+    },
+
+    // ---- Children ----
+    children: {
+      getAll() { 
+        let all = DB._get('children'); 
+        if (all.length === 0) {
+          all = [
+            { id: '1', name: 'Ahmad Rafiei Jr.', birthDate: '2024-01-12', gender: 'boy' },
+            { id: '2', name: 'Aisyah Rafiei', birthDate: '2025-09-12', gender: 'girl' }
+          ];
+          DB._set('children', all);
+        }
+        return all;
+      },
+      add(entry) { const all = DB.children.getAll(); entry.id = entry.id || uid(); all.push(entry); DB._set('children', all); return entry; },
+      update(id, data) { const all = DB.children.getAll(); const i = all.findIndex(e => e.id === id); if (i >= 0) { Object.assign(all[i], data); DB._set('children', all); } return all[i]; },
+      delete(id) { DB._set('children', DB.children.getAll().filter(e => e.id !== id)); },
     },
 
     // ---- Google Sheets URL ----
@@ -210,6 +229,62 @@
     renderGrowthHistory();
     renderVitalHistory();
     renderVaccineList();
+    renderChildProfiles();
+    renderTodaySummary();
+  }
+
+  // ---- Child Profiles ----
+  function renderChildProfiles() {
+    const containers = [$('#childProfiles'), $('#childProfilesGrowth')];
+    const children = DB.children.getAll();
+    
+    containers.forEach(container => {
+      if (!container) return;
+      const activeId = $('.child-card.active-child', container)?.dataset.child || children[0]?.id;
+      
+      container.innerHTML = children.map(c => {
+        const age = calculateAge(c.birthDate);
+        const isActive = c.id === activeId;
+        return `
+          <div class="child-card ${isActive ? 'active-child' : ''} log-card--dynamic" data-child="${c.id}" data-id="${c.id}" data-store="children">
+            <div class="child-avatar child-avatar--${c.gender}">${c.gender === 'boy' ? '👦' : '👧'}</div>
+            <div class="child-info">
+              <p class="child-info__name">${esc(c.name)}</p>
+              <p class="child-info__age">${age}</p>
+            </div>
+            <div class="log-card__actions">
+              <button class="icon-btn icon-btn--sm btn-edit-entry" data-id="${c.id}" data-store="children" title="Edit"><span class="material-symbols-rounded">edit</span></button>
+              <button class="icon-btn icon-btn--sm btn-del-entry" data-id="${c.id}" data-store="children" title="Hapus"><span class="material-symbols-rounded">delete</span></button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Attach selection listener
+      $$('.child-card', container).forEach(card => {
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('.log-card__actions')) return;
+          $$('.child-card', container).forEach(c => c.classList.remove('active-child'));
+          card.classList.add('active-child');
+          showSnackbar(`👶 Profil ${$('p.child-info__name', card)?.textContent || ''} dipilih`);
+        });
+      });
+      attachEntryListeners(container);
+    });
+  }
+
+  function calculateAge(birthDate) {
+    if (!birthDate) return 'Umur tidak diketahui';
+    const birth = new Date(birthDate);
+    const now = new Date();
+    let years = now.getFullYear() - birth.getFullYear();
+    let months = now.getMonth() - birth.getMonth();
+    if (months < 0 || (months === 0 && now.getDate() < birth.getDate())) {
+      years--;
+      months += 12;
+    }
+    if (years > 0) return `${years} tahun ${months} bulan`;
+    return `${months} bulan`;
   }
 
   // ---- Entry List (Home) ----
@@ -251,7 +326,7 @@
       const tagNames = { headache:'Sakit Kepala', fatigue:'Kelelahan', nausea:'Mual', pain:'Nyeri', dizzy:'Pusing', cough:'Batuk', fever:'Demam', insomnia:'Insomnia' };
       const tags = (Array.isArray(s.tags) ? s.tags : []).map(t => tagNames[t] || t).join(', ');
       return `
-        <div class="log-card log-card--dynamic" data-id="${s.id}">
+        <div class="log-card log-card--dynamic" data-id="${s.id}" data-store="symptoms">
           <div class="log-card__icon log-card__icon--mood"><span class="material-symbols-rounded">sick</span></div>
           <div class="log-card__content">
             <p class="log-card__title">${esc(tags || 'Gejala')}</p>
@@ -259,6 +334,7 @@
           </div>
           <span class="log-card__badge log-card__badge--warning">Lv. ${s.severity}</span>
           <div class="log-card__actions">
+            <button class="icon-btn icon-btn--sm btn-edit-entry" data-id="${s.id}" data-store="symptoms" title="Edit"><span class="material-symbols-rounded">edit</span></button>
             <button class="icon-btn icon-btn--sm btn-del-entry" data-id="${s.id}" data-store="symptoms" title="Hapus"><span class="material-symbols-rounded">delete</span></button>
           </div>
         </div>`;
@@ -273,7 +349,7 @@
     const meds = DB.medications.getAll();
     if (meds.length === 0) { container.innerHTML = ''; return; }
     container.innerHTML = meds.map(m => `
-      <div class="med-card" data-id="${m.id}">
+      <div class="med-card" data-id="${m.id}" data-store="medications">
         <div class="med-card__pill"><span class="material-symbols-rounded">pill</span></div>
         <div class="med-card__info">
           <p class="med-card__name">${esc(m.name)}</p>
@@ -309,7 +385,7 @@
       return;
     }
     container.innerHTML = growths.map(g => `
-      <div class="log-card log-card--dynamic" data-id="${g.id}">
+      <div class="log-card log-card--dynamic" data-id="${g.id}" data-store="growth">
         <div class="log-card__icon log-card__icon--child"><span class="material-symbols-rounded">monitoring</span></div>
         <div class="log-card__content">
           <p class="log-card__title">BB: ${g.weight}kg • TB: ${g.height}cm • LK: ${g.headCirc}cm</p>
@@ -333,13 +409,14 @@
       return;
     }
     container.innerHTML = vitals.map(v => `
-      <div class="log-card log-card--dynamic" data-id="${v.id}">
+      <div class="log-card log-card--dynamic" data-id="${v.id}" data-store="vitals">
         <div class="log-card__icon log-card__icon--exercise"><span class="material-symbols-rounded">monitor_heart</span></div>
         <div class="log-card__content">
           <p class="log-card__title">${esc(v.type)}: ${esc(v.value)} ${esc(v.unit || '')}</p>
           <p class="log-card__desc">${formatDate(v.date)}</p>
         </div>
         <div class="log-card__actions">
+          <button class="icon-btn icon-btn--sm btn-edit-entry" data-id="${v.id}" data-store="vitals" title="Edit"><span class="material-symbols-rounded">edit</span></button>
           <button class="icon-btn icon-btn--sm btn-del-entry" data-id="${v.id}" data-store="vitals" title="Hapus"><span class="material-symbols-rounded">delete</span></button>
         </div>
       </div>`).join('');
@@ -356,7 +433,7 @@
       const sc = v.status === 'done' ? 'done' : v.status === 'missed' ? 'missed' : 'upcoming';
       const label = v.status === 'done' ? '✓ Selesai' : v.status === 'missed' ? '⚠ Terlewat' : '⏰ Akan Datang';
       return `
-        <div class="vaccine-card vaccine-card--${sc}" data-id="${v.id}">
+        <div class="vaccine-card vaccine-card--${sc} log-card--dynamic" data-id="${v.id}" data-store="vaccines">
           <div class="vaccine-card__icon vaccine-card__icon--${sc}"><span class="material-symbols-rounded">vaccines</span></div>
           <div class="vaccine-card__info">
             <p class="vaccine-card__name">${esc(v.name)}</p>
@@ -372,8 +449,16 @@
     attachEntryListeners(container);
   }
 
-  // ===== SHARED EDIT/DELETE LISTENERS =====
+  // ===== SHARED VIEW/EDIT/DELETE LISTENERS =====
   function attachEntryListeners(container) {
+    $$('.log-card--dynamic, .med-card, .vaccine-card', container).forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.log-card__actions') || e.target.closest('.med-card__check')) return;
+        const { id, store } = card.dataset;
+        if (id && store) openViewModal(id, store);
+      });
+    });
+
     $$('.btn-del-entry', container).forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -389,6 +474,47 @@
       });
     });
   }
+
+  // ===== VIEW MODAL =====
+  function openViewModal(id, store) {
+    if (!DB[store]) return;
+    const item = DB[store].getAll().find(e => e.id === id);
+    if (!item) return;
+
+    const modal = $('#modalView');
+    const container = $('#viewContentContainer');
+    const title = $('#viewTitle');
+    const icon = $('#viewIcon');
+    if (!modal || !container) return;
+
+    title.textContent = item.title || item.name || item.type || 'Detail Entry';
+    icon.textContent = getEntryIcon(item.type || store);
+    
+    let html = `
+      <div class="view-item"><span class="view-label">Waktu</span><span class="view-value">${formatDate(item.date)}</span></div>
+    `;
+
+    const exclude = ['id', 'date', 'synced', 'title', 'type'];
+    Object.entries(item).forEach(([key, val]) => {
+      if (exclude.includes(key)) return;
+      const label = key.charAt(0).toUpperCase() + key.slice(1);
+      let displayVal = val;
+      if (Array.isArray(val)) displayVal = val.join(', ');
+      if (typeof val === 'boolean') displayVal = val ? 'Ya' : 'Tidak';
+      
+      html += `<div class="view-item"><span class="view-label">${esc(label)}</span><span class="view-value">${esc(String(displayVal || '-'))}</span></div>`;
+    });
+
+    container.innerHTML = html;
+    
+    const btnEdit = $('#btnEditFromView');
+    btnEdit.onclick = () => { modal.classList.remove('open'); openEditModal(id, store); };
+
+    modal.classList.add('open');
+  }
+
+  $('#btnCloseView')?.addEventListener('click', () => $('#modalView').classList.remove('open'));
+  $('#modalView')?.addEventListener('click', (e) => { if (e.target === $('#modalView')) $('#modalView').classList.remove('open'); });
 
   // ===== CONFIRM DELETE MODAL =====
   function openConfirmModal(id, store) {
@@ -471,7 +597,7 @@
   let currentEntryType = '';
 
   // Open Step 1 (Picker)
-  $('#btnFAB')?.addEventListener('click', () => {
+  $('#fab')?.addEventListener('click', () => {
     const modal = $('#modalAdd');
     if (!modal) return;
     $('#entryStep1').style.display = 'block';
@@ -545,14 +671,19 @@
           <div class="input-field"><label class="input-field__label">Dosis</label><input class="input-field__input" id="inp_med_dose" placeholder="cth: 500mg, 1 tablet"></div>
           <div class="input-field"><label class="input-field__label">Keterangan</label><input class="input-field__input" id="inp_med_notes" placeholder="cth: 3x1 setelah makan"></div>
         `;
-      case 'berat_badan':
-        return `<div class="input-field"><label class="input-field__label">Berat (kg)</label><input class="input-field__input" id="inp_weight" type="number" step="0.1" placeholder="65.0"></div>`;
-      case 'suhu_tubuh':
-        return `<div class="input-field"><label class="input-field__label">Suhu (°C)</label><input class="input-field__input" id="inp_temp" type="number" step="0.1" placeholder="36.5"></div>`;
-      case 'gejala':
+      case 'pertumbuhan':
         return `
-          <div class="input-field"><label class="input-field__label">Gejala</label><input class="input-field__input" id="inp_sym_title" placeholder="cth: Sakit Kepala"></div>
-          <div class="severity-picker" style="margin-top:12px"><p class="severity-picker__label">Keparahan (1-5)</p><div class="severity-slider" id="inp_sym_severity_dynamic"><span class="severity-dot active" data-level="1">1</span><span class="severity-dot" data-level="2">2</span><span class="severity-dot" data-level="3">3</span><span class="severity-dot" data-level="4">4</span><span class="severity-dot" data-level="5">5</span></div></div>
+          <div class="input-field"><label class="input-field__label">Anak</label><select class="input-field__input" id="inp_child_id">${DB.children.getAll().map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="input-field"><label class="input-field__label">Berat (kg)</label><input class="input-field__input" id="inp_weight" type="number" step="0.1" placeholder="12.5"></div>
+            <div class="input-field"><label class="input-field__label">Tinggi (cm)</label><input class="input-field__input" id="inp_height" type="number" step="0.1" placeholder="87"></div>
+          </div>
+        `;
+      case 'children':
+        return `
+          <div class="input-field"><label class="input-field__label">Nama Lengkap</label><input class="input-field__input" id="inp_child_name" placeholder="cth: Ahmad Jr."></div>
+          <div class="input-field"><label class="input-field__label">Tanggal Lahir</label><input class="input-field__input" id="inp_child_birth" type="date"></div>
+          <div class="input-field"><label class="input-field__label">Jenis Kelamin</label><select class="input-field__input" id="inp_child_gender"><option value="boy">Laki-laki</option><option value="girl">Perempuan</option></select></div>
         `;
       default:
         return `<div class="input-field"><label class="input-field__label">Judul</label><input class="input-field__input" id="inp_def_title"></div><div class="input-field"><label class="input-field__label">Catatan</label><textarea class="input-field__input" id="inp_def_notes" rows="3"></textarea></div>`;
@@ -584,6 +715,17 @@
       if (!title) { showSnackbar('⚠️ Masukkan gejala'); return; }
       const sev = parseInt($('.severity-dot.active', $('#inp_sym_severity_dynamic'))?.dataset.level || '1');
       DB.symptoms.add({ ...data, tags: [title.toLowerCase()], severity: sev, notes: '', area: 'Umum' });
+    } else if (type === 'children') {
+      const name = $('#inp_child_name').value;
+      const bday = $('#inp_child_birth').value;
+      if (!name || !bday) { showSnackbar('⚠️ Lengkapi data anak'); return; }
+      DB.children.add({ ...data, name, birthDate: bday, gender: $('#inp_child_gender').value });
+    } else if (type === 'pertumbuhan') {
+      const cid = $('#inp_child_id').value;
+      const w = $('#inp_weight').value;
+      const h = $('#inp_height').value;
+      const cname = DB.children.getAll().find(c => c.id === cid)?.name || 'Anak';
+      DB.growth.add({ ...data, childId: cid, childName: cname, weight: w, height: h, headCirc: 0 });
     } else {
       const title = $('#inp_def_title')?.value || currentEntryType;
       DB.entries.add({ ...data, type: 'Umum', title, value: '', notes: $('#inp_def_notes')?.value || '' });
@@ -648,16 +790,7 @@
     showSnackbar('❤️ Data vital berhasil disimpan!');
   });
 
-  // ===== CHILD CARD SELECTION =====
-  $$('.child-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const parentGrid = card.closest('.child-profiles-grid') || card.closest('.child-profiles');
-      if (!parentGrid) return;
-      $$('.child-card', parentGrid).forEach(c => c.classList.remove('active-child'));
-      card.classList.add('active-child');
-      showSnackbar(`👶 Profil ${$('p.child-info__name', card)?.textContent || ''} dipilih`);
-    });
-  });
+  // ===== CHILD CARD SELECTION (already handled in render) =====
 
   // ===== MEDICATION (default) =====
   $$('.med-card__check').forEach(btn => {
@@ -668,7 +801,13 @@
   });
 
   // ===== ADD CHILD =====
-  $('#btnAddChild')?.addEventListener('click', () => showSnackbar('➕ Fitur tambah anak — segera hadir'));
+  $('#btnAddChild')?.addEventListener('click', () => {
+    currentEntryType = 'children';
+    const modal = $('#modalAdd');
+    if (!modal) return;
+    showEntryForm('children');
+    modal.classList.add('open');
+  });
 
   // ===== GOOGLE SHEETS SETTINGS =====
   $('#btnSaveSheetUrl')?.addEventListener('click', () => {
@@ -765,8 +904,63 @@
     });
   });
 
+  // ---- Today Summary (Dynamic) ----
+  function renderTodaySummary() {
+    const container = $('#todaySummaryList');
+    if (!container) return;
+    
+    const meds = DB.medications.getAll().filter(m => !m.taken).slice(0, 2);
+    const symptoms = DB.symptoms.getAll().slice(0, 1);
+    
+    let html = '';
+    
+    if (meds.length > 0) {
+      meds.forEach(m => {
+        html += `
+          <div class="log-card log-card--dynamic" data-id="${m.id}" data-store="medications">
+            <div class="log-card__icon log-card__icon--meds"><span class="material-symbols-rounded">pill</span></div>
+            <div class="log-card__content">
+              <p class="log-card__title">Belum Diminum: ${esc(m.name)}</p>
+              <p class="log-card__desc">${esc(m.dose)} • ${esc(m.time)}</p>
+            </div>
+            <span class="log-card__badge log-card__badge--warning">PENTING</span>
+          </div>
+        `;
+      });
+    }
+    
+    if (symptoms.length > 0) {
+      const s = symptoms[0];
+      html += `
+        <div class="log-card log-card--dynamic" data-id="${s.id}" data-store="symptoms">
+          <div class="log-card__icon log-card__icon--mood"><span class="material-symbols-rounded">sick</span></div>
+          <div class="log-card__content">
+            <p class="log-card__title">Log Gejala Terakhir</p>
+            <p class="log-card__desc">Keparahan: Lv ${s.severity} • ${formatDate(s.date)}</p>
+          </div>
+          <span class="log-card__badge log-card__badge--info">CEK</span>
+        </div>
+      `;
+    }
+    
+    if (!html) {
+      html = `
+        <div class="log-card"><div class="log-card__icon log-card__icon--mood"><span class="material-symbols-rounded">sentiment_satisfied</span></div><div class="log-card__content"><p class="log-card__title">Keluarga Sehat</p><p class="log-card__desc">Belum ada tugas atau keluhan mendesak hari ini.</p></div><span class="log-card__badge log-card__badge--good">Baik</span></div>
+      `;
+    }
+    
+    container.innerHTML = html;
+    attachEntryListeners(container);
+  }
+
   // ===== VACCINE & ARTICLE CLICKS =====
-  $$('.vaccine-card').forEach(card => { card.addEventListener('click', () => showSnackbar(`💉 Detail ${$('p.vaccine-card__name', card)?.textContent || 'Vaksin'}`)); });
+  $$('.vaccine-card').forEach(card => { 
+    card.addEventListener('click', () => {
+      const { id, store } = card.dataset;
+      if (id && store) openViewModal(id, store);
+      else showSnackbar(`💉 Detail ${$('p.vaccine-card__name', card)?.textContent || 'Vaksin'}`);
+    }); 
+  });
   $$('.article-card').forEach(card => { card.addEventListener('click', () => showSnackbar(`📖 Membuka: ${($('p.article-card__title', card)?.textContent || '').substring(0, 40)}...`)); });
   $$('#pageArticles .log-card').forEach(card => { card.addEventListener('click', () => showSnackbar(`📖 Membuka: ${($('p.log-card__title', card)?.textContent || '').substring(0, 40)}...`)); });
 
@@ -786,14 +980,37 @@
 
   // ===== PROFILE MENU =====
   const profileActions = {
-    menuEmergency: '🚨 Kartu Darurat — Segera hadir',
-    menuRecords: '📁 Rekam Medis — Segera hadir',
-    menuDevices: '⌚ Perangkat Terhubung — Segera hadir',
-    menuVisitPrep: '📋 Persiapan Kunjungan — Segera hadir',
+    menuEmergency: '🚨 Membuka Kartu Darurat...',
+    menuRecords: '📁 Mengakses Rekam Medis...',
+    menuDevices: '⌚ Mencari Perangkat Terhubung...',
+    menuVisitPrep: '📋 Menyiapkan Kunjungan Dokter...',
     menuExport: '📥 Mengekspor data kesehatan...',
-    menuHelp: '❓ Bantuan & Masukan — Segera hadir'
+    menuHelp: '❓ Membuka Pusat Bantuan...'
   };
-  Object.entries(profileActions).forEach(([id, msg]) => { $(`#${id}`)?.addEventListener('click', () => showSnackbar(msg)); });
+  Object.entries(profileActions).forEach(([id, msg]) => { 
+    $(`#${id}`)?.addEventListener('click', () => {
+      if (id === 'menuExport') {
+        const data = {
+          entries: DB.entries.getAll(),
+          growth: DB.growth.getAll(),
+          symptoms: DB.symptoms.getAll(),
+          medications: DB.medications.getAll(),
+          vitals: DB.vitals.getAll(),
+          vaccines: DB.vaccines.getAll(),
+          children: DB.children.getAll()
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `familyhealth_export_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        showSnackbar('✅ Data berhasil diekspor!');
+      } else {
+        showSnackbar(msg);
+      }
+    }); 
+  });
 
   // Settings page
   $('#menuSettings')?.addEventListener('click', () => navigateTo('pageProfile'));
@@ -829,7 +1046,14 @@
     catch { return d; }
   }
   function getEntryIcon(type) {
-    const icons = { 'Gejala':'sick', 'Obat':'pill', 'Tanda Vital':'monitor_heart', 'Mood':'sentiment_satisfied', 'Kebiasaan':'self_improvement', 'Pertumbuhan Anak':'child_care', 'Imunisasi':'vaccines' };
+    const icons = { 
+      'Gejala':'sick', 'Obat':'pill', 'Tanda Vital':'monitor_heart', 
+      'Mood':'sentiment_satisfied', 'Kebiasaan':'self_improvement', 
+      'Pertumbuhan Anak':'child_care', 'Imunisasi':'vaccines',
+      'children': 'child_care', 'vitals': 'monitor_heart', 'growth': 'trending_up',
+      'symptoms': 'sick', 'medications': 'pill', 'vaccines': 'vaccines',
+      'entries': 'note_add'
+    };
     return icons[type] || 'note_add';
   }
 

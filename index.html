@@ -148,10 +148,10 @@
     <!-- Today Summary -->
     <section class="today-log">
       <div class="section-header"><h2 class="section-header__title">Ringkasan Hari Ini</h2><button class="section-header__action">Semua</button></div>
-      <div class="log-card"><div class="log-card__icon log-card__icon--vaccine"><span class="material-symbols-rounded">vaccines</span></div><div class="log-card__content"><p class="log-card__title">Imunisasi Berikutnya</p><p class="log-card__desc">DPT-HB-Hib 4 — Ahmad Jr.</p></div><span class="log-card__badge log-card__badge--warning">15 Mar</span></div>
-      <div class="log-card"><div class="log-card__icon log-card__icon--mood"><span class="material-symbols-rounded">sentiment_satisfied</span></div><div class="log-card__content"><p class="log-card__title">Mood Keluarga</p><p class="log-card__desc">Semua ceria dan sehat hari ini</p></div><span class="log-card__badge log-card__badge--good">Baik</span></div>
-      <div class="log-card"><div class="log-card__icon log-card__icon--sleep"><span class="material-symbols-rounded">bedtime</span></div><div class="log-card__content"><p class="log-card__title">Tidur</p><p class="log-card__desc">7j 30m • Deep sleep 2j 15m</p></div><span class="log-card__value">7.5j</span></div>
-      <div class="log-card"><div class="log-card__icon log-card__icon--water"><span class="material-symbols-rounded">water_drop</span></div><div class="log-card__content"><p class="log-card__title">Air Minum</p><p class="log-card__desc">5 dari 8 gelas</p></div><span class="log-card__value">5/8</span></div>
+      <div id="todaySummaryList">
+        <div class="log-card"><div class="log-card__icon log-card__icon--vaccine"><span class="material-symbols-rounded">vaccines</span></div><div class="log-card__content"><p class="log-card__title">Imunisasi Berikutnya</p><p class="log-card__desc">DPT-HB-Hib 4 — Ahmad Jr.</p></div><span class="log-card__badge log-card__badge--warning">15 Mar</span></div>
+        <div class="log-card"><div class="log-card__icon log-card__icon--mood"><span class="material-symbols-rounded">sentiment_satisfied</span></div><div class="log-card__content"><p class="log-card__title">Mood Keluarga</p><p class="log-card__desc">Semua ceria dan sehat hari ini</p></div><span class="log-card__badge log-card__badge--good">Baik</span></div>
+      </div>
     </section>
 
     <!-- Dynamic Entries (from CRUD) -->
@@ -464,6 +464,24 @@
       <h3 class="bottom-sheet__title" style="margin-bottom:8px">Hapus Data?</h3>
       <p style="font-size:0.82rem;color:var(--md-on-surface-variant);margin-bottom:20px">Data yang dihapus tidak dapat dikembalikan. Yakin ingin menghapus?</p>
       <div style="display:flex;gap:10px"><button class="md-btn md-btn--outlined" id="btnConfirmNo" style="flex:1">Batal</button><button class="md-btn md-btn--filled" id="btnConfirmYes" style="flex:1;background:var(--md-error);color:var(--md-on-error)"><span class="material-symbols-rounded">delete</span> Hapus</button></div>
+    </div>
+  </div>
+
+  <!-- MODAL: VIEW DETAILS -->
+  <div class="modal-overlay" id="modalView">
+    <div class="bottom-sheet">
+      <div class="bottom-sheet__handle"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h3 class="bottom-sheet__title" id="viewTitle">Detail Data</h3>
+        <span class="material-symbols-rounded" id="viewIcon" style="font-size:32px; color:var(--md-primary)">info</span>
+      </div>
+      <div id="viewContentContainer" class="view-details-content">
+        <!-- Content populated by JS -->
+      </div>
+      <div style="display:flex; gap:10px; margin-top:24px">
+        <button class="md-btn md-btn--outlined" id="btnEditFromView" style="flex:1"><span class="material-symbols-rounded">edit</span> Edit</button>
+        <button class="md-btn md-btn--filled" id="btnCloseView" style="flex:1">Tutup</button>
+      </div>
     </div>
   </div>
 
