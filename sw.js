@@ -1,47 +1,56 @@
-const CACHE_NAME = 'familyhealth-v1';
+/* sw.js - Service Worker untuk Family Health App */
+
+const CACHE_NAME = 'family-health-cache-v1';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/styles.css',
-  '/app.js',
-  '/manifest.json',
-  'https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap',
-  'https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded'
+    './',
+    './index.html',
+    './style.css',
+    './app.js',
+    './manifest.json',
+    './health_body_map_illustration_1773776783968.png',
+    './emergency_health_card_1773776804585.png',
+    'https://cdn.tailwindcss.com',
+    'https://fonts.googleapis.com/icon?family=Material+Icons'
 ];
 
-// Install SW
+// 1. Event Install: Menyimpan aset ke dalam Cache
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
-  );
-  self.skipWaiting();
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then((cache) => {
+                console.log('Cache berhasil dibuka dan aset disimpan.');
+                return cache.addAll(ASSETS_TO_CACHE);
+            })
+    );
 });
 
-// Activate SW
+// 2. Event Activate: Membersihkan cache lama jika ada pembaruan versi
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
-    })
-  );
-  self.clients.claim();
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cacheName) => {
+                    if (cacheName !== CACHE_NAME) {
+                        console.log('Menghapus cache lama:', cacheName);
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        })
+    );
 });
 
-// Fetch strategy: Network first, fallback to cache
+// 3. Event Fetch: Mengambil dari cache dulu (Offline First), jika tidak ada baru ke jaringan
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        const responseClone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseClone);
-        });
-        return response;
-      })
-      .catch(() => caches.match(event.request))
-  );
+    event.respondWith(
+        caches.match(event.request)
+            .then((response) => {
+                // Jika file ada di cache, kembalikan file tersebut
+                if (response) {
+                    return response;
+                }
+                // Jika tidak ada, ambil dari internet
+                return fetch(event.request);
+            })
+    );
 });
