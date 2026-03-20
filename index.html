@@ -5,7 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
   <title>FamilyHealth</title>
-  <meta name="theme-color" content="#0d2520">
+  <meta name="theme-color" content="#007aff">
+  <link rel="manifest" href="manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -154,15 +155,22 @@
 
     /* HEADER */
     #hdr {
-      padding: env(safe-area-inset-top) var(--m) 16px;
+      padding: env(safe-area-inset-top) var(--m) 12px;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
       flex-shrink: 0;
       background: var(--glass);
       backdrop-filter: var(--blur);
       border-bottom: 1px solid var(--glass-out);
       z-index: 100;
+    }
+
+    @media (max-width: 600px) {
+      #hdr {
+        padding: env(safe-area-inset-top) 16px 10px;
+        gap: 8px;
+      }
     }
 
     .logo-txt {
@@ -573,20 +581,47 @@
       margin-left: 4px;
     }
 
-    input,
-    select,
+    input, select {
+      width: 100%;
+      background: var(--glass-b);
+      backdrop-filter: var(--blur);
+      border: 1px solid var(--glass-out);
+      border-radius: var(--rs);
+      padding: 14px 18px;
+      color: var(--on-glass);
+      font-family: var(--font);
+      font-size: 1rem;
+      outline: none;
+      transition: var(--trans);
+      appearance: none;
+    }
+
+    @media (max-width: 600px) {
+      input, select {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+      }
+    }
+    
     textarea {
       width: 100%;
       background: var(--glass-b);
       backdrop-filter: var(--blur);
       border: 1px solid var(--glass-out);
       border-radius: var(--rs);
-      padding: 16px 20px;
+      padding: 14px 18px;
       color: var(--on-glass);
       font-family: var(--font);
-      font-size: 1.05rem;
+      font-size: 1rem;
       outline: none;
       transition: var(--trans);
+    }
+    
+    @media (max-width: 600px) {
+      textarea {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+      }
     }
 
     input:focus,
@@ -600,20 +635,28 @@
     /* BUTTONS LIQUID GLASS */
     .sbtn {
       width: 100%;
-      padding: 18px 28px;
+      padding: 16px 24px;
       border: none;
       border-radius: var(--rb);
       background: var(--p);
       color: #ffffff;
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
       transition: var(--trans);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 10px;
       box-shadow: 0 8px 25px rgba(0, 122, 255, 0.25);
+    }
+
+    @media (max-width: 600px) {
+      .sbtn {
+        padding: 14px 20px;
+        font-size: 0.94rem;
+        gap: 8px;
+      }
     }
 
     .sbtn:active {
@@ -663,11 +706,20 @@
       backdrop-filter: var(--blur);
       border: 1px solid var(--glass-out);
       border-radius: var(--rr);
-      padding: 32px;
+      padding: 28px;
       width: 100%;
       max-width: 360px;
       box-shadow: var(--sh);
       animation: glassIn 0.4s var(--trans);
+    }
+
+    @media (max-width: 600px) {
+      .conf-box {
+        padding: 24px;
+        max-width: 320px;
+      }
+      .conf-title { font-size: 1.35rem; }
+      .conf-msg { font-size: 0.95rem; }
     }
 
     .conf-title {
@@ -906,46 +958,64 @@
       margin-top: 4px;
     }
 
-    /* FAB */
+    /* FAB / QUICK ADD */
     #fab-container {
-      position: absolute;
-      bottom: 100px;
-      right: 24px;
-      z-index: 150;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 12px;
+      position: fixed;
+      bottom: 110px;
+      right: 20px;
+      z-index: 100;
     }
 
     #fab-main {
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
-      background: var(--p-c);
-      color: var(--on-p-c);
+      width: 52px;
+      height: 52px;
+      border-radius: 100px;
+      background: var(--p);
+      color: white;
       border: none;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 10px 30px rgba(0, 122, 255, 0.4);
       transition: var(--trans);
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    #fab-main .material-symbols-rounded {
-      font-size: 32px;
+    #fab-main:hover { transform: scale(1.05); box-shadow: 0 12px 35px rgba(0, 122, 255, 0.5); }
+    #fab-main:active { transform: scale(0.95); }
+
+    .plus-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      padding: 10px 0;
+    }
+
+    .plus-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 8px;
+      background: var(--glass-b);
+      border: 1px solid var(--glass-out);
+      border-radius: 18px;
+      cursor: pointer;
       transition: var(--trans);
     }
 
-    #fab-main.open {
-      transform: scale(0.9);
-      background: var(--ec);
-      color: var(--on-ec);
+    .plus-item:hover { background: var(--glass); border-color: var(--p); transform: translateY(-3px); }
+
+    .plus-item .material-symbols-rounded {
+      font-size: 28px;
+      color: var(--p);
     }
 
-    #fab-main.open .material-symbols-rounded {
-      transform: rotate(45deg);
+    .plus-item span:not(.material-symbols-rounded) {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--on-glass);
+      text-align: center;
     }
 
     .fab-action {
@@ -1251,8 +1321,7 @@
     <div id="fab-overlay" onclick="closeFAB()"
       style="display:none;position:absolute;inset:0;z-index:90;background:rgba(0,0,0,0.4);"></div>
     <div id="fab-container">
-      <div id="fab-actions" style="display:none;flex-direction:column;align-items:flex-end;gap:12px"></div>
-      <button id="fab-main" onclick="toggleFAB()">
+      <button id="fab-main" onclick="openM('plus_menu')">
         <span class="material-symbols-rounded">add</span>
       </button>
     </div>
@@ -1717,19 +1786,12 @@
         { icon: 'no_food', label: 'Puasa', click: "openM('add_fasting')", bg: 'var(--pc)' },
         { icon: 'edit_note', label: 'Journal', click: "openM('add_journal')", bg: 'var(--tc)' },
         { icon: 'sick', label: 'Gejala', click: "openM('add_symptom')", bg: 'var(--ec)' },
-        ...(isFemale() ? [
-          { icon: 'calendar_month', label: 'Siklus', click: "openM('add_cycle')", bg: 'var(--pc)' },
+        ...( (isFemale() && ['Ibu', 'Istri'].includes(getP().role)) ? [
+          { icon: 'calendar_month', label: 'Siklus', click: "openM('add_cycle')", bg: 'var(--tc)' },
           { icon: 'child_care', label: 'Menyusui', click: "openM('add_nursing')", bg: 'var(--sc)' },
         ] : []),
+        ...(['Ibu', 'Istri', 'Ayah', 'Suami'].includes(getP().role) ? [{ icon: 'favorite', label: 'Suami Istri', click: "openM('add_cycle')", bg: 'var(--rose-c)' }] : []),
       ];
-      const fabActions = document.getElementById('fab-actions');
-      if (fabActions) fabActions.innerHTML = items.map(it => `
-    <div class="fab-action">
-      <span class="fab-lbl">${it.label}</span>
-      <button class="fab-ico" style="background:${it.bg};color:white" onclick="closeFAB();${it.click}">
-        <span class="material-symbols-rounded">${it.icon}</span>
-      </button>
-    </div>`).join('');
       // Alert banners
       const alertDiv = document.getElementById('dash-alerts');
       if (alertDiv) alertDiv.innerHTML =
@@ -1743,23 +1805,8 @@
       </div></div>`: '');
     }
 
-    let _fabOpen = false;
-    function toggleFAB() {
-      _fabOpen = !_fabOpen;
-      const acts = document.getElementById('fab-actions');
-      const main = document.getElementById('fab-main');
-      const ov = document.getElementById('fab-overlay');
-      if (acts) { acts.style.display = _fabOpen ? 'flex' : 'none'; }
-      if (main) main.classList.toggle('open', _fabOpen);
-      if (ov) ov.style.display = _fabOpen ? 'block' : 'none';
-    }
-    function closeFAB() {
-      _fabOpen = false;
-      const acts = document.getElementById('fab-actions'); const main = document.getElementById('fab-main'); const ov = document.getElementById('fab-overlay');
-      if (acts) acts.style.display = 'none';
-      if (main) main.classList.remove('open');
-      if (ov) ov.style.display = 'none';
-    }
+    function toggleFAB() { openM('plus_menu'); }
+    function closeFAB() { closeModal(); }
 
     function renderDashRecent() {
       const allItems = collectAllItems(30).slice(0, 8);
@@ -2718,6 +2765,12 @@
         if (!document.querySelector('.set-input-row')) renderSetsUI([]);
       }
       if (type.includes('lab')) switchLabTab('lipid', document.querySelector('#mbody .mtabs .mtab'));
+      if (type.includes('cycle')) {
+        const te = document.getElementById('f-type');
+        const pf = document.getElementById('period-fields');
+        const update = () => { if (pf) pf.style.display = (te.value === 'period' || te.value === 'pregnancy') ? 'block' : 'none'; };
+        te?.addEventListener('change', update); update();
+      }
     }
 
     function saveModal() {
@@ -3021,24 +3074,39 @@
       <div class="fg"><label>Paparan UV (mnt)</label><input type="number" id="f-uv" placeholder="0"></div></div>
       <div class="fg"><label>Catatan / Mood</label><textarea id="f-notes" placeholder="Perasaan hari ini..."></textarea></div>`},
         add_cycle: {
-          title: '<span class="material-symbols-rounded">calendar_month</span> Siklus & Reproduksi', body: `
-      <div class="fg"><label>Jenis Catatan</label>
+          title: '<span class="material-symbols-rounded">favorite</span> Siklus & Reproduksi', body: `
+      <div class="fg"><label>Jenis Catatan (Suami Istri / Reproduksi)</label>
         <select id="f-type">
-          <option value="period">🩸 Menstruasi</option>
-          <option value="symptom">⚡ Gejala PMS</option>
-          <option value="intercourse">👩‍❤️‍👨 Hubungan Intim / Seksual</option>
-          <option value="ovulation">🥚 Tes Ovulasi (LH)</option>
-          <option value="basal">🌡️ Suhu Basal</option>
-          <option value="pregnancy">🤰 Kehamilan Aktif</option>
+          <option value="intercourse">Hubungan Intim / Seksual</option>
+          <option value="period">Pendarahan Menstruasi</option>
+          <option value="symptom">Gejala PMS / Hormonal</option>
+          <option value="ovulation">Tes Ovulasi (LH)</option>
+          <option value="basal">Suhu Basal Tubuh</option>
+          <option value="pregnancy">Catat Kehamilan Baru</option>
         </select></div>
-      <div class="fg"><label>Tanggal</label><input type="date" id="f-date" value="${td}"></div>
-      <div class="fr"><div class="fg"><label>Tanggal Mulai Haid / HPHT</label><input type="date" id="f-startDate"></div>
-      <div class="fg"><label>Tanggal Selesai Haid</label><input type="date" id="f-endDate"></div></div>
-      <div class="fg"><label>HPHT (untuk kehamilan)</label><input type="date" id="f-lmp"></div>
-      <div class="fr"><div class="fg"><label>Panjang Siklus (hari)</label><input type="number" id="f-cycleLength" placeholder="28"></div>
-      <div class="fg"><label>Suhu Basal (°C)</label><input type="number" id="f-basalTemp" step="0.1" placeholder="36.5"></div></div>
-      <div class="fg"><label>Gejala / Catatan</label><input id="f-symptoms" placeholder="Kram, mood swings, mual..."></div>
-      <div class="cbx"><input type="checkbox" id="f-active"><label for="f-active">Status aktif (sedang berlangsung)</label></div>`},
+      <div class="fg"><label>Tanggal Aktivitas</label><input type="date" id="f-date" value="${td}"></div>
+      <div id="period-fields" style="display:none">
+        <div class="fr"><div class="fg"><label>Tanggal Mulai Haid / HPHT</label><input type="date" id="f-startDate"></div>
+        <div class="fg"><label>Tanggal Selesai Haid</label><input type="date" id="f-endDate"></div></div>
+      </div>
+      <div class="fg"><label>Gejala / Catatan</label><input id="f-symptoms" placeholder="Catatan tambahan..."></div>
+      <div class="cbx"><input type="checkbox" id="f-active"><label for="f-active">Sedang berlangsung</label></div>`},
+        plus_menu: {
+          title: '<span class="material-symbols-rounded">add_circle</span> Tambah Aktivitas', saveLbl: false, body: `
+      <div class="plus-grid">
+        <div class="plus-item" onclick="openM('add_vital')"><span class="material-symbols-rounded">monitor_heart</span><span>Vital</span></div>
+        <div class="plus-item" onclick="openM('add_lab')"><span class="material-symbols-rounded">biotech</span><span>Lab</span></div>
+        <div class="plus-item" onclick="openM('add_body')"><span class="material-symbols-rounded">scale</span><span>Tubuh</span></div>
+        <div class="plus-item" onclick="openM('add_activity')"><span class="material-symbols-rounded">fitness_center</span><span>Aktivitas</span></div>
+        <div class="plus-item" onclick="openM('add_nutrition')"><span class="material-symbols-rounded">restaurant</span><span>Nutrisi</span></div>
+        <div class="plus-item" onclick="openM('add_medication')"><span class="material-symbols-rounded">medication</span><span>Obat</span></div>
+        <div class="plus-item" onclick="openM('add_sleep')"><span class="material-symbols-rounded">nights_stay</span><span>Tidur</span></div>
+        ${['Ibu', 'Istri', 'Ayah', 'Suami'].includes(getP().role) ? `<div class="plus-item" onclick="openM('add_cycle')"><span class="material-symbols-rounded">favorite</span><span>Suami Istri</span></div>` : ''}
+        <div class="plus-item" onclick="openM('add_journal')"><span class="material-symbols-rounded">edit_note</span><span>Journal</span></div>
+        <div class="plus-item" onclick="openM('add_symptom')"><span class="material-symbols-rounded">sick</span><span>Gejala</span></div>
+        ${['Ibu', 'Istri'].includes(getP().role) ? `<div class="plus-item" onclick="openM('add_nursing')"><span class="material-symbols-rounded">child_care</span><span>Menyusui</span></div>` : ''}
+        <div class="plus-item" onclick="openM('add_fasting')"><span class="material-symbols-rounded">no_food</span><span>Puasa</span></div>
+      </div>`},
         add_doctor: {
           title: '<span class="material-symbols-rounded">medical_services</span> Data Dokter', body: `
       <div class="fg"><label>Nama Dokter (tanpa "dr.")</label><input id="f-name" placeholder="Nama dokter"></div>
@@ -3134,14 +3202,14 @@
         import: {
           title: '<span class="material-symbols-rounded">download</span> Impor Data', saveLbl: false, body: `
       <div class="mtabs" id="imp-tabs">
-        <button class="mtab on" type="button" onclick="switchImpTab('csv',this)">CSV</button>
-        <button class="mtab" type="button" onclick="switchImpTab('photo',this)">📷 Foto Lab</button>
-        <button class="mtab" type="button" onclick="switchImpTab('apps',this)">Apps</button>
+        <button class="mtab on" type="button" onclick="switchImpTab('csv',this)"><span class="material-symbols-rounded" style="font-size:18px">table_chart</span> CSV</button>
+        <button class="mtab" type="button" onclick="switchImpTab('photo',this)"><span class="material-symbols-rounded" style="font-size:18px">photo_camera</span> Foto Lab</button>
+        <button class="mtab" type="button" onclick="switchImpTab('apps',this)"><span class="material-symbols-rounded" style="font-size:18px">apps</span> Aplikasi</button>
       </div>
       <div id="imp-csv">
         <div class="imp-zone" onclick="document.getElementById('fi-csv').click()">
-          <div class="iz">📊</div><p>Klik atau seret file CSV di sini</p>
-          <p class="iz2">Format: date, value1, value2, ...</p>
+          <div class="iz"><span class="material-symbols-rounded" style="font-size:48px">analytics</span></div><p>Klik atau seret file CSV di sini</p>
+          <p class="iz2">Mendukung ekspor Apple, Google, Huawei, & Mi Fitness</p>
         </div>
         <input type="file" id="fi-csv" accept=".csv" style="display:none" onchange="importCSV(this)">
         <div class="fg"><label>Jenis Data CSV</label>
@@ -3150,27 +3218,28 @@
       </div>
       <div id="imp-photo" style="display:none">
         <div class="imp-zone" onclick="document.getElementById('fi-ocr').click()">
-          <div class="iz">📷</div><p>Upload foto hasil laboratorium</p>
-          <p class="iz2">JPG, PNG — tampilkan gambar, input nilai manual</p>
+          <div class="iz"><span class="material-symbols-rounded" style="font-size:48px">photo_camera</span></div><p>Unggah foto hasil laboratorium</p>
+          <p class="iz2">JPG, PNG — lampirkan gambar & input nilai manual</p>
         </div>
         <input type="file" id="fi-ocr" accept="image/*" style="display:none" onchange="importPhoto(this)">
         <div id="ocr-result"></div>
       </div>
       <div id="imp-apps" style="display:none">
-        <div style="background:var(--o2);border:1px solid var(--o);border-radius:var(--rs);padding:11px 12px;margin-bottom:12px;font-size:.76rem;color:var(--o)">
-          ⚠️ <b>Keterbatasan Teknis:</b> Web app tidak dapat mengakses data dari aplikasi lain secara langsung karena pembatasan keamanan OS Android/iOS. Cara terbaik saat ini adalah export CSV dari aplikasi tersebut, lalu impor via tab CSV.
+        <div style="background:rgba(0,122,255,0.06);border:1px dashed var(--p);border-radius:16px;padding:16px;margin-bottom:16px;font-size:.78rem;color:var(--p);line-height:1.6">
+          📱 <b>Konversi ke APK (Android):</b> Gunakan aplikasi ini sebagai PWA (Install dari Browser) untuk performa native. Jika ingin file .APK resmi, Anda dapat mengunggah file ini ke portal <b>PWABuilder.com</b> untuk dikonversi secara otomatis.
         </div>
-        <div style="font-size:.82rem;font-weight:700;margin-bottom:10px">Panduan Export per Aplikasi</div>
+        <div style="font-size:.84rem;font-weight:800;margin-bottom:12px;color:var(--on-glass)">Panduan Sinkronisasi Apps</div>
         ${[
-              { name: 'Huawei Health', steps: 'Buka Huawei Health → Profil → Impor & ekspor data → Export → pilih format CSV → kirim ke HP → impor di tab CSV' },
-              { name: 'Mi Fitness / Zepp Life', steps: 'Mi Fitness: Profil → Pengaturan → Ekspor Data Pengguna → pilih rentang → CSV atau JSON' },
-              { name: 'Guava Health', steps: 'Guava tidak mendukung export langsung. Catat manual atau salin dari riwayat di aplikasi.' },
-              { name: 'Google Fit', steps: 'Buka Google Takeout (takeout.google.com) → pilih Google Fit → Download → ekstrak ZIP → CSV tersedia' },
-              { name: 'Samsung Health', steps: 'Samsung Health → Profil → Pengaturan → Unduh data pribadi → Unduh → CSV per kategori' },
-            ].map(a => `<div style="padding:10px 0;border-bottom:1px solid var(--bd)">
-          <div style="font-size:.82rem;font-weight:700;margin-bottom:4px">${a.name}</div>
-          <div style="font-size:.7rem;color:var(--tx2);line-height:1.5">${a.steps}</div>
+              { name: 'Apple Health', steps: 'Buka Apple Health → Profil → Export Health Data → pilih file XML/CSV → gunakan konverter CSV → Impor di tab CSV.' },
+              { name: 'Google Fit / Health Connect', steps: 'Gunakan Google Takeout (takeout.google.com) → pilih Google Fit → Download CSV → Impor di tab CSV.' },
+              { name: 'Huawei Health', steps: 'Profil → Impor & ekspor data → Export → Pilih CSV → Impor di tab CSV.' },
+              { name: 'Mi Fitness / Zepp', steps: 'Profil → Pengaturan → Ekspor Data → pilih format CSV → Impor di tab CSV.' },
+              { name: 'Guava Health', steps: 'Menu → Manage Data → Export for Backup → pilih CSV → Impor di tab CSV.' },
+            ].map(a => `<div style="padding:12px 16px; background:var(--glass-b); border-radius:12px; margin-bottom:10px; border:1px solid var(--glass-out)">
+          <div style="font-size:.85rem;font-weight:750;margin-bottom:4px;color:var(--on-glass)">${a.name}</div>
+          <div style="font-size:.72rem;color:var(--on-glass-v);line-height:1.5">${a.steps}</div>
         </div>`).join('')}
+        <div style="font-size:.7rem;color:var(--on-glass-v);text-align:center;margin-top:10px">Smart Mapping aktif: Kami mendeteksi kolom otomatis dari ekspor di atas.</div>
       </div>`},
         export_data: {
           title: '<span class="material-symbols-rounded">upload</span> Ekspor Data', saveLbl: false, body: `
@@ -3267,21 +3336,69 @@
     // ─────────────────────────────────────────────
     function importCSV(input) {
       const file = input.files[0]; if (!file) return;
+      const type = document.getElementById('f-csv-type')?.value || 'vitals';
       const reader = new FileReader();
+      
+      const MAP = {
+        // Time
+        date: ['date', 'tanggal', 'timestamp', 'start_time', 'time', 'start time', 'finish', 'start'],
+        time: ['time', 'jam', 'pukul'],
+        // Vitals
+        heartRate: ['heartrate', 'heart rate', 'bpm', 'hr', 'beats/min', 'lb/min', 'denyut'],
+        bpSystolic: ['bpsystolic', 'systolic', 'td_sistolik', 'sistole', 'tekanan atas'],
+        bpDiastolic: ['bpdiastolic', 'diastolic', 'td_diastolik', 'diastole', 'tekanan bawah'],
+        spo2: ['spo2', 'oxygen saturation', 'sp o2', 'o2', 'kadar oksigen'],
+        temp: ['temp', 'temperature', 'suhu', 'body temperature'],
+        // Body
+        weight: ['weight', 'berat', 'berat badan', 'mass', 'masa (kg)', 'weight (kg)'],
+        height: ['height', 'tinggi', 'tinggi badan', 'height (cm)'],
+        // Activity
+        steps: ['steps', 'langkah', 'step count', 'jumlah langkah'],
+        activeMin: ['activemin', 'active minutes', 'duration', 'durasi (mnt)', 'active time'],
+        calories: ['calories', 'kkal', 'energy', 'calories burned', 'kalori'],
+        distance: ['distance', 'jarak', 'distance (km)', 'meter']
+      };
+
       reader.onload = e => {
         const lines = e.target.result.trim().split('\n');
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/["\s]/g, ''));
-        const type = document.getElementById('f-csv-type')?.value || 'vitals';
+        if (lines.length < 2) return;
+        const rawHeaders = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/["\s]/g, ''));
+        
         let n = 0;
         lines.slice(1).forEach(line => {
           const cols = line.split(',').map(c => c.trim().replace(/"/g, ''));
           if (!cols.filter(Boolean).length) return;
-          const obj = {}; headers.forEach((h, i) => { if (cols[i] !== undefined) obj[h] = cols[i]; });
+          
+          const obj = {};
+          rawHeaders.forEach((rh, i) => {
+            if (cols[i] === undefined || cols[i] === '') return;
+            // Find if this rawHeader matches any of our MAP categories
+            let found = false;
+            for (const [key, aliases] of Object.entries(MAP)) {
+              if (aliases.includes(rh)) {
+                obj[key] = cols[i];
+                found = true; break;
+              }
+            }
+            if (!found) obj[rh] = cols[i]; // Keep original if no map
+          });
+
+          // Post-process Date: some apps use "2023-10-01 08:00" in one col
+          if (obj.date) {
+            if (obj.date.includes(' ')) {
+              const [d, t] = obj.date.split(' ');
+              obj.date = d;
+              if (!obj.time) obj.time = t;
+            }
+            // Simple date cleanup (Apple/Google patterns)
+            obj.date = obj.date.replace(/Z$/, '').split('T')[0];
+          }
+
           addItem(type, { ...obj, date: obj.date || today() }); n++;
         });
         const prev = document.getElementById('csv-preview');
-        if (prev) prev.textContent = `✅ ${n} baris berhasil diimpor sebagai data "${type}"`;
-        toast(`✅ ${n} data diimpor!`); renderCurrent();
+        if (prev) prev.textContent = `✅ ${n} baris berhasil diproses (Smart Mapping aktif)`;
+        toast(`✅ ${n} data ${type} diimpor!`); renderCurrent();
       };
       reader.readAsText(file);
     }
@@ -3593,6 +3710,13 @@
     }
 
     init();
+
+    // Register Service Worker for PWA (needed for APK conversion)
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW fail:', err));
+      });
+    }
   </script>
 </body>
 
