@@ -1439,6 +1439,7 @@
     function getPid() { return getP().id }
     function getGender() { return getP().gender || 'M' }
     function isFemale() { return getGender() === 'F' }
+    function canNurse() { const p = getP(); return isFemale() && ['Ibu', 'Istri'].includes(p.role); }
 
     // Section data — always uses CURRENT profile id at call time
     function getSec(sec) {
@@ -1786,8 +1787,10 @@
         { icon: 'no_food', label: 'Puasa', click: "openM('add_fasting')", bg: 'var(--pc)' },
         { icon: 'edit_note', label: 'Journal', click: "openM('add_journal')", bg: 'var(--tc)' },
         { icon: 'sick', label: 'Gejala', click: "openM('add_symptom')", bg: 'var(--ec)' },
-        ...( (isFemale() && ['Ibu', 'Istri'].includes(getP().role)) ? [
+        ...(isFemale() ? [
           { icon: 'calendar_month', label: 'Siklus', click: "openM('add_cycle')", bg: 'var(--tc)' },
+        ] : []),
+        ...(canNurse() ? [
           { icon: 'child_care', label: 'Menyusui', click: "openM('add_nursing')", bg: 'var(--sc)' },
         ] : []),
         ...(['Ibu', 'Istri', 'Ayah', 'Suami'].includes(getP().role) ? [{ icon: 'favorite', label: 'Suami Istri', click: "openM('add_cycle')", bg: 'var(--rose-c)' }] : []),
@@ -1840,6 +1843,9 @@
     }
 
     function renderJournal() {
+      const np = document.querySelector('button[onclick="jFilter(\'nursing\',this)"]');
+      if (np) np.style.display = canNurse() ? 'inline-block' : 'none';
+
       let items = collectAllItems(365, jFilt);
 
       // Apply text search
@@ -2037,8 +2043,8 @@
         { id: 'lifestyle', icon: 'spa', name: 'Gaya Hidup' },
         ...(isFemale() ? [
           { id: 'cycle', icon: 'calendar_month', name: 'Siklus & Reproduksi' },
-          { id: 'nursing', icon: 'child_care', name: 'Menyusui' },
         ] : []),
+        ...(canNurse() ? [{ id: 'nursing', icon: 'child_care', name: 'Menyusui' }] : []),
         { id: 'symptoms', icon: 'sick', name: 'Gejala & Kondisi' },
         { id: 'hosp', icon: 'local_hospital', name: 'Rawat Inap/Jalan' },
         { id: 'clinical', icon: 'description', name: 'Rekam Medis' },
@@ -3104,7 +3110,7 @@
         ${['Ibu', 'Istri', 'Ayah', 'Suami'].includes(getP().role) ? `<div class="plus-item" onclick="openM('add_cycle')"><span class="material-symbols-rounded">favorite</span><span>Suami Istri</span></div>` : ''}
         <div class="plus-item" onclick="openM('add_journal')"><span class="material-symbols-rounded">edit_note</span><span>Journal</span></div>
         <div class="plus-item" onclick="openM('add_symptom')"><span class="material-symbols-rounded">sick</span><span>Gejala</span></div>
-        ${['Ibu', 'Istri'].includes(getP().role) ? `<div class="plus-item" onclick="openM('add_nursing')"><span class="material-symbols-rounded">child_care</span><span>Menyusui</span></div>` : ''}
+        ${canNurse() ? `<div class="plus-item" onclick="openM('add_nursing')"><span class="material-symbols-rounded">child_care</span><span>Menyusui</span></div>` : ''}
         <div class="plus-item" onclick="openM('add_fasting')"><span class="material-symbols-rounded">no_food</span><span>Puasa</span></div>
       </div>`},
         add_doctor: {
@@ -3246,7 +3252,13 @@
       <div style="font-size:.82rem;color:var(--tx2);margin-bottom:14px">Ekspor data ${getP().name} ke file yang bisa dibuka dokter atau disimpan sebagai arsip.</div>
       <div class="sdiv" style="padding:0 0 8px">Pilih Data yang Diekspor</div>
       <div style="background:var(--sf2);border-radius:var(--rs);padding:8px 12px;margin-bottom:12px">
-        ${['vitals', 'lab', 'body', 'activity', 'nutrition', 'medication', 'sleep', 'fasting', 'nursing', 'symptoms', 'hosp', 'cycle', 'journal', 'clinical'].map(s => `
+        ${['vitals', 'lab', 'body', 'activity', 'nutrition', 'medication', 'sleep', 'fasting', 'nursing', 'symptoms', 'hosp', 'cycle', 'journal', 'clinical']
+            .filter(s => {
+              if (s === 'nursing') return canNurse();
+              if (s === 'cycle') return isFemale();
+              return true;
+            })
+            .map(s => `
           <div class="cbx"><input type="checkbox" id="exp-${s}" checked><label for="exp-${s}">${({ vitals: '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px">monitor_heart</span> Tanda Vital', lab: '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px">biotech</span> Hasil Lab', body: '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px">scale</span> Pengukuran Tubuh', activity: '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px">fitness_center</span> Aktivitas', nutrition: '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px">restaurant</span> Nutrisi', medication: '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px">medication</span> Obat', sleep: '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px">nights_stay</span> Tidur', fasting: '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px">no_food</span> Puasa', nursing: '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px">child_care</span> Menyusui', symptoms: '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px">sick</span> Gejala', hosp: '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px">local_hospital</span> Rawat', cycle: '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px">calendar_month</span> Siklus', journal: '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px">menu_book</span> Journal', clinical: '<span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px">description</span> Rekam Medis' }[s] || s)}</label></div>`).join('')}
       </div>
       <button class="sbtn" onclick="doExportCSV()"><span class="material-symbols-rounded">bar_chart</span> Ekspor ke CSV</button>
