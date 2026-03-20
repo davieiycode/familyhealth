@@ -287,16 +287,46 @@ textarea{resize:vertical;min-height:70px}
 
 /* FASTING TIMER */
 .fast-timer{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--y);line-height:1}
+
+/* FAB */
+.fab-action{display:flex;align-items:center;gap:8px;animation:fabIn .15s ease}
+@keyframes fabIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+.fab-lbl{background:var(--sf);border:1px solid var(--bd);border-radius:20px;padding:5px 11px;font-size:.72rem;font-weight:700;color:var(--tx);white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.fab-ico{width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.3);flex-shrink:0;transition:transform .15s}
+.fab-ico:active{transform:scale(.9)}
+#fab-main.open{transform:rotate(45deg);background:linear-gradient(135deg,var(--r),#CC2244)}
+
+/* PROF DIALOG */
+.pdlg-item{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;transition:background .15s;border-bottom:1px solid var(--bd)}
+.pdlg-item:last-child{border-bottom:none}
+.pdlg-item:hover{background:rgba(255,255,255,.03)}
+.pdlg-item.active{background:var(--t2)}
+.pdlg-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:.82rem;flex-shrink:0}
 </style>
 </head>
 <body>
 
 <div id="hdr">
   <div class="logo-txt">VitaFam</div>
-  <div id="ptabs"></div>
-  <div style="display:flex;gap:4px;flex-shrink:0">
-    <button class="hbtn" onclick="openM('add_profile')" title="Tambah profil">＋</button>
+  <div style="flex:1"></div>
+  <div style="display:flex;gap:5px;align-items:center;flex-shrink:0">
+    <div id="sync-indicator" title="Status sinkronisasi" style="width:7px;height:7px;border-radius:50%;background:var(--tx3);flex-shrink:0;transition:background .3s"></div>
+    <button class="hbtn" onclick="openM('export_data')" title="Ekspor data">⬇</button>
     <button class="hbtn" onclick="openM('sync_settings')" title="Sinkronisasi">⟳</button>
+    <button id="prof-btn" onclick="toggleProfDialog()" style="height:30px;min-width:30px;padding:0 8px;border-radius:20px;border:1.5px solid var(--bd);background:var(--t2);color:var(--t);font-family:Syne,sans-serif;font-size:.72rem;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .2s" title="Pilih profil">
+      <span id="prof-av-hdr" style="width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800"></span>
+      <span id="prof-name-hdr" style="white-space:nowrap;max-width:60px;overflow:hidden;text-overflow:ellipsis"></span>
+      <span style="font-size:.6rem;opacity:.7">&#9662;</span>
+    </button>
+  </div>
+</div>
+
+<!-- PROFILE DIALOG -->
+<div id="prof-dialog" style="display:none;position:fixed;top:88px;right:10px;z-index:150;background:var(--sf);border:1px solid var(--bd);border-radius:var(--rr);min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden">
+  <div style="padding:8px 12px;font-family:Syne,sans-serif;font-size:.68rem;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--bd)">Pilih Profil</div>
+  <div id="prof-dialog-list"></div>
+  <div style="border-top:1px solid var(--bd);padding:6px 8px">
+    <button onclick="closeProfDialog();openM('add_profile')" style="width:100%;padding:8px;background:var(--t2);border:1.5px dashed rgba(0,223,196,.3);border-radius:var(--rs);color:var(--t);font-size:.75rem;font-weight:700;cursor:pointer">+ Tambah Anggota</button>
   </div>
 </div>
 
@@ -309,7 +339,8 @@ textarea{resize:vertical;min-height:70px}
     </div>
     <div id="dash-banners"></div>
     <div id="dash-vitals" style="margin-top:4px"></div>
-    <div id="dash-quick"></div>
+    
+    <div id="dash-alerts"></div>
     <div id="dash-recent"></div>
   </div>
 
@@ -361,6 +392,14 @@ textarea{resize:vertical;min-height:70px}
   <button class="ni" onclick="nav('resume',this)"><span class="ic">📊</span><span class="lb">Resume</span></button>
   <button class="ni" onclick="nav('profile',this)"><span class="ic">👤</span><span class="lb">Profil</span></button>
 </nav>
+
+<!-- FAB -->
+<div id="fab-overlay" onclick="closeFAB()" style="display:none;position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.4);"></div>
+<div id="fab-container" style="position:fixed;bottom:calc(74px + env(safe-area-inset-bottom));right:16px;z-index:95;display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+  <div id="fab-actions" style="display:none;flex-direction:column;align-items:flex-end;gap:7px">
+  </div>
+  <button id="fab-main" onclick="toggleFAB()" style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--t),#00A896);border:none;color:#05081A;font-size:1.3rem;cursor:pointer;box-shadow:0 4px 20px rgba(0,223,196,.4);transition:all .3s;display:flex;align-items:center;justify-content:center">＋</button>
+</div>
 
 <!-- MODAL -->
 <div id="moverlay" onclick="closeMOverlay(event)">
@@ -547,13 +586,39 @@ function toast(m){
 // PROFILES
 // ─────────────────────────────────────────────
 function renderProfiles(){
-  const ps=getProfiles();
-  document.getElementById('ptabs').innerHTML=ps.map((p,i)=>`
-    <button class="pchip ${i===cPid?'on':''}" onclick="switchP(${i})">
-      <div class="av" style="background:${p.color}22;color:${p.color}">${(p.name||'?')[0].toUpperCase()}</div>
-      ${p.name}
-    </button>`).join('');
+  const ps=getProfiles();const p=ps[cPid]||{};
+  // Update header profile button
+  const av=document.getElementById('prof-av-hdr');
+  const nm=document.getElementById('prof-name-hdr');
+  if(av){av.textContent=(p.name||'?')[0].toUpperCase();av.style.background=p.color+'22';av.style.color=p.color;}
+  if(nm) nm.textContent=p.name||'';
+  // Update profile dialog list
+  const dl=document.getElementById('prof-dialog-list');
+  if(dl) dl.innerHTML=ps.map((fp,i)=>`
+    <div class="pdlg-item ${i===cPid?'active':''}" onclick="switchP(${i});closeProfDialog()">
+      <div class="pdlg-av" style="background:${fp.color}22;color:${fp.color}">${(fp.name||'?')[0].toUpperCase()}</div>
+      <div style="flex:1">
+        <div style="font-size:.82rem;font-weight:700">${fp.name}</div>
+        <div style="font-size:.65rem;color:var(--tx2)">${fp.role||'Anggota'}${fp.dob?' · '+ageY(fp.dob)+' th':''}</div>
+      </div>
+      ${i===cPid?'<span style="color:var(--t);font-size:.7rem">✓</span>':''}
+    </div>`).join('');
 }
+
+function toggleProfDialog(){
+  const d=document.getElementById('prof-dialog');
+  if(!d) return;
+  const isOpen=d.style.display!=='none';
+  if(isOpen){d.style.display='none';}else{renderProfiles();d.style.display='block';}
+}
+function closeProfDialog(){
+  const d=document.getElementById('prof-dialog');if(d)d.style.display='none';
+}
+// Close profile dialog on outside click
+document.addEventListener('click',e=>{
+  const dlg=document.getElementById('prof-dialog');const btn=document.getElementById('prof-btn');
+  if(dlg&&btn&&!dlg.contains(e.target)&&!btn.contains(e.target)) dlg.style.display='none';
+},{capture:true});
 
 function switchP(i){
   cPid=i;
@@ -721,31 +786,52 @@ function renderDashQuick(){
   const p=getP();
   const chr=(p.chronicDiseases||[]).length;
   const symp=getSec('symptoms').filter(s=>!s.resolved);
-  const meds=getSec('medication');
+  // Build FAB actions
   const items=[
-    {icon:'🔬',label:'Input Lab',click:"openM('add_lab')"},
-    {icon:'💓',label:'Catat Vital',click:"openM('add_vital')"},
-    {icon:'🏃',label:'Catat Aktivitas',click:"openM('add_activity')"},
-    {icon:'⚖️',label:'Ukur Tubuh',click:"openM('add_body')"},
-    {icon:'🥗',label:'Catat Makan',click:"openM('add_nutrition')"},
-    {icon:'💊',label:'Obat',click:"openM('add_medication')"},
-    {icon:'🌙',label:'Catat Tidur',click:"openM('add_sleep')"},
-    {icon:'🌙',label:'Puasa',click:"openM('add_fasting')"},
-    {icon:'📔',label:'Jurnal',click:"openM('add_journal')"},
+    {icon:'💓',label:'Tanda Vital',click:"openM('add_vital')",bg:'var(--r)'},
+    {icon:'🏃',label:'Aktivitas',click:"openM('add_activity')",bg:'var(--t)'},
+    {icon:'🔬',label:'Hasil Lab',click:"openM('add_lab')",bg:'var(--p)'},
+    {icon:'⚖️',label:'Ukur Tubuh',click:"openM('add_body')",bg:'var(--o)'},
+    {icon:'🥗',label:'Catat Makan',click:"openM('add_nutrition')",bg:'var(--g)'},
+    {icon:'💊',label:'Tambah Obat',click:"openM('add_medication')",bg:'var(--b)'},
+    {icon:'🌙',label:'Catat Tidur',click:"openM('add_sleep')",bg:'var(--b)'},
+    {icon:'🌙',label:'Puasa',click:"openM('add_fasting')",bg:'var(--y)'},
+    {icon:'📔',label:'Jurnal',click:"openM('add_journal')",bg:'var(--y)'},
+    {icon:'🤒',label:'Gejala/Cedera',click:"openM('add_symptom')",bg:'var(--r)'},
     ...(isFemale()?[
-      {icon:'🌸',label:'Siklus',click:"openM('add_cycle')"},
-      {icon:'🤱',label:'Menyusui',click:"openM('add_nursing')"},
+      {icon:'🌸',label:'Siklus',click:"openM('add_cycle')",bg:'var(--pk)'},
+      {icon:'🤱',label:'Menyusui',click:"openM('add_nursing')",bg:'var(--b)'},
     ]:[]),
   ];
-  document.getElementById('dash-quick').innerHTML=`<div class="sdiv">Aksi Cepat</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:0 14px 10px">
-      ${items.map(it=>`<div onclick="${it.click}" style="background:var(--sf);border:1px solid var(--bd);border-radius:var(--rs);padding:12px 6px;text-align:center;cursor:pointer;transition:all .15s;active:scale(.96)">
-        <div style="font-size:1.2rem;margin-bottom:4px">${it.icon}</div>
-        <div style="font-size:.6rem;font-weight:700;font-family:'Syne',sans-serif">${it.label}</div>
-      </div>`).join('')}
-    </div>
-    ${symp.length?`<div style="margin:0 14px;padding:10px 12px;background:var(--r2);border:1px solid var(--r);border-radius:var(--rs);font-size:.76rem;color:var(--r);margin-bottom:8px">⚠️ ${symp.length} keluhan aktif: ${symp.map(s=>s.name).join(', ')}</div>`:''}
-    ${chr?`<div style="margin:0 14px;padding:10px 12px;background:var(--o2);border:1px solid var(--o);border-radius:var(--rs);font-size:.76rem;color:var(--o);margin-bottom:8px">⚕️ ${chr} kondisi kronis tercatat</div>`:''}`;
+  const fabActions=document.getElementById('fab-actions');
+  if(fabActions) fabActions.innerHTML=items.map(it=>`
+    <div class="fab-action">
+      <span class="fab-lbl">${it.label}</span>
+      <button class="fab-ico" style="background:${it.bg}" onclick="closeFAB();${it.click}">${it.icon}</button>
+    </div>`).join('');
+  // Alert banners
+  const alertDiv=document.getElementById('dash-alerts');
+  if(alertDiv) alertDiv.innerHTML=
+    (symp.length?`<div style="margin:0 14px 8px;padding:10px 12px;background:var(--r2);border:1px solid var(--r);border-radius:var(--rs);font-size:.76rem;color:var(--r)">⚠️ ${symp.length} keluhan aktif: ${symp.map(s=>s.name).join(', ')}</div>`:'')
+    +(chr?`<div style="margin:0 14px 8px;padding:10px 12px;background:var(--o2);border:1px solid var(--o);border-radius:var(--rs);font-size:.76rem;color:var(--o)">⚕️ ${chr} kondisi kronis tercatat</div>`:'');
+}
+
+let _fabOpen=false;
+function toggleFAB(){
+  _fabOpen=!_fabOpen;
+  const acts=document.getElementById('fab-actions');
+  const main=document.getElementById('fab-main');
+  const ov=document.getElementById('fab-overlay');
+  if(acts){acts.style.display=_fabOpen?'flex':'none';}
+  if(main) main.classList.toggle('open',_fabOpen);
+  if(ov) ov.style.display=_fabOpen?'block':'none';
+}
+function closeFAB(){
+  _fabOpen=false;
+  const acts=document.getElementById('fab-actions');const main=document.getElementById('fab-main');const ov=document.getElementById('fab-overlay');
+  if(acts) acts.style.display='none';
+  if(main) main.classList.remove('open');
+  if(ov) ov.style.display='none';
 }
 
 function renderDashRecent(){
@@ -1402,11 +1488,19 @@ function kmsChartHTML(who,bodyData,field,label,ageMo){
 function vaccineHTML(){
   const p=getP();const ageMo=ageM(p.dob);const devData=p.devData||{};
   const due=VACCINE_SCHEDULE.filter(v=>v.ageM<=ageMo+1);
-  return`<div>${due.map(v=>`<div class="vax-row">
+  const optDue=OPTIONAL_VACCINES.filter(v=>v.ageM<=ageMo+2);
+  const vaxRow=(v,optional)=>`<div class="vax-row">
     <button class="vax-chk ${devData['vax_'+v.id]?'done':'due'}" onclick="toggleVax('${v.id}')">${devData['vax_'+v.id]?'✓':'!'}</button>
-    <div style="flex:1"><div style="font-size:.8rem;font-weight:700">${v.name} — ${v.dose}</div>
-    <div style="font-size:.64rem;color:var(--tx2)">${v.ageLbl}${devData['vax_'+v.id+'_date']?' · '+fmtD(devData['vax_'+v.id+'_date']):''}</div></div>
-  </div>`).join('')}</div>`;
+    <div style="flex:1">
+      <div style="font-size:.8rem;font-weight:700">${v.name} — ${v.dose}${optional?` <span style="font-size:.6rem;color:var(--tx3);background:var(--sf2);padding:1px 5px;border-radius:8px">Opsional</span>`:''}</div>
+      <div style="font-size:.64rem;color:var(--tx2)">${v.ageLbl}${devData['vax_'+v.id+'_date']?' · '+fmtD(devData['vax_'+v.id+'_date']):''}</div>
+    </div>
+  </div>`;
+  return`<div>
+    ${due.map(v=>vaxRow(v,false)).join('')}
+    ${optDue.length?`<div style="padding:6px 14px;font-size:.65rem;color:var(--tx3);font-weight:700;background:var(--bg2);text-transform:uppercase;letter-spacing:.4px">Vaksin Opsional / Tambahan</div>
+    ${optDue.map(v=>vaxRow(v,true)).join('')}`:''}
+  </div>`;
 }
 
 function devCheckHTML(){
@@ -1582,7 +1676,7 @@ function openM(type,editId=null){
   document.getElementById('mbody').innerHTML=cfg.body+(cfg.saveLbl!==false?`<button class="sbtn" onclick="saveModal()">${cfg.saveLbl||'Simpan'}</button>`:'');
   document.getElementById('moverlay').classList.add('on');
   if(editId) prefillModal(type,editId);
-  setTimeout(()=>initModalBehavior(type),50);
+  setTimeout(()=>{initModalBehavior(type);patchDoctorFields();},50);
 }
 
 function closeModal(){document.getElementById('moverlay').classList.remove('on');_mType=null;_mId=null;}
@@ -1686,8 +1780,12 @@ function saveModal(){
     };
     const fn=DATA_FNS[sec];if(!fn){toast('Tipe tidak dikenali: '+sec);return;}
     const item=fn();
-    if(eid) updItem(sec,eid,item);
-    else addItem(sec,item);
+    if(sec==='nursing'){
+      saveNursingWithSync(item,eid||null);
+    } else {
+      if(eid) updItem(sec,eid,item);
+      else addItem(sec,item);
+    }
     closeModal();toast('✅ Tersimpan!');renderCurrent();return;
   }
   toast('Tidak ada data untuk disimpan');
@@ -1976,7 +2074,8 @@ function getModalCfg(type){
       </div>
       <button class="sbtn" onclick="doSync()">⬆️ Kirim Data ke Google Sheets</button>
       <button class="sbtn orange" onclick="doPull()" style="margin-top:6px">⬇️ Tarik Data dari Google Sheets</button>
-      <div id="sync-log" style="font-size:.72rem;color:var(--tx2);margin-top:10px;min-height:20px"></div>`},
+      <div class="cbx" style="margin-top:10px"><input type="checkbox" id="f-autoSync" ${getSett().autoSync?'checked':''} onchange="toggleAutoSync(this)"><label for="f-autoSync">Sinkron otomatis setiap 5 detik</label></div>
+      <div id="sync-log" style="font-size:.72rem;color:var(--tx2);margin-top:8px;min-height:20px"></div>`},
     import:{title:'📥 Impor Data',saveLbl:false,body:`
       <div class="mtabs" id="imp-tabs">
         <button class="mtab on" type="button" onclick="switchImpTab('csv',this)">CSV</button>
@@ -2017,6 +2116,19 @@ function getModalCfg(type){
           <div style="font-size:.7rem;color:var(--tx2);line-height:1.5">${a.steps}</div>
         </div>`).join('')}
       </div>`},
+    export_data:{title:'⬇ Ekspor Data',saveLbl:false,body:`
+      <div style="font-size:.82rem;color:var(--tx2);margin-bottom:14px">Ekspor data ${getP().name} ke file yang bisa dibuka dokter atau disimpan sebagai arsip.</div>
+      <div class="sdiv" style="padding:0 0 8px">Pilih Data yang Diekspor</div>
+      <div style="background:var(--sf2);border-radius:var(--rs);padding:8px 12px;margin-bottom:12px">
+        ${['vitals','lab','body','activity','nutrition','medication','sleep','fasting','nursing','symptoms','hosp','cycle','journal','clinical'].map(s=>`
+          <div class="cbx"><input type="checkbox" id="exp-${s}" checked><label for="exp-${s}">${({vitals:'💓 Tanda Vital',lab:'🔬 Hasil Lab',body:'⚖️ Pengukuran Tubuh',activity:'🏃 Aktivitas',nutrition:'🥗 Nutrisi',medication:'💊 Obat',sleep:'🌙 Tidur',fasting:'🌙 Puasa',nursing:'🤱 Menyusui',symptoms:'🤒 Gejala',hosp:'🏥 Rawat',cycle:'🌸 Siklus',journal:'📔 Jurnal',clinical:'📋 Rekam Medis'}[s]||s)}</label></div>`).join('')}
+      </div>
+      <button class="sbtn" onclick="doExportCSV()">📊 Ekspor ke CSV</button>
+      <button class="sbtn orange" onclick="exportPDF()" style="margin-top:8px">📄 Buka Laporan PDF (Print/Save)</button>
+      <div style="font-size:.7rem;color:var(--tx2);margin-top:10px;line-height:1.6">
+        💡 <b>Untuk dokter:</b> Gunakan opsi PDF — laporan lengkap dengan analisis lab.<br>
+        💾 <b>Untuk arsip/backup:</b> Gunakan CSV — bisa dibuka di Excel/Sheets.
+      </div>`},
   };
 
   // Edit forms reuse add forms
@@ -2040,7 +2152,8 @@ function switchImpTab(tab,btn){
 // SYNC
 // ─────────────────────────────────────────────
 async function doSync(){
-  const url=document.getElementById('f-gasUrl')?.value||getSett().gasUrl;
+  const inp=document.getElementById('f-gasUrl');
+  const url=(inp?.value?.trim())||getSett().gasUrl;
   if(!url){toast('URL Apps Script belum diisi');return;}
   const s=getSett();s.gasUrl=url;saveSett(s);
   setSync('loading','Mengirim...');
@@ -2123,6 +2236,268 @@ function savePhotoLab(){
 }
 
 // ─────────────────────────────────────────────
+// EXPORT WRAPPER
+// ─────────────────────────────────────────────
+function doExportCSV(){
+  const secs=['vitals','lab','body','activity','nutrition','medication','sleep','fasting','nursing','symptoms','hosp','cycle','journal','clinical'];
+  const selected=secs.filter(s=>document.getElementById('exp-'+s)?.checked);
+  if(!selected.length){toast('Pilih minimal 1 kategori');return;}
+  exportCSV(selected);
+}
+
+// ─────────────────────────────────────────────
+// HELPER: toggle auto-sync setting
+// ─────────────────────────────────────────────
+function toggleAutoSync(el){
+  const s=getSett();s.autoSync=el.checked;saveSett(s);
+  if(s.autoSync){startAutoSync();toast('⟳ Auto-sync aktif');}
+  else{if(_syncTimer)clearInterval(_syncTimer);toast('Auto-sync dinonaktifkan');}
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+// DOCTOR AUTOCOMPLETE HELPER
+// ─────────────────────────────────────────────
+function getDoctorOptions(){
+  const docs=getSec('doctors');
+  if(!docs.length) return '';
+  return '<datalist id="dl-doctors">'+docs.filter(d=>d.name).map(d=>`<option value="dr. ${d.name}">`).join('')+'</datalist>';
+}
+function getChildProfileOptions(){
+  const ps=getProfiles();
+  const children=ps.filter(p=>p.role==='Anak'||p.dob&&ageY(p.dob)<=12);
+  if(!children.length) return '';
+  return '<datalist id="dl-children">'+children.map(p=>`<option value="${p.name}">`).join('')+'</datalist>';
+}
+
+// Patch doctor fields to use datalist after modal opens
+function patchDoctorFields(){
+  setTimeout(()=>{
+    const doctorList=getDoctorOptions();
+    const childList=getChildProfileOptions();
+    // Inject datalists into modal
+    const sheet=document.getElementById('msheet');
+    if(sheet){
+      if(doctorList&&!sheet.querySelector('#dl-doctors')) sheet.insertAdjacentHTML('beforeend',doctorList);
+      if(childList&&!sheet.querySelector('#dl-children')) sheet.insertAdjacentHTML('beforeend',childList);
+      // Attach to all doctor/baby inputs
+      sheet.querySelectorAll('input[id*="doctor"],input[id*="Doctor"]').forEach(el=>{
+        el.setAttribute('list','dl-doctors');el.setAttribute('autocomplete','off');
+      });
+      sheet.querySelectorAll('#f-babyName').forEach(el=>{
+        el.setAttribute('list','dl-children');el.setAttribute('autocomplete','off');
+      });
+    }
+  },80);
+}
+
+// ─────────────────────────────────────────────
+// AUTO-SYNC (every 5 seconds if URL set)
+// ─────────────────────────────────────────────
+let _syncTimer=null;
+let _syncBusy=false;
+
+async function autoSync(){
+  if(_syncBusy) return;
+  const s=getSett();
+  if(!s.gasUrl||!s.autoSync) return;
+  _syncBusy=true;
+  setIndicator('loading');
+  try{
+    const r=await fetch(s.gasUrl,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'push',profiles:getProfiles(),data:getData(),ts:new Date().toISOString()}),
+      signal:AbortSignal.timeout(4000)});
+    if(r.ok){
+      s.lastSync=new Date().toISOString();saveSett(s);
+      setIndicator('ok');
+    } else {setIndicator('err');}
+  }catch(e){setIndicator('err');}
+  finally{_syncBusy=false;}
+}
+
+function setIndicator(status){
+  const el=document.getElementById('sync-indicator');
+  if(!el) return;
+  el.style.background=status==='ok'?'var(--g)':status==='err'?'var(--r)':status==='loading'?'var(--o)':'var(--tx3)';
+  if(status==='ok') setTimeout(()=>setIndicator('idle'),3000);
+}
+
+function startAutoSync(){
+  if(_syncTimer) clearInterval(_syncTimer);
+  _syncTimer=setInterval(autoSync,5000);
+}
+
+// ─────────────────────────────────────────────
+// VACCINE: toggle also updates KMS devData
+// ─────────────────────────────────────────────
+// (toggleVax already updates devData — no extra code needed)
+
+// ─────────────────────────────────────────────
+// NURSING → also log to baby nutrition
+// ─────────────────────────────────────────────
+function saveNursingWithSync(item,editId){
+  // Save nursing record
+  if(editId) updItem('nursing',editId,item);
+  else addItem('nursing',item);
+  // Sync to baby profile nutrition if babyName matches a child profile
+  if(item.babyName&&item.duration){
+    const ps=getProfiles();
+    const baby=ps.find(p=>p.name===item.babyName||(p.role==='Anak'&&p.name.includes(item.babyName)));
+    if(baby){
+      const d=getData();
+      if(!d[baby.id]) d[baby.id]={};
+      if(!d[baby.id].nutrition) d[baby.id].nutrition=[];
+      // Check if already synced for this date+time
+      const exists=d[baby.id].nutrition.find(n=>n._nursingSync&&n.date===item.date&&n.meal===item.startTime);
+      if(!exists){
+        d[baby.id].nutrition.unshift({
+          id:Date.now(),date:item.date||today(),meal:item.startTime||'',
+          type:'Menyusui',name:'ASI'+( item.side?(' — '+(item.side==='left'?'Kiri':item.side==='right'?'Kanan':'Keduanya')):''),
+          calories:item.method==='pump'&&item.amount?Math.round(+item.amount*0.65):0,
+          water:0,protein:0,fat:0,carbs:0,
+          notes:`Sesi menyusui ${item.duration} menit`,
+          _nursingSync:true
+        });
+        saveData(d);
+      }
+    }
+  }
+}
+
+// ─────────────────────────────────────────────
+// EXPORT DATA
+// ─────────────────────────────────────────────
+function exportCSV(secList){
+  const p=getP();
+  let csv='VITAFAM EXPORT — '+p.name+'\n';
+  csv+='Diekspor: '+new Date().toLocaleString('id-ID')+'\n\n';
+  secList.forEach(sec=>{
+    const data=getSec(sec);
+    if(!data.length) return;
+    csv+='=== '+sec.toUpperCase()+' ===\n';
+    const keys=[...new Set(data.flatMap(d=>Object.keys(d).filter(k=>!k.startsWith('_'))))];
+    csv+=keys.join(',')+('\n');
+    data.forEach(d=>{
+      csv+=keys.map(k=>{
+        const v=d[k];
+        if(v===null||v===undefined) return '';
+        if(typeof v==='object') return JSON.stringify(v).replace(/,/g,';');
+        return String(v).replace(/,/g,';');
+      }).join(',')+('\n');
+    });
+    csv+='\n';
+  });
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='vitafam_'+p.name+'_'+today()+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast('✅ CSV berhasil diekspor!');
+}
+
+function exportPDF(){
+  const p=getP();
+  const secs=['vitals','lab','body','activity','nutrition','medication','sleep','fasting','nursing','symptoms','hosp','clinical','cycle'];
+  let html=`<!DOCTYPE html><html><head><meta charset="utf-8">
+  <title>Laporan Kesehatan — ${p.name}</title>
+  <style>
+    body{font-family:Arial,sans-serif;max-width:800px;margin:0 auto;padding:20px;color:#111}
+    h1{color:#00A896;border-bottom:2px solid #00A896;padding-bottom:8px}
+    h2{color:#333;margin-top:28px;font-size:14px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #eee;padding-bottom:4px}
+    table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px}
+    th{background:#f5f5f5;padding:6px 8px;text-align:left;font-weight:bold;border:1px solid #ddd}
+    td{padding:5px 8px;border:1px solid #eee}
+    tr:nth-child(even){background:#fafafa}
+    .badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:bold}
+    .ok{background:#dcfce7;color:#166534}.warn{background:#fef3c7;color:#92400e}.bad{background:#fee2e2;color:#991b1b}
+    .info{background:#f0f9ff;border-left:3px solid #00A896;padding:10px;margin:8px 0;font-size:12px}
+    @media print{body{padding:10px}}
+  </style></head><body>
+  <h1>📋 Laporan Kesehatan</h1>
+  <div class="info">
+    <b>Nama:</b> ${p.name} &nbsp;|&nbsp; <b>Gender:</b> ${p.gender==='F'?'Perempuan':'Laki-laki'}
+    ${p.dob?'&nbsp;|&nbsp; <b>Usia:</b> '+ageY(p.dob)+' tahun':''} &nbsp;|&nbsp;
+    <b>Gol. Darah:</b> ${p.bloodType||'—'} &nbsp;|&nbsp; <b>BPJS:</b> ${p.bpjs||'—'}<br>
+    <b>Diekspor:</b> ${new Date().toLocaleString('id-ID')}
+  </div>`;
+
+  // Lab section with analysis
+  const labData=getSec('lab');
+  if(labData.length){
+    html+='<h2>🔬 Hasil Laboratorium</h2>';
+    labData.slice(0,10).forEach(d=>{
+      const items=getLabItems(d);
+      if(!items.length) return;
+      html+=`<p style="font-size:12px;color:#666;margin:4px 0"><b>${d.title||'Hasil Lab'}</b> — ${fmtD(d.date)}${d.facility?' · '+d.facility:''}</p>`;
+      html+='<table><tr><th>Parameter</th><th>Nilai</th><th>Satuan</th><th>Status</th></tr>';
+      items.forEach(it=>{html+=`<tr><td>${it.n}</td><td>${it.v}</td><td>${it.u}</td><td><span class="badge ${it.c}">${it.l}</span></td></tr>`;});
+      html+='</table>';
+    });
+  }
+
+  // Vitals
+  const vitData=getSec('vitals');
+  if(vitData.length){
+    html+='<h2>💓 Tanda Vital Terkini</h2><table><tr><th>Tanggal</th><th>Detak</th><th>Tekanan Darah</th><th>SpO₂</th><th>Suhu</th></tr>';
+    vitData.slice(0,10).forEach(d=>{html+=`<tr><td>${fmtD(d.date)}</td><td>${d.heartRate||'—'} bpm</td><td>${d.bpSystolic?(d.bpSystolic+'/'+d.bpDiastolic):'—'} mmHg</td><td>${d.spo2?d.spo2+'%':'—'}</td><td>${d.temp?d.temp+'°C':'—'}</td></tr>`;});
+    html+='</table>';
+  }
+
+  // Body
+  const bodyData=getSec('body');
+  if(bodyData.length){
+    html+='<h2>⚖️ Pengukuran Tubuh</h2><table><tr><th>Tanggal</th><th>Berat</th><th>Tinggi</th><th>BMI</th><th>Lemak</th></tr>';
+    bodyData.slice(0,10).forEach(d=>{const bmi=d.weight&&d.height?(+d.weight/((+d.height/100)**2)).toFixed(1):'—';html+=`<tr><td>${fmtD(d.date)}</td><td>${d.weight||'—'} kg</td><td>${d.height||'—'} cm</td><td>${bmi}</td><td>${d.fatPct?d.fatPct+'%':'—'}</td></tr>`;});
+    html+='</table>';
+  }
+
+  // Medication
+  const medData=getSec('medication');
+  if(medData.length){
+    html+='<h2>💊 Obat-obatan</h2><table><tr><th>Nama Obat</th><th>Dosis</th><th>Frekuensi</th><th>Peringatan</th></tr>';
+    medData.forEach(d=>{html+=`<tr><td>${d.name}</td><td>${d.dose||'—'}</td><td>${d.frequency||'—'}</td><td>${d.warning||'—'}</td></tr>`;});
+    html+='</table>';
+  }
+
+  // Chronic conditions
+  const chr=p.chronicDiseases||[];
+  if(chr.length){
+    html+='<h2>⚕️ Kondisi Kronis/Genetis</h2><table><tr><th>Kondisi</th><th>Sejak</th><th>Catatan</th></tr>';
+    chr.forEach(c=>{html+=`<tr><td>${c.name}</td><td>${c.since||'—'}</td><td>${c.notes||'—'}</td></tr>`;});
+    html+='</table>';
+  }
+
+  // Symptoms
+  const sympData=getSec('symptoms').filter(s=>!s.resolved);
+  if(sympData.length){
+    html+='<h2>🤒 Keluhan Aktif</h2><table><tr><th>Keluhan</th><th>Bagian Tubuh</th><th>Mulai</th><th>Durasi</th><th>Tingkat</th></tr>';
+    sympData.forEach(d=>{html+=`<tr><td>${d.name||'—'}</td><td>${d.bodyPart||'—'}</td><td>${fmtD(d.startDate)}</td><td>${diffDays(d.startDate||d.date)} hari</td><td>${d.severity||'—'}/5</td></tr>`;});
+    html+='</table>';
+  }
+
+  html+='<div class="info" style="margin-top:24px;font-size:11px;color:#666">Laporan ini dihasilkan otomatis oleh VitaFam. Selalu konsultasikan hasil ini dengan dokter atau tenaga medis.</div>';
+  html+='</body></html>';
+
+  const w=window.open('','_blank');
+  w.document.write(html);w.document.close();
+  setTimeout(()=>w.print(),400);
+  toast('📄 Laporan PDF dibuka!');
+}
+
+// ─────────────────────────────────────────────
+// ADDITIONAL VACCINES (optional)
+// ─────────────────────────────────────────────
+const OPTIONAL_VACCINES=[
+  {id:'influenza',name:'Influenza',dose:'Tahunan',ageM:6,ageLbl:'≥6 bulan, tahunan'},
+  {id:'dengue',name:'Dengue (Dengvaxia)',dose:'3 dosis',ageM:108,ageLbl:'9 tahun (endemik)'},
+  {id:'hpv',name:'HPV',dose:'2-3 dosis',ageM:120,ageLbl:'10-12 tahun (perempuan)'},
+  {id:'mmr2',name:'MMR',dose:'Dosis 2 (sekolah)',ageM:72,ageLbl:'6 tahun'},
+  {id:'td',name:'Td (Tetanus-Difteri)',dose:'Booster',ageM:84,ageLbl:'7 tahun, ulang 10 tahun'},
+  {id:'rotavirus',name:'Rotavirus',dose:'2-3 dosis',ageM:2,ageLbl:'2-4 bulan'},
+  {id:'meningococcal',name:'Meningococcal',dose:'Dosis 1',ageM:24,ageLbl:'≥2 tahun (risiko tinggi)'},
+];
+
+// ─────────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────────
 function init(){
@@ -2132,11 +2507,12 @@ function init(){
       bloodType:'',bpjs:'',insurance:'',medRecords:[],chronicDiseases:[],devData:{}}];
     saveProfiles(ps);
   }
-  // Ensure all profiles have required fields
   ps=ps.map(p=>({bloodType:'',bpjs:'',insurance:'',medRecords:[],chronicDiseases:[],devData:{},...p}));
   saveProfiles(ps);
   renderProfiles();
   renderDash();
+  // Start auto-sync if configured
+  startAutoSync();
 }
 
 init();
