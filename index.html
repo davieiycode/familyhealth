@@ -8,7 +8,9 @@
   <meta name="theme-color" content="#05081A">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0" />
   <style>
@@ -16,7 +18,7 @@
       /* Base Colors (overridden by theme) */
       --t: #26ffe3;
       --t-rgb: 38, 255, 227;
-      
+
       /* Theme Defaults (Dark High Contrast) */
       --bg: #030612;
       --bg2: #05081A;
@@ -30,13 +32,20 @@
       --tx3: rgba(248, 250, 255, 0.4);
 
       /* Functional Colors */
-      --o: #ffb347; --o-rgb: 255, 179, 71;
-      --r: #ff4d7a; --r-rgb: 255, 77, 122;
-      --p: #b197fc; --p-rgb: 177, 151, 252;
-      --b: #4facfe; --b-rgb: 79, 172, 254;
-      --g: #34d399; --g-rgb: 52, 211, 153;
-      --pk: #f472b6; --pk-rgb: 244, 114, 182;
-      --y: #ffd32a; --y-rgb: 255, 211, 42;
+      --o: #ffb347;
+      --o-rgb: 255, 179, 71;
+      --r: #ff4d7a;
+      --r-rgb: 255, 77, 122;
+      --p: #b197fc;
+      --p-rgb: 177, 151, 252;
+      --b: #4facfe;
+      --b-rgb: 79, 172, 254;
+      --g: #34d399;
+      --g-rgb: 52, 211, 153;
+      --pk: #f472b6;
+      --pk-rgb: 244, 114, 182;
+      --y: #ffd32a;
+      --y-rgb: 255, 211, 42;
 
       --rr: 24px;
       --rs: 14px;
@@ -57,11 +66,30 @@
     }
 
     /* Color Palettes */
-    [data-color="rose"] { --t: #fb7185; --t-rgb: 251, 113, 133; }
-    [data-color="violet"] { --t: #a78bfa; --t-rgb: 167, 139, 250; }
-    [data-color="emerald"] { --t: #34d399; --t-rgb: 52, 211, 153; }
-    [data-color="blue"] { --t: #38bdf8; --t-rgb: 56, 189, 248; }
-    [data-color="orange"] { --t: #fb923c; --t-rgb: 251, 146, 60; }
+    [data-color="rose"] {
+      --t: #fb7185;
+      --t-rgb: 251, 113, 133;
+    }
+
+    [data-color="violet"] {
+      --t: #a78bfa;
+      --t-rgb: 167, 139, 250;
+    }
+
+    [data-color="emerald"] {
+      --t: #34d399;
+      --t-rgb: 52, 211, 153;
+    }
+
+    [data-color="blue"] {
+      --t: #38bdf8;
+      --t-rgb: 56, 189, 248;
+    }
+
+    [data-color="orange"] {
+      --t: #fb923c;
+      --t-rgb: 251, 146, 60;
+    }
 
     * {
       box-sizing: border-box;
@@ -328,7 +356,7 @@
       transform: scale(1.1);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
-    
+
     .color-dot.on::after {
       content: 'check';
       font-family: 'Material Symbols Outlined';
@@ -351,7 +379,7 @@
       margin-bottom: 16px;
       backdrop-filter: blur(var(--blur));
     }
-    
+
     .p-card-hd {
       display: flex;
       align-items: center;
@@ -853,11 +881,13 @@
       backdrop-filter: blur(10px);
       transition: 0.3s;
     }
+
     .pbtn:hover {
       background: var(--sf2);
       border-color: var(--t);
       color: var(--t);
     }
+
     .pbtn .material-symbols-outlined {
       font-size: 1.1rem;
     }
@@ -875,7 +905,11 @@
       backdrop-filter: blur(10px);
       transition: 0.3s;
     }
-    .ritem:active { transform: scale(0.98); }
+
+    .ritem:active {
+      transform: scale(0.98);
+    }
+
     .ritem-icon {
       width: 42px;
       height: 42px;
@@ -884,12 +918,38 @@
       align-items: center;
       justify-content: center;
     }
-    .ritem-info { flex: 1; }
-    .ritem-t { font-size: 0.88rem; font-weight: 700; color: var(--tx); }
-    .ritem-d { font-size: 0.72rem; color: var(--tx2); margin-top: 2px; }
-    .ritem-v { text-align: right; }
-    .ritem-val { font-size: 0.9rem; font-weight: 800; color: var(--t); }
-    .ritem-tag { font-size: 0.65rem; color: var(--tx3); margin-top: 2px; }
+
+    .ritem-info {
+      flex: 1;
+    }
+
+    .ritem-t {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--tx);
+    }
+
+    .ritem-d {
+      font-size: 0.72rem;
+      color: var(--tx2);
+      margin-top: 2px;
+    }
+
+    .ritem-v {
+      text-align: right;
+    }
+
+    .ritem-val {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--t);
+    }
+
+    .ritem-tag {
+      font-size: 0.65rem;
+      color: var(--tx3);
+      margin-top: 2px;
+    }
 
 
     .ni.on .material-symbols-outlined {
@@ -1057,7 +1117,7 @@
     }
 
     .conf-title {
-      
+
       font-size: 1.2rem;
       font-weight: 700;
       margin-bottom: 8px;
@@ -1082,7 +1142,7 @@
       padding: 14px;
       border: none;
       border-radius: 16px;
-      
+
       font-size: 0.9rem;
       font-weight: 700;
       cursor: pointer;
@@ -1104,7 +1164,7 @@
     }
 
     #dash-greet {
-      
+
       font-size: 1.5rem !important;
       font-weight: 700 !important;
       letter-spacing: -0.5px;
@@ -1115,7 +1175,203 @@
       font-size: 1rem !important;
     }
 
-    /* Fix narrow sb values */
+    /* PREMIUM TOAST */
+    #toast {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--bg-glass-heavy);
+      border: 1px solid var(--bd);
+      padding: 12px 20px;
+      border-radius: 20px;
+      color: var(--tx);
+      font-size: 0.88rem;
+      font-weight: 600;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transition: 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #toast.on {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .t-close {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--sf2);
+      border-radius: 50%;
+      font-size: 10px;
+      cursor: pointer;
+    }
+
+    /* TOGGLE SWITCH */
+    .tg {
+      --w: 44px;
+      --h: 24px;
+      position: relative;
+      width: var(--w);
+      height: var(--h);
+    }
+
+    .tg input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .tg-s {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--sf2);
+      border: 1px solid var(--bd);
+      border-radius: var(--h);
+      transition: .3s;
+    }
+
+    .tg-s::before {
+      content: "";
+      position: absolute;
+      height: 18px;
+      width: 18px;
+      left: 2px;
+      bottom: 2px;
+      background: var(--tx3);
+      border-radius: 50%;
+      transition: .3s;
+    }
+
+    .tg input:checked+.tg-s {
+      background: var(--t);
+      border-color: var(--t);
+    }
+
+    .tg input:checked+.tg-s::before {
+      transform: translateX(20px);
+      background: #030612;
+    }
+
+    /* PB WRAP GLASS */
+    .pb-wrap {
+      margin-bottom: 12px;
+    }
+
+    .pb-hd {
+      display: flex;
+      justify-content: space-between;
+      font-size: .68rem;
+      font-weight: 700;
+      color: var(--tx2);
+      margin-bottom: 6px;
+    }
+
+    .pb-track {
+      height: 8px;
+      background: var(--sf);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .pb-fill {
+      height: 100%;
+      background: var(--t);
+      border-radius: 4px;
+      transition: .5s;
+    }
+
+    /* REPRODUCTIVE CALENDAR */
+    .cyc-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
+    .cyc-day {
+      width: 100%;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 50%;
+      color: var(--tx2);
+      transition: 0.2s;
+    }
+
+    .cyc-day.today {
+      border: 1.5px solid var(--t);
+      color: var(--t);
+    }
+
+    .cyc-day.period {
+      background: rgba(255, 77, 122, 0.2);
+      color: #ff4d7a;
+      border: 1px solid rgba(255, 77, 122, 0.3);
+    }
+
+    .cyc-day.ovulation {
+      background: var(--t);
+      color: #030612;
+      box-shadow: 0 0 10px rgba(var(--t-rgb), 0.5);
+    }
+
+    .cyc-day.fertile {
+      background: rgba(var(--t-rgb), 0.15);
+      color: var(--t);
+    }
+
+    .cbtn {
+      background: var(--sf);
+      border: 1px solid var(--bd);
+      border-radius: 8px;
+      padding: 4px 8px;
+      color: var(--tx2);
+      cursor: pointer;
+      font-size: 0.7rem;
+    }
+
+    .cbtn:hover {
+      border-color: var(--t);
+      color: var(--t);
+    }
+
+    /* KMS & GROWTH */
+    .vax-row, .dev-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--bd);
+      transition: 0.2s;
+    }
+    .vax-row:active, .dev-row:active { background: var(--sf); }
+    .vax-chk, .dev-chk {
+      width: 28px; height: 28px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; cursor: pointer; border: none;
+      transition: 0.3s cubic-bezier(0.3, 0, 0, 1.5);
+    }
+    .vax-chk.due { background: var(--sf2); color: var(--tx3); border: 2.5px solid var(--bd); }
+    .vax-chk.done, .dev-chk.done { background: var(--g); color: #030612; transform: scale(1.1); }
+    .dev-chk { background: var(--sf); border: 2.5px solid var(--bd); color: transparent; }
+    .vax-row:hover .vax-chk, .dev-row:hover .dev-chk { border-color: var(--t); }
+    .kms-legend { display: flex; gap: 14px; margin-top: 10px; font-size: .62rem; color: var(--tx3); justify-content: center; }
+    .kms-leg { display: flex; align-items: center; gap: 5px; }
+    .kms-dot { width: 6px; height: 6px; border-radius: 50%; }
   </style>
 </head>
 
@@ -1212,10 +1468,14 @@
 
   <!-- BNAV -->
   <nav id="bnav">
-    <button class="ni on" onclick="nav('dash',this)"><span class="ic material-symbols-outlined">dashboard</span><span class="lb">Dashboard</span></button>
-    <button class="ni" onclick="nav('journal',this)"><span class="ic material-symbols-outlined">menu_book</span><span class="lb">Journal</span></button>
-    <button class="ni" onclick="nav('resume',this)"><span class="ic material-symbols-outlined">analytics</span><span class="lb">Resume</span></button>
-    <button class="ni" onclick="nav('profile',this)"><span class="ic material-symbols-outlined">person</span><span class="lb">Profile</span></button>
+    <button class="ni on" onclick="nav('dash',this)"><span class="ic material-symbols-outlined">dashboard</span><span
+        class="lb">Dashboard</span></button>
+    <button class="ni" onclick="nav('journal',this)"><span class="ic material-symbols-outlined">menu_book</span><span
+        class="lb">Journal</span></button>
+    <button class="ni" onclick="nav('resume',this)"><span class="ic material-symbols-outlined">analytics</span><span
+        class="lb">Resume</span></button>
+    <button class="ni" onclick="nav('profile',this)"><span class="ic material-symbols-outlined">person</span><span
+        class="lb">Profile</span></button>
   </nav>
 
   <!-- FAB -->
@@ -1232,8 +1492,7 @@
       <div style="display:flex;justify-content:center;margin-bottom:20px">
         <div style="width:40px;height:4px;background:var(--bd);border-radius:4px"></div>
       </div>
-      <div class="mtitle" id="mtitle"
-        style="font-size:1.2rem;font-weight:800;margin-bottom:20px"></div>
+      <div class="mtitle" id="mtitle" style="font-size:1.2rem;font-weight:800;margin-bottom:20px"></div>
       <div id="mbody"></div>
     </div>
   </div>
@@ -1254,6 +1513,8 @@
   <div id="toast"></div>
 
   <script>
+    let _calMo = new Date(); // Global state for calendar month view
+
     // ─────────────────────────────────────────────
     // REFERENCE DATA
     // ─────────────────────────────────────────────
@@ -1412,8 +1673,9 @@
     let _tt;
     function toast(m) {
       const t = document.getElementById('toast');
-      t.textContent = m; t.classList.add('on');
-      clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('on'), 2200);
+      t.innerHTML = `<span>${m}</span><div class="t-close" onclick="this.parentElement.classList.remove('on')">✕</div>`;
+      t.classList.add('on');
+      clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('on'), 5000);
     }
 
     // ─────────────────────────────────────────────
@@ -1424,7 +1686,7 @@
       const av = document.getElementById('prof-av-hdr');
       const nm = document.getElementById('prof-name-hdr');
       if (av) { av.textContent = (p.name || '?')[0].toUpperCase(); av.style.background = p.color + '22'; av.style.color = p.color; }
-      if (nm) nm.textContent = p.name || '';
+      if (nm) nm.textContent = (p.name || '').split(' ')[0];
       // Update profile dialog list
       const dl = document.getElementById('prof-dialog-list');
       if (dl) dl.innerHTML = ps.map((fp, i) => `
@@ -1965,18 +2227,25 @@
     function resumeVitals() {
       const data = getSec('vitals');
       const last = data[0] || {};
-      return `<div style="padding:10px 0;display:grid;grid-template-columns:1fr 1fr;gap:10px;border-bottom:1px solid var(--bd)">
-    ${[{ v: last.heartRate, l: 'favorite', n: 'Detak', c: 'r' }, { v: last.bpSystolic ? (last.bpSystolic + '/' + last.bpDiastolic) : '—', l: 'stethoscope', n: 'TD', c: 'o' }, { v: last.spo2 ? last.spo2 + '%' : '—', l: 'lungs', n: 'SpO₂', c: 't' }, { v: last.temp ? last.temp + '°C' : '—', l: 'thermometer', n: 'Suhu', c: 'b' }].map(x => `<div class="sb"><div class="sv" style="color:var(--${x.c})">${x.v || '—'}</div><div class="sl"><span class="material-symbols-outlined" style="font-size:0.75rem">${x.l}</span> ${x.n}</div></div>`).join('')}
+      const grid = [
+        { v: last.heartRate, l: 'favorite', n: 'Detak', c: 'r', u: ' bpm' },
+        { v: last.bpSystolic ? (last.bpSystolic + '/' + last.bpDiastolic) : null, l: 'stethoscope', n: 'TD', c: 'o', u: '' },
+        { v: last.spo2, l: 'bubble_chart', n: 'SpO₂', c: 't', u: '%' },
+        { v: last.temp, l: 'thermometer', n: 'Suhu', c: 'b', u: '°C' },
+        { v: last.respRate, l: 'pulmonology', n: 'Napas', c: 'g', u: '/mt' }
+      ];
+      return `<div style="padding:10px 0;display:grid;grid-template-columns:repeat(auto-fit, minmax(70px, 1fr));gap:8px;border-bottom:1px solid var(--bd)">
+    ${grid.map(x => `<div class="sb"><div class="sv" style="color:var(--${x.c})">${x.v != null ? x.v + x.u : '—'}</div><div class="sl"><span class="material-symbols-outlined" style="font-size:0.7rem">${x.l}</span> ${x.n}</div></div>`).join('')}
   </div>`+
-        addBtn('add_vital', '+ Catat Tanda Vital') +
+        addBtn('add_vital', 'Catat Tanda Vital') +
         (data.length ? data.slice(0, 20).map(d => itemCard('vitals', d, 'var(--r)', `Vital · ${fmtD(d.date)} ${d.time || ''}`,
-          [`<span class="material-symbols-outlined" style="font-size:0.9rem">favorite</span> ${d.heartRate} bpm`, `<span class="material-symbols-outlined" style="font-size:0.9rem">stethoscope</span> ${d.bpSystolic}/${d.bpDiastolic}`, `<span class="material-symbols-outlined" style="font-size:0.9rem">lungs</span> ${d.spo2}%`, `<span class="material-symbols-outlined" style="font-size:0.9rem">thermometer</span> ${d.temp}°C`].filter(Boolean).join(' · ')
+          [`<span class="material-symbols-outlined" style="font-size:0.85rem;color:var(--r)">favorite</span> ${d.heartRate}`, `<span class="material-symbols-outlined" style="font-size:0.85rem;color:var(--o)">stethoscope</span> ${d.bpSystolic}/${d.bpDiastolic}`, `<span class="material-symbols-outlined" style="font-size:0.85rem;color:var(--t)">bubble_chart</span> ${d.spo2}%`, `<span class="material-symbols-outlined" style="font-size:0.85rem;color:var(--b)">thermometer</span> ${d.temp}°C`, `<span class="material-symbols-outlined" style="font-size:0.85rem;color:var(--g)">pulmonology</span> ${d.respRate}`].filter(Boolean).join(' · ')
         )).join('') : emptySmall('Belum ada data vital'));
     }
 
     function resumeActivity() {
       const data = getSec('activity');
-      return addBtn('add_activity', '+ Catat Aktivitas / Latihan') +
+      return addBtn('add_activity', 'Catat Aktivitas / Latihan') +
         (data.length ? data.slice(0, 30).map(d => {
           const sets = d.sets?.length ? `<div style="margin-top:6px;background:var(--bg2);border-radius:var(--rs);padding:6px 10px">${d.sets.map((s, i) => `<div style="font-size:.72rem;color:var(--tx2);padding:2px 0;border-bottom:1px solid var(--bd)">Set ${i + 1}: ${s.reps} reps${s.weight ? ' · ' + s.weight + 'kg' : ''}</div>`).join('')}</div>` : '';
           return itemCard('activity', d, 'var(--t)', d.type || 'Aktivitas',
@@ -1987,7 +2256,7 @@
 
     function resumeLab() {
       const data = getSec('lab'); const gender = getGender();
-      let html = addBtn('add_lab', '+ Input Hasil Lab');
+      let html = addBtn('add_lab', 'Input Hasil Lab');
       if (!data.length) return html + emptySmall('Belum ada hasil laboratorium');
       // Last lab summary
       const last = data[0]; const items = getLabItems(last);
@@ -2025,7 +2294,7 @@
     <div style="display:flex;justify-content:space-between;font-size:.58rem;color:var(--tx3)"><span>Kurus</span><span>Normal</span><span>Lebih</span><span>Obesitas</span></div>
     <div style="text-align:center;font-size:.72rem;font-weight:600;color:${bmiC(+bmi)};margin-top:4px">BMI ${bmi} — ${bmiL(+bmi)}</div>` : ''}
   </div>`;
-      html += addBtn('add_body', '+ Catat Pengukuran Tubuh');
+      html += addBtn('add_body', 'Catat Pengukuran Tubuh');
       html += data.length ? data.slice(0, 20).map(d => {
         const b = d.weight && d.height ? (+d.weight / ((+d.height / 100) ** 2)).toFixed(1) : null;
         return itemCard('body', d, 'var(--o)', `Pengukuran · ${fmtD(d.date)}`,
@@ -2040,13 +2309,31 @@
       const tod = data.filter(d => d.date === td);
       const kal = tod.reduce((s, d) => s + (+d.calories || 0), 0); const water = tod.reduce((s, d) => s + (+d.water || 0), 0);
       const kp = Math.min(Math.round(kal / 2000 * 100), 100), wp = Math.min(Math.round(water / 2000 * 100), 100);
+
+      // Nutrition Trend (7 days)
+      const days = []; for (let i = 6; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); days.push(d.toISOString().split('T')[0]); }
+      const trendK = days.map(d => data.filter(x => x.date === d).reduce((s, x) => s + (+x.calories || 0), 0));
+      const trendW = days.map(d => data.filter(x => x.date === d).reduce((s, x) => s + (+x.water || 0), 0));
+      const maxK = Math.max(2500, ...trendK); const maxW = Math.max(2500, ...trendW);
+
+      const trendSVG = (vals, color, max) => `<svg viewBox="0 0 280 40" style="width:100%;height:auto;margin-top:4px">
+        ${vals.map((v, i) => {
+        const h = (v / max) * 30; const x = i * (280 / 7) + 4; const w = (280 / 7) - 8;
+        return `<rect x="${x}" y="${35 - h}" width="${w}" height="${Math.max(h, 1)}" rx="2" fill="${color}" opacity="${v ? 1 : 0.2}"/>`;
+      }).join('')}
+      </svg>`;
+
       let html = `<div style="padding:10px 14px;border-bottom:1px solid var(--bd)">
-    <div class="pb-wrap"><div class="pb-hd"><span>Kalori Hari Ini</span><span>${kal} / 2000 kkal (${kp}%)</span></div>
-    <div class="pb-track"><div class="pb-fill" style="width:${kp}%"></div></div></div>
-    <div class="pb-wrap"><div class="pb-hd"><span>Hidrasi</span><span>${water} / 2000 ml (${wp}%)</span></div>
-    <div class="pb-track"><div class="pb-fill" style="width:${wp}%;background:var(--b)"></div></div></div>
+    <div class="pb-wrap"><div class="pb-hd"><span>🍱 Kalori</span><span>${kal} / 2000 kkal (${kp}%)</span></div>
+    <div class="pb-track"><div class="pb-fill" style="width:${kp}%"></div></div>
+    ${trendSVG(trendK, 'var(--t)', maxK)}
+    </div>
+    <div class="pb-wrap"><div class="pb-hd"><span>💧 Hidrasi</span><span>${water} / 2000 ml (${wp}%)</span></div>
+    <div class="pb-track"><div class="pb-fill" style="width:${wp}%;background:var(--b)"></div></div>
+    ${trendSVG(trendW, 'var(--b)', maxW)}
+    </div>
   </div>`;
-      return html + addBtn('add_nutrition', '+ Catat Makanan / Minuman') +
+      return html + addBtn('add_nutrition', 'Catat Makanan / Minuman') +
         (data.length ? data.slice(0, 25).map(d => itemCard('nutrition', d, 'var(--g)', d.name || 'Asupan',
           [fmtD(d.date), d.meal, d.calories && `${d.calories} kkal`, d.protein && `P ${d.protein}g`, d.water && `${d.water}ml`].filter(Boolean).join(' · ')
         )).join('') : emptySmall('Belum ada catatan nutrisi'));
@@ -2054,7 +2341,7 @@
 
     function resumeMedication() {
       const data = getSec('medication');
-      return addBtn('add_medication', '+ Tambah Obat') +
+      return addBtn('add_medication', 'Tambah Obat') +
         (data.length ? data.map(d => `<div style="padding:10px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px">
     <div style="width:36px;height:36px;border-radius:9px;background:var(--b2);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">💊</div>
     <div style="flex:1">
@@ -2086,7 +2373,7 @@
     <div class="sb"><div class="sv" style="color:var(--o)">${last.quality || '—'}</div><div class="sl">Skor Kualitas</div></div>
     <div class="sb"><div class="sv" style="color:var(--r)">${last.wakeUps ?? '—'}</div><div class="sl">Terbangun</div></div>
   </div></div>`+ barSVG +
-        addBtn('add_sleep', '+ Catat Tidur') +
+        addBtn('add_sleep', 'Catat Tidur') +
         (data.length ? data.slice(0, 20).map(d => itemCard('sleep', d, 'var(--b)',
           `Tidur ${d.duration || '—'} jam · ${fmtD(d.date)}`,
           [d.bedtime && `${d.bedtime}→${d.wakeTime}`, d.quality && `Skor ${d.quality}/100`, d.deep && `Deep ${d.deep}%`, d.rem && `REM ${d.rem}%`].filter(Boolean).join(' · ')
@@ -2102,45 +2389,73 @@
     <div class="sb"><div class="sv" style="color:var(--t)">${tod.reduce((s, d) => s + (+d.meditation || 0), 0)}</div><div class="sl">Meditasi (mnt)</div></div>
     <div class="sb"><div class="sv" style="color:var(--o)">${tod.reduce((s, d) => s + (+d.alcohol || 0), 0)}</div><div class="sl">Alkohol (unit)</div></div>
   </div></div>`+
-        addBtn('add_lifestyle', '+ Catat Kebiasaan') +
+        addBtn('add_lifestyle', 'Catat Kebiasaan') +
         (data.length ? data.slice(0, 20).map(d => itemCard('lifestyle', d, 'var(--g)', 'Kebiasaan · ' + fmtD(d.date),
           [d.cigarettes != null && (d.cigarettes === 0 || d.cigarettes === '' ? '✅ Bebas rokok' : `🚬 ${d.cigarettes} batang`), d.meditation && `🧘 ${d.meditation} mnt`, d.uv && `☀️ ${d.uv} mnt UV`].filter(Boolean).join(' · ')
         )).join('') : emptySmall('Belum ada catatan kebiasaan'));
     }
 
     function resumeCycle() {
-      const data = getSec('cycle'); const now = new Date();
-      const dIM = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const data = getSec('cycle');
+      const now = new Date(); const view = _calMo;
+      const dIM = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
       const periods = data.filter(d => d.type === 'period');
       const pDays = new Set();
-      periods.forEach(p => { if (p.startDate && p.endDate) { let d = new Date(p.startDate); const e = new Date(p.endDate); while (d <= e) { if (d.getMonth() === now.getMonth()) pDays.add(d.getDate()); d.setDate(d.getDate() + 1); } } });
+      periods.forEach(p => {
+        if (p.startDate && p.endDate) {
+          let d = new Date(p.startDate); const e = new Date(p.endDate);
+          while (d <= e) { if (d.getMonth() === view.getMonth() && d.getFullYear() === view.getFullYear()) pDays.add(d.getDate()); d.setDate(d.getDate() + 1); }
+        }
+      });
       const cycLens = data.filter(d => d.cycleLength).map(d => +d.cycleLength);
       const avgCyc = cycLens.length ? Math.round(cycLens.reduce((a, b) => a + b, 0) / cycLens.length) : 28;
       const lastP = periods[0];
       let ovDay = null;
-      if (lastP?.startDate) { const od = new Date(lastP.startDate); od.setDate(od.getDate() + avgCyc - 14); if (od.getMonth() === now.getMonth()) ovDay = od.getDate(); }
-      const fDow = (new Date(now.getFullYear(), now.getMonth(), 1).getDay() + 6) % 7;
+      if (lastP?.startDate) {
+        const od = new Date(lastP.startDate); od.setDate(od.getDate() + avgCyc - 14);
+        if (od.getMonth() === view.getMonth() && od.getFullYear() === view.getFullYear()) ovDay = od.getDate();
+      }
+      const fDow = (new Date(view.getFullYear(), view.getMonth(), 1).getDay() + 6) % 7;
       let cal = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map(d => `<div style="text-align:center;font-size:.56rem;color:var(--tx3);font-weight:700;padding:2px">${d}</div>`).join('');
       for (let i = 0; i < fDow; i++) cal += `<div></div>`;
       for (let day = 1; day <= dIM; day++) {
-        const iT = day === now.getDate(), iP = pDays.has(day), iO = day === ovDay, iF = ovDay && day >= ovDay - 5 && day <= ovDay + 1 && !iO;
+        const iT = day === now.getDate() && view.getMonth() === now.getMonth() && view.getFullYear() === now.getFullYear();
+        const iP = pDays.has(day), iO = day === ovDay, iF = ovDay && day >= ovDay - 5 && day <= ovDay + 1 && !iO;
         const cls = iP ? 'period' : iO ? 'ovulation' : iF ? 'fertile' : iT ? 'today' : '';
         cal += `<div class="cyc-day ${cls}">${day}</div>`;
       }
-      return `<div style="padding:8px 0 0;border-bottom:1px solid var(--bd)">
-    <div class="cyc-grid">${cal}</div>
+
+      const monNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      const nav = `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px 4px">
+        <button class="cbtn" onclick="changeCal(-1)">◀</button>
+        <div style="font-weight:800;font-size:.9rem">${monNames[view.getMonth()]} ${view.getFullYear()}</div>
+        <button class="cbtn" onclick="changeCal(1)">▶</button>
+      </div>`;
+
+      return `<div style="padding:0;border-bottom:1px solid var(--bd)">
+    ${nav}
+    <div class="cyc-grid" style="padding:10px 14px">${cal}</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;padding:4px 14px 10px;font-size:.63rem">
       <span class="tag r">Haid</span><span class="tag t">Masa Subur</span>
       <span style="padding:3px 10px;border-radius:20px;background:var(--t);color:#05081A;font-size:.63rem;font-weight:700">Ovulasi</span>
     </div>
-    </div>
-  </div>`+
-        addBtn('add_cycle', '+ Catat Siklus / Gejala / Kehamilan') +
+    </div>`+
+        addBtn('add_cycle', 'Catat Siklus / Kehamilan') +
+        addBtn('add_sex', 'Catat Aktivitas Pasutri') +
         (data.length ? data.slice(0, 15).map(d => itemCard('cycle', d, 'var(--pk)',
           ({ period: 'Menstruasi', symptom: 'Gejala PMS', basal: 'Suhu Basal', pregnancy: 'Kehamilan' }[d.type] || 'Siklus') + ' · ' + fmtD(d.date),
           [d.startDate && `Mulai ${fmtD(d.startDate)}`, d.endDate && `Selesai ${fmtD(d.endDate)}`, d.cycleLength && `${d.cycleLength} hari`, d.basalTemp && `${d.basalTemp}°C`].filter(Boolean).join(' · '),
           d.active ? `<span class="tag pk">Aktif</span>` : ''
-        )).join('') : emptySmall('Belum ada data siklus'));
+        )).join('') : '') +
+        (getSec('sex_activity').length ? `<div style="padding:10px 14px;font-size:.75rem;font-weight:700;color:var(--tx3);text-transform:uppercase">Aktivitas Pasutri</div>` +
+          getSec('sex_activity').slice(0, 10).map(d => itemCard('sex_activity', d, 'var(--r)', 'Aktivitas Pasutri',
+            [fmtD(d.date), d.time, d.type, d.protection && `Proteksi: ${d.protection}`].filter(Boolean).join(' · ')
+          )).join('') : emptySmall('Belum ada data siklus'));
+    }
+
+    function changeCal(offset) {
+      _calMo.setMonth(_calMo.getMonth() + offset);
+      renderCurrent();
     }
 
     function resumeFasting() {
@@ -2170,7 +2485,7 @@
     <div class="sb"><div class="sv" style="color:var(--t)">${avgDur || '—'}</div><div class="sl">Rata-rata Jam</div></div>
   </div></div>
   <div style="padding:8px 14px">${timerHTML}</div>` +
-        addBtn('add_fasting', '+ Mulai / Catat Puasa') +
+        addBtn('add_fasting', 'Mulai / Catat Puasa') +
         (data.length ? data.slice(0, 20).map(d => {
           const typeLabel = { ramadan: 'Ramadan', sunnah: 'Sunnah', medical: 'Medis', intermittent: 'Intermittent', other: 'Lainnya' }[d.fastType] || d.fastType || 'Puasa';
           return itemCard('fasting', d, 'var(--y)', typeLabel + ' · ' + fmtD(d.date),
@@ -2218,7 +2533,7 @@
   </div>
   ${last.startTime ? `<div style="margin-top:8px;font-size:.72rem;color:var(--tx2)">Sesi terakhir: ${fmtD(last.date)} ${last.startTime} · ${sideLabel[last.side] || last.side || ''} · ${last.duration || '—'} menit</div>` : ''}
   </div>`+
-        addBtn('add_nursing', '+ Catat Sesi Menyusui') +
+        addBtn('add_nursing', 'Catat Sesi Menyusui') +
         (data.length ? data.slice(0, 25).map(d => {
           const side = sideLabel[d.side] || d.side || '';
           return itemCard('nursing', d, 'var(--b)',
@@ -2233,7 +2548,7 @@
       const data = getSec('symptoms'); const active = data.filter(d => !d.resolved);
       return (active.length ? `<div style="padding:8px 14px;background:var(--r2);border-bottom:1px solid var(--bd)"><div style="font-size:.74rem;color:var(--r);font-weight:700;margin-bottom:4px">⚠️ ${active.length} keluhan aktif</div>
     <div class="tags">${active.map(s => `<span class="tag r">${s.name} (${diffDays(s.startDate || s.date)}h)</span>`).join('')}</div></div>` : '') +
-        addBtn('add_symptom', '+ Tambah Gejala / Cedera') +
+        addBtn('add_symptom', 'Tambah Gejala / Cedera') +
         (data.length ? data.slice(0, 20).map(d => itemCard('symptoms', d, d.resolved ? 'var(--g)' : +d.severity >= 4 ? 'var(--r)' : +d.severity >= 2 ? 'var(--o)' : 'var(--t)',
           (d.name || 'Gejala') + (d.resolved ? ' (Sembuh)' : ''),
           [fmtD(d.startDate || d.date), d.bodyPart, !d.resolved && d.startDate && `${diffDays(d.startDate)} hari`].filter(Boolean).join(' · '),
@@ -2243,7 +2558,7 @@
 
     function resumeHosp() {
       const data = getSec('hosp');
-      return addBtn('add_hosp', '+ Tambah Riwayat Rawat') +
+      return addBtn('add_hosp', 'Tambah Riwayat Rawat') +
         (data.length ? data.slice(0, 20).map(d => itemCard('hosp', d, d.hospType === 'inpatient' ? 'var(--r)' : 'var(--b)',
           d.facility || 'Fasilitas',
           [d.hospType === 'inpatient' ? 'Rawat Inap' : 'Rawat Jalan', fmtD(d.startDate), d.endDate && '→ ' + fmtD(d.endDate), d.diagnosis].filter(Boolean).join(' · ')
@@ -2252,7 +2567,7 @@
 
     function resumeClinical() {
       const data = getSec('clinical');
-      return addBtn('add_clinical', '+ Tambah Dokumen Medis') +
+      return addBtn('add_clinical', 'Tambah Dokumen Medis') +
         (data.length ? data.slice(0, 20).map(d => itemCard('clinical', d, 'var(--p)',
           d.title || 'Rekam Medis',
           [fmtD(d.date), d.hospital, d.doctor && `dr. ${d.doctor}`].filter(Boolean).join(' · ')
@@ -2261,7 +2576,7 @@
 
     function resumeDoctors() {
       const data = getSec('doctors');
-      return addBtn('add_doctor', '+ Tambah Dokter') +
+      return addBtn('add_doctor', 'Tambah Dokter') +
         (data.length ? `<div>${data.slice(0, 20).map(d => `<div class="doc-card">
     <div class="doc-av"><span class="material-symbols-outlined">${d.active ? 'medical_information' : 'person'}</span></div>
     <div style="flex:1">
@@ -2277,7 +2592,7 @@
 
     function resumeJournal() {
       const data = getSec('journal');
-      return addBtn('add_journal', '+ Tulis Catatan Jurnal') +
+      return addBtn('add_journal', 'Tulis Catatan Jurnal') +
         (data.length ? data.slice(0, 20).map(d => `<div style="padding:10px 14px;border-bottom:1px solid var(--bd)">
     <div style="display:flex;justify-content:space-between">
       <div style="flex:1">
@@ -2317,10 +2632,15 @@
       <div class="kms-leg"><div class="kms-dot" style="background:var(--g)"></div>Median</div>
       <div class="kms-leg"><div class="kms-dot" style="background:white"></div>Data anak</div>
     </div>
+    <div style="margin-top:14px">${addBtn('add_body', 'Catat Pengukuran')}</div>
   </div>
   <div style="padding:8px 0;border-bottom:1px solid var(--bd)">
-    <div style="font-size:.8rem;font-weight:700;padding:0 14px 8px">💉 Imunisasi</div>
+    <div style="font-size:.8rem;font-weight:700;padding:0 14px 8px;display:flex;justify-content:space-between;align-items:center">
+      <span>💉 Imunisasi</span>
+      <span style="font-size:0.6rem;color:var(--tx3);font-weight:400">Terintegrasi dengan Jurnal Kesehatan</span>
+    </div>
     ${vaccineHTML()}
+    <div style="padding:10px 14px">${addBtn('add_journal', 'Catat Vaksinasi')}</div>
   </div>
   <div style="padding:8px 0">
     <div style="font-size:.8rem;font-weight:700;padding:0 14px 8px">✅ Tumbuh Kembang</div>
@@ -2354,29 +2674,50 @@
     }
 
     function vaccineHTML() {
-      const p = getP(); const ageMo = ageM(p.dob); const devData = p.devData || {};
+      const p = getP(); const ageMo = ageM(p.dob);
       const due = VACCINE_SCHEDULE.filter(v => v.ageM <= ageMo + 1);
       const optDue = OPTIONAL_VACCINES.filter(v => v.ageM <= ageMo + 2);
-      const vaxRow = (v, optional) => `<div class="vax-row">
-    <button class="vax-chk ${devData['vax_' + v.id] ? 'done' : 'due'}" onclick="toggleVax('${v.id}')">${devData['vax_' + v.id] ? '✓' : '!'}</button>
-    <div style="flex:1">
-      <div style="font-size:.8rem;font-weight:700">${v.name} — ${v.dose}${optional ? ` <span style="font-size:.6rem;color:var(--tx3);background:var(--sf2);padding:1px 5px;border-radius:8px">Opsional</span>` : ''}</div>
-      <div style="font-size:.64rem;color:var(--tx2)">${v.ageLbl}${devData['vax_' + v.id + '_date'] ? ' · ' + fmtD(devData['vax_' + v.id + '_date']) : ''}</div>
-    </div>
-  </div>`;
+      
+      const vaxRow = (v, optional) => {
+        const res = getVaxStatus(v);
+        return `<div class="vax-row" onclick="toggleVax('${v.id}')">
+          <button class="vax-chk ${res.done ? 'done' : 'due'}">${res.done ? '✓' : '!'}</button>
+          <div style="flex:1">
+            <div style="font-size:.8rem;font-weight:700">${v.name} — ${v.dose}${optional ? ` <span style="font-size:.6rem;color:var(--tx3);background:var(--sf2);padding:1px 5px;border-radius:8px">Opsional</span>` : ''}</div>
+            <div style="font-size:.64rem;color:var(--tx2)">${v.ageLbl}${res.date ? ' · ' + fmtD(res.date) : ''} ${res.source ? `<span style="opacity:0.6">(${res.source})</span>` : ''}</div>
+          </div>
+        </div>`;
+      };
       return `<div>
     ${due.map(v => vaxRow(v, false)).join('')}
-    ${optDue.length ? `<div style="padding:6px 14px;font-size:.65rem;color:var(--tx3);font-weight:700;background:var(--bg2);text-transform:uppercase;letter-spacing:.4px">Vaksin Opsional / Tambahan</div>
+    ${optDue.length ? `<div style="padding:10px 14px 6px;font-size:.65rem;color:var(--tx3);font-weight:800;background:rgba(255,255,255,0.02);text-transform:uppercase;letter-spacing:.5px">Vaksin Opsional / Tambahan</div>
     ${optDue.map(v => vaxRow(v, true)).join('')}` : ''}
   </div>`;
+    }
+
+    function getVaxStatus(v) {
+      const p = getP(); const devData = p.devData || {};
+      if (devData['vax_' + v.id]) return { done: true, date: devData['vax_' + v.id + '_date'], source: 'Manual' };
+      
+      // Smart search in journal/history
+      const kw = v.name.toLowerCase();
+      const allSecs = ['journal', 'clinical', 'lab'];
+      for (const s of allSecs) {
+        const item = getSec(s).find(it => {
+          const txt = (it.title || it.name || it.content || '').toLowerCase();
+          return txt.includes(kw) || (v.id.includes('polio') && txt.includes('polio')) || (v.id.includes('dpt') && txt.includes('dpt')) || (v.id.includes('bcg') && txt.includes('bcg'));
+        });
+        if (item) return { done: true, date: item.date, source: s === 'journal' ? 'Jurnal' : s === 'clinical' ? 'Dokumen' : 'Lab' };
+      }
+      return { done: false };
     }
 
     function devCheckHTML() {
       const p = getP(); const ageMo = ageM(p.dob); const devData = p.devData || {};
       const ms = []; Object.keys(DEV_MILESTONES).forEach(m => { if (parseInt(m) <= ageMo + 2) ms.push(...DEV_MILESTONES[m]); });
-      return `<div>${ms.map(m => `<div class="dev-row">
-    <button class="dev-chk ${devData['dev_' + m.id] ? 'done' : ''}" onclick="toggleDev('${m.id}')">${devData['dev_' + m.id] ? '✓' : ''}</button>
-    <div style="font-size:.8rem;color:${devData['dev_' + m.id] ? 'var(--tx2)' : 'var(--tx)'};${devData['dev_' + m.id] ? 'text-decoration:line-through;text-decoration-color:var(--tx3)' : ''}">${m.t}</div>
+      return `<div>${ms.map(m => `<div class="dev-row" onclick="toggleDev('${m.id}')">
+    <button class="dev-chk ${devData['dev_' + m.id] ? 'done' : ''}">${devData['dev_' + m.id] ? '✓' : ''}</button>
+    <div style="flex:1;font-size:.8rem;color:${devData['dev_' + m.id] ? 'var(--tx2)' : 'var(--tx)'};${devData['dev_' + m.id] ? 'text-decoration:line-through;text-decoration-color:var(--tx3)' : ''}">${m.t}</div>
   </div>`).join('')}</div>`;
     }
 
@@ -2403,7 +2744,7 @@
       const st = getSett();
       const aY = p.dob ? ageY(p.dob) : null, aM = p.dob ? ageM(p.dob) : null;
       const aStr = aY != null ? (aY < 1 ? aM + ' bulan' : aY + ' tahun') : '—';
-      
+
       let html = `<div class="p-hero" style="background:var(--bg2);padding-top:20px;margin-bottom:20px;text-align:center">
     <div style="width:80px;height:80px;border-radius:24px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;background:${p.color}22;color:${p.color};border:2px solid ${p.color}">${(p.name || '?')[0].toUpperCase()}</div>
     <div style="font-size:1.4rem;font-weight:800;color:var(--tx)">${p.name || ''}</div>
@@ -2419,9 +2760,9 @@
       <div class="fg"><label>Pilih Warna Aksen</label>
         <div class="color-picker">
           ${[
-            {id:'cyan', c:'#26ffe3'}, {id:'rose', c:'#fb7185'}, {id:'violet', c:'#a78bfa'}, 
-            {id:'emerald', c:'#34d399'}, {id:'blue', c:'#38bdf8'}, {id:'orange', c:'#fb923c'}
-          ].map(c => `<div class="color-dot ${st.color === c.id ? 'on' : ''}" style="background:${c.c}" onclick="setThemeColor('${c.id}')"></div>`).join('')}
+          { id: 'cyan', c: '#26ffe3' }, { id: 'rose', c: '#fb7185' }, { id: 'violet', c: '#a78bfa' },
+          { id: 'emerald', c: '#34d399' }, { id: 'blue', c: '#38bdf8' }, { id: 'orange', c: '#fb923c' }
+        ].map(c => `<div class="color-dot ${st.color === c.id ? 'on' : ''}" style="background:${c.c}" onclick="setThemeColor('${c.id}')"></div>`).join('')}
         </div>
       </div>
       <div class="fg" style="margin-top:16px"><label>Mode Tampilan</label>
@@ -2561,7 +2902,7 @@
       document.getElementById('mbody').innerHTML = cfg.body + (cfg.saveLbl !== false ? `<button class="sbtn" onclick="saveModal()">${cfg.saveLbl || 'Simpan'}</button>` : '');
       document.getElementById('moverlay').classList.add('on');
       if (editId) prefillModal(type, editId);
-      setTimeout(() => { initModalBehavior(type); patchDoctorFields(); }, 50);
+      setTimeout(() => { initModalBehavior(type); patchDoctorFields(); updateCycleFields(); }, 50);
     }
 
     function closeModal() { document.getElementById('moverlay').classList.remove('on'); _mType = null; _mId = null; }
@@ -2690,7 +3031,7 @@
     function renderSetsUI(sets = []) {
       const c = document.getElementById('f-sets-container'); if (!c) return;
       c.innerHTML = sets.map((s, i) => `<div class="set-input-row"><div class="set-num">S${i + 1}</div><input class="si-reps" type="number" placeholder="Reps" value="${s.reps || ''}" style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rs);padding:7px;color:var(--tx);font-family:'Nunito',sans-serif;font-size:.82rem"><input class="si-weight" type="number" placeholder="Beban(kg)" step="0.5" value="${s.weight || ''}" style="background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rs);padding:7px;color:var(--tx);font-family:'Nunito',sans-serif;font-size:.82rem"></div>`).join('') +
-        `<button type="button" onclick="addSetRow()" style="width:100%;padding:7px;background:var(--t2);border:1.5px dashed rgba(0,223,196,.3);border-radius:var(--rs);color:var(--t);font-size:.74rem;font-weight:700;cursor:pointer;margin-top:4px">+ Tambah Set</button>`;
+        `<button type="button" onclick="addSetRow()" style="width:100%;padding:7px;background:var(--t2);border:1.5px dashed rgba(0,223,196,.3);border-radius:var(--rs);color:var(--t);font-size:.74rem;font-weight:700;cursor:pointer;margin-top:4px">Tambah Set</button>`;
     }
     function addSetRow() {
       const c = document.getElementById('f-sets-container'); if (!c) return;
@@ -2824,7 +3165,7 @@
       <div id="lab-tab-other" style="display:none">
         <div class="fg"><label>Parameter Tambahan</label>
           <div id="f-custom-tests"></div>
-          <button type="button" onclick="addCustomTest()" style="width:100%;padding:7px;background:var(--p2);border:1.5px dashed rgba(167,139,250,.4);border-radius:var(--rs);color:var(--p);font-size:.74rem;font-weight:700;cursor:pointer;margin-top:6px">+ Tambah Parameter</button>
+          <button type="button" onclick="addCustomTest()" style="width:100%;padding:7px;background:var(--p2);border:1.5px dashed rgba(167,139,250,.4);border-radius:var(--rs);color:var(--p);font-size:.74rem;font-weight:700;cursor:pointer;margin-top:6px">Tambah Parameter</button>
         </div>
       </div>
       <div class="fg"><label>Catatan / Interpretasi</label><textarea id="f-notes" placeholder="Catatan dokter..."></textarea></div>`},
@@ -2898,15 +3239,26 @@
       <div class="fg"><label>Catatan / Mood</label><textarea id="f-notes" placeholder="Perasaan hari ini..."></textarea></div>`},
         add_cycle: {
           title: 'Siklus & Reproduksi', body: `
-      <div class="fg"><label>Jenis</label><select id="f-type"><option value="period">Menstruasi</option><option value="symptom">Gejala PMS</option><option value="basal">Suhu Basal</option><option value="pregnancy">Kehamilan Aktif</option></select></div>
-      <div class="fg"><label>Tanggal</label><input type="date" id="f-date" value="${td}"></div>
-      <div class="fr"><div class="fg"><label>Tanggal Mulai Haid / HPHT</label><input type="date" id="f-startDate"></div>
-      <div class="fg"><label>Tanggal Selesai Haid</label><input type="date" id="f-endDate"></div></div>
-      <div class="fg"><label>HPHT (untuk kehamilan)</label><input type="date" id="f-lmp"></div>
-      <div class="fr"><div class="fg"><label>Panjang Siklus (hari)</label><input type="number" id="f-cycleLength" placeholder="28"></div>
-      <div class="fg"><label>Suhu Basal (°C)</label><input type="number" id="f-basalTemp" step="0.1" placeholder="36.5"></div></div>
+      <div class="fg"><label>Jenis</label><select id="f-type" onchange="updateCycleFields()">
+        <option value="period">Menstruasi</option>
+        <option value="symptom">Gejala PMS</option>
+        <option value="basal">Suhu Basal</option>
+        <option value="pregnancy">Kehamilan Aktif</option>
+      </select></div>
+      <div class="fg"><label>Tanggal Catatan</label><input type="date" id="f-date" value="${td}"></div>
+      <div id="cycle-period-fields">
+        <div class="fr"><div class="fg"><label>Tanggal Mulai Haid</label><input type="date" id="f-startDate"></div>
+        <div class="fg"><label>Tanggal Selesai Haid</label><input type="date" id="f-endDate"></div></div>
+        <div class="fg"><label>Panjang Siklus (hari)</label><input type="number" id="f-cycleLength" placeholder="28"></div>
+      </div>
+      <div id="cycle-preg-fields" style="display:none">
+        <div class="fg"><label>HPHT / LMP (Hari Pertama Haid Terakhir)</label><input type="date" id="f-lmp"></div>
+      </div>
+      <div id="cycle-basal-fields" style="display:none">
+        <div class="fg"><label>Suhu Basal (°C)</label><input type="number" id="f-basalTemp" step="0.1" placeholder="36.5"></div>
+      </div>
       <div class="fg"><label>Gejala / Catatan</label><input id="f-symptoms" placeholder="Kram, mood swings, mual..."></div>
-      <div class="cbx"><input type="checkbox" id="f-active"><label for="f-active">Status aktif (sedang berlangsung)</label></div>`},
+      <div class="cbx"><input type="checkbox" id="f-active"><div class="cbx-box"></div><label for="f-active">Status aktif (sedang berlangsung)</label></div>`},
         add_doctor: {
           title: 'Data Dokter', body: `
       <div class="fg"><label>Nama Dokter (tanpa "dr.")</label><input id="f-name" placeholder="Nama dokter"></div>
@@ -2958,15 +3310,18 @@
       <div class="fg"><label>Catatan (energi, gejala, dll)</label><textarea id="f-notes" placeholder="Pusing, lemas, energi baik, dll..."></textarea></div>`},
         add_nursing: {
           title: 'Catat Menyusui', body: `
-      <div class="fg"><label>Nama Bayi (opsional)</label><input id="f-babyName" placeholder="Nama bayi"></div>
+      <div class="fg"><label>Nama Anak</label><select id="f-babyName">
+        <option value="">Pilih Anak...</option>
+        ${getProfiles().filter(p => !p.role || p.role === 'Anak').map(p => `<option value="${p.name}">${p.name}</option>`).join('')}
+      </select></div>
       <div class="fg"><label>Tanggal</label><input type="date" id="f-date" value="${td}"></div>
       <div class="fr"><div class="fg"><label>Jam Mulai</label><input type="time" id="f-startTime" value="${nt}"></div>
       <div class="fg"><label>Jam Selesai</label><input type="time" id="f-endTime"></div></div>
       <div class="fg"><label>Durasi (menit)</label><input type="number" id="f-duration" placeholder="15"></div>
       <div class="fg"><label>Metode</label>
-        <select id="f-method"><option value="direct">Menyusui Langsung</option><option value="pump">Memompa (ASIP)</option><option value="both">Keduanya</option></select></div>
+      <select id="f-method"><option value="direct">Menyusui Langsung</option><option value="pump">Memompa (ASIP)</option><option value="both">Keduanya</option></select></div>
       <div class="fr"><div class="fg"><label>Sisi / Payudara</label>
-        <select id="f-side"><option value="left">Kiri</option><option value="right">Kanan</option><option value="both">Keduanya</option></select></div>
+      <select id="f-side"><option value="left">Kiri</option><option value="right">Kanan</option><option value="both">Keduanya</option></select></div>
       <div class="fg"><label>Jumlah ASIP (ml, bila pompa)</label><input type="number" id="f-amount" placeholder="—"></div></div>
       <div class="fg"><label>Catatan</label><textarea id="f-notes" placeholder="Refleks letdown, kondisi bayi, dll..."></textarea></div>`},
         sync_settings: {
@@ -2983,7 +3338,13 @@
       </div>
       <button class="sbtn" onclick="doSync()"><span class="material-symbols-outlined">cloud_upload</span> Kirim ke Sheets</button>
       <button class="sbtn orange" onclick="doPull()" style="margin-top:8px"><span class="material-symbols-outlined">cloud_download</span> Tarik dari Sheets</button>
-      <div class="cbx" style="margin-top:16px"><input type="checkbox" id="f-autoSync" ${getSett().autoSync ? 'checked' : ''} onchange="toggleAutoSync(this)"><div class="cbx-box"></div><label for="f-autoSync">Sinkron otomatis</label></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding:12px;background:var(--sf);border-radius:16px">
+        <label style="margin:0;text-transform:none;font-weight:700">Sinkronisasi Otomatis</label>
+        <label class="tg">
+          <input type="checkbox" id="f-autoSync" ${getSett().autoSync ? 'checked' : ''} onchange="toggleAutoSync(this)">
+          <span class="tg-s"></span>
+        </label>
+      </div>
       <div id="sync-log" style="font-size:.72rem;color:var(--tx2);margin-top:8px;min-height:20px"></div>`},
         import: {
           title: 'Impor Data', saveLbl: false, body: `
