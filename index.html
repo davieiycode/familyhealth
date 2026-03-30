@@ -1612,7 +1612,16 @@
     </footer>
   </div>
 
+  <div id="debug-error" style="display:none; position:fixed; bottom:0; left:0; right:0; background:var(--r); color:#fff; padding:15px; z-index:9999; font-family:monospace; font-size:12px; white-space:pre-wrap;"></div>
+
   <script>
+    window.onerror = function(msg, url, line, col, error) {
+       const errBox = document.getElementById('debug-error');
+       errBox.style.display = 'block';
+       errBox.innerText = `ERROR: ${msg}\nLine: ${line}\nURL: ${url}`;
+       return false;
+    };
+
     let PROFILES = [
       { 
         id: 'ayah', name: 'Ayah', icon: 'person', active: true, color: '#4facfe',
@@ -2205,14 +2214,15 @@
     let selectedBatchItems = [];
 
     function createCard(item, type = 'default') {
-      const isLive = type === 'env';
-      const isRecord = type === 'record';
-      const isProgram = type === 'program';
-      
-      const activeUser = PROFILES.find(p => p.active) || PROFILES[0];
-      const latestLog = isRecord ? ACTIVITY_LOG.find(l => l.user === activeUser.name && (l.action.includes(item.name) || item.name.includes(l.action))) : null;
-      
-      const isSelected = selectedBatchItems.some(i => i.name === item.name);
+      try {
+        const isLive = type === 'env';
+        const isRecord = type === 'record';
+        const isProgram = type === 'program';
+        
+        const activeUser = PROFILES.find(p => p.active) || PROFILES[0];
+        const latestLog = isRecord ? ACTIVITY_LOG.find(l => l.user === activeUser.name && (l.action && (l.action.includes(item.name) || (item.name && item.name.includes(l.action))))) : null;
+        
+        const isSelected = selectedBatchItems.some(i => i.name === item.name);
 
       return `
         <div class="card ${latestLog ? 'has-data' : ''} ${isBatchMode && isRecord ? 'batch-target' : ''} ${isSelected ? 'selected' : ''}" 
@@ -2268,6 +2278,10 @@
           </div>
         </div>
       `;
+      } catch (e) {
+        console.error('createCard fail', e, item);
+        return `<div style="padding:10px; color:var(--r);">Card Error</div>`;
+      }
     }
 
     let ACTIVITY_LOG = [
@@ -2941,11 +2955,15 @@
       };
 
       const render = (id, data, type) => {
-        if (!document.getElementById(id)) return;
-        const filtered = data.filter(filter);
-        const grid = document.getElementById(id);
-        grid.innerHTML = filtered.map(i => createCard(i, type)).join('');
-        grid.parentElement.style.display = filtered.length ? 'block' : 'none';
+        try {
+          const grid = document.getElementById(id);
+          if (!grid) return;
+          const filtered = data.filter(filter);
+          grid.innerHTML = filtered.map(i => createCard(i, type)).join('');
+          grid.parentElement.style.display = filtered.length ? 'block' : 'none';
+        } catch (e) {
+          console.error(`render fail for ${id}`, e);
+        }
       };
 
       // Dashboard Only
@@ -2973,27 +2991,34 @@
       // Update Summary (Latest Reports Collection)
       const summaryGrid = document.getElementById('latest-reports-summary');
       if (summaryGrid) {
-         // Gather all recordable data definitions
-         const allData = [...VITAL_DATA, ...LAB_DATA, ...MEDICATION_DATA, ...GROWTH_DATA, ...REPRO_DATA, ...SELF_DATA, ...MENTAL_DATA, ...VACCINATION_DATA];
-         
-         // Find unique latest logs for this user that match our data definitions
-         const userLogs = ACTIVITY_LOG.filter(l => l.user === active.name);
-         
-         // Sort items by which has the newest log
-         const withData = allData.filter(item => userLogs.some(l => l.action.includes(item.name) || item.name.includes(l.action)));
-         const sortedWithData = withData.sort((a, b) => {
-            const logA = userLogs.find(l => l.action.includes(a.name) || a.name.includes(l.action));
-            const logB = userLogs.find(l => l.action.includes(b.name) || b.name.includes(l.action));
-            return (logB?.id || 0) - (logA?.id || 0); // Mock sort using ID (Date.now)
-         });
+         try {
+            // Gather all recordable data definitions
+            const allData = [...VITAL_DATA, ...LAB_DATA, ...MEDICATION_DATA, ...GROWTH_DATA, ...REPRO_DATA, ...SELF_DATA, ...MENTAL_DATA, ...VACCINATION_DATA];
+            
+            // Find unique latest logs for this user that match our data definitions
+            const userLogs = ACTIVITY_LOG.filter(l => l.user === active.name);
+            
+            const withData = allData.filter(item => userLogs.some(l => (l.action && l.action.includes(item.name)) || (item.name && item.name.includes(l.action))));
+            const sortedWithData = withData.sort((a, b) => {
+               const findLog = (i) => userLogs.find(l => (l.action && l.action.includes(i.name)) || (i.name && i.name.includes(l.action)));
+               const logA = findLog(a);
+               const logB = findLog(b);
+               // Extract timestamp from ID or use 0
+               const idA = logA ? parseInt(logA.id.replace(/\D/g, '')) || 0 : 0;
+               const idB = logB ? parseInt(logB.id.replace(/\D/g, '')) || 0 : 0;
+               return idB - idA;
+            });
 
-         // Render top 4 latest unique reports
-         const topLatest = sortedWithData.slice(0, 4);
-         if (topLatest.length > 0) {
-            summaryGrid.innerHTML = topLatest.map(i => createCard(i, 'record')).join('');
-            summaryGrid.parentElement.style.display = 'block';
-         } else {
-            summaryGrid.innerHTML = `<div style="grid-column: 1/-1; padding: 30px; text-align: center; color: var(--tx3); background: rgba(255,255,255,0.03); border-radius: 20px; border: 1.5px dashed var(--bd);">Belum ada laporan terekam untuk ${active.name}. Silakan input data di kategori bawah.</div>`;
+            // Render top 4 latest unique reports
+            const topLatest = sortedWithData.slice(0, 4);
+            if (topLatest.length > 0) {
+               summaryGrid.innerHTML = topLatest.map(i => createCard(i, 'record')).join('');
+               summaryGrid.parentElement.style.display = 'block';
+            } else {
+               summaryGrid.innerHTML = `<div style="grid-column: 1/-1; padding: 30px; text-align: center; color: var(--tx3); background: rgba(255,255,255,0.03); border-radius: 20px; border: 1.5px dashed var(--bd);">Belum ada laporan terekam untuk ${active.name}. Silakan input data di kategori bawah.</div>`;
+            }
+         } catch (e) {
+            console.error('Latest Reports Summary Fail:', e);
          }
       }
 
@@ -3008,22 +3033,24 @@
       
       // Filter nav chips in Resume/Profile (only for those using scrollToId)
       document.querySelectorAll('.nav-chip').forEach(chip => {
-        const onClick = chip.getAttribute('onclick') || '';
-        if (onClick.includes('scrollToId')) {
-           const match = onClick.match(/'([^']+)'/);
-           if (match) {
-              const targetId = match[1];
-              const targetSection = document.getElementById(targetId);
-              if (targetSection) {
-                 const hasData = targetId === 'section-summary-reports' || targetSection.querySelector('.card');
-                 chip.style.display = hasData ? 'inline-block' : 'none';
+        try {
+           const onClick = chip.getAttribute('onclick') || '';
+           if (onClick.includes('scrollToId')) {
+              const match = onClick.match(/'([^']+)'/);
+              if (match) {
+                 const targetId = match[1];
+                 const targetSection = document.getElementById(targetId);
+                 if (targetSection) {
+                    const hasData = targetId === 'section-summary-reports' || targetSection.querySelector('.card');
+                    chip.style.display = hasData ? 'inline-block' : 'none';
+                 }
               }
            }
-        }
+        } catch (e) {}
       });
 
-      renderTimeline();
-      renderFamilyInsights();
+      try { renderTimeline(); } catch(e) { console.error(e); }
+      try { renderFamilyInsights(); } catch(e) { console.error(e); }
     }
 
     function renderFamilyInsights() {
@@ -3245,12 +3272,19 @@
       });
     }
 
-    loadFromStorage();
-    renderProfiles();
-    renderGrids();
-
-    let healthChartInstance = null;
-    let currentTrendName = "";
+    try {
+       loadFromStorage();
+       renderProfiles();
+       renderGrids();
+       setTimeout(updateEnvData, 1000);
+    } catch (err) {
+       console.error('Fatal Init Error:', err);
+       const debugEl = document.getElementById('debug-error');
+       if (debugEl) {
+         debugEl.style.display = 'block';
+         debugEl.innerText = 'FATAL INIT: ' + err.message;
+       }
+    }
 
     function openTrendModal(name) {
       currentTrendName = name;
