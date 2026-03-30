@@ -1256,6 +1256,10 @@
         </div>
       </div>
 
+        <div id="family-sync-dashboard" style="margin-bottom: 30px; display: none;">
+           <!-- Dynamic Family Insights will be rendered here -->
+        </div>
+
         <div class="section-container" id="section-meds" style="margin-top: 30px;">
           <div class="section-title"><span class="material-symbols-outlined" style="color:var(--p)">medication</span>Jadwal Minum Obat</div>
           <div class="grid" id="medication-grid-dash"></div>
@@ -1325,6 +1329,10 @@
           <div class="nav-chip" onclick="scrollToId('section-meds-journal')">Obat</div>
           <div class="nav-chip" onclick="scrollToId('section-vaccine')">Vaksin</div>
         </div>
+      </div>
+
+      <div id="family-sync-resume" style="margin-bottom: 30px; display: none;">
+           <!-- Dynamic Family Insights for Resume -->
       </div>
 
       <div class="section-container" id="section-vital">
@@ -1664,6 +1672,27 @@
         subItems: [
            { name: 'Hari Pertama Haid (HPHT)', type: 'date' },
            { name: 'Gejala Penyerta', type: 'select', options: ['Tidak Ada', 'Kram Perut', 'Sakit Kepala', 'Mood Swing', 'Nyeri Payudara'] }
+        ]
+      },
+      { 
+        name: 'Hubungan Pasangan', 
+        desc: 'Log aktivitas intim untuk program hamil atau KB.', 
+        freq: 'Rutin', 
+        icon: 'favorite', 
+        subItems: [
+           { name: 'Waktu Aktivitas', type: 'date' },
+           { name: 'Tujuan', type: 'select', options: ['Program Hamil (Promil)', 'KB Alami', 'Rutin / Biasa'] }
+        ]
+      },
+      { 
+        name: 'Ovulasi & Masa Subur', 
+        desc: 'Pantau tanda-tanda kesuburan harian.', 
+        freq: 'Rutin', 
+        icon: 'water_drop',
+        gender: 'Female',
+        subItems: [
+           { name: 'Suhu Basal Tubuh', type: 'number', unit: '°C' },
+           { name: 'Lendir Serviks', type: 'select', options: ['Kering', 'Lembab', 'Putih Telur (Sangat Subur)', 'Kental'] }
         ]
       },
       { 
@@ -2045,7 +2074,10 @@
       { id: 'l5', user: 'Ibu', action: 'Input Gula Darah Puasa', val: '98 mg/dL', time: '29 Mar, 06:30', icon: 'bloodtype' },
       { id: 'l6', user: 'Adik', action: 'Vaksinasi Booster DPT', val: 'Puskesmas Tebet', time: '28 Mar, 10:00', icon: 'vaccines' },
       { id: 'l7', user: 'Kakak', action: 'Suhu Tubuh (Demam)', val: '38.2°C', time: '27 Mar, 21:00', icon: 'thermostat' },
-      { id: 'l8', user: 'Ayah', action: 'Input Profil Lipid', val: 'Kolesterol: 190', time: '25 Mar, 09:00', icon: 'biotech' }
+      { id: 'l8', user: 'Ayah', action: 'Input Profil Lipid', val: 'Kolesterol: 190', time: '25 Mar, 09:00', icon: 'biotech' },
+      // Added logs for prediction testing
+      { id: 'l9', user: 'Ibu', action: 'Siklus Haid', val: 'Hari Pertama Haid (HPHT): 2026-03-20', time: '20 Mar, 08:00', icon: 'calendar_month' },
+      { id: 'l10', user: 'Ibu', action: 'Usia Kehamilan', val: 'Usia Kandungan: 12 Minggu | Tanggal Perkiraan Lahir: 2026-10-15', time: '25 Mar, 10:00', icon: 'pregnant_woman' }
     ];
 
     let currentAction = null;
@@ -2560,6 +2592,110 @@
       });
 
       renderTimeline();
+      renderFamilyInsights();
+    }
+
+    function renderFamilyInsights() {
+       const active = PROFILES.find(p => p.active);
+       if (!active) return;
+
+       // Only show for adults (Ayah/Ibu)
+       const isAdult = active.id === 'ayah' || active.id === 'ibu';
+       const dashSync = document.getElementById('family-sync-dashboard');
+       const resSync = document.getElementById('family-sync-resume');
+
+       if (!isAdult) {
+          if (dashSync) dashSync.style.display = 'none';
+          if (resSync) resSync.style.display = 'none';
+          return;
+       }
+
+       let insightsHtml = `
+          <div class="section-title" style="margin-bottom: 20px; font-size: 1.1rem; color: var(--p);">
+             <span class="material-symbols-outlined" style="font-size: 1.8rem; color: var(--p);">sync_lock</span>
+             Wawasan Keluarga (Sync)
+          </div>
+          <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+       `;
+
+       let hasInsight = false;
+
+       // 1. Ibu's Reproductive Prediction (Visible to Ayah & Ibu)
+       const ibuLog = ACTIVITY_LOG.filter(l => l.user === 'Ibu');
+       const lastPeriod = ibuLog.find(l => l.action === 'Siklus Haid');
+       const pregnancy = ibuLog.find(l => l.action === 'Usia Kehamilan');
+
+       if (lastPeriod) {
+          const hphtMatch = lastPeriod.val.match(/(\d{4}-\d{2}-\d{2})/);
+          if (hphtMatch) {
+             const date = new Date(hphtMatch[0]);
+             const ovul = new Date(date); ovul.setDate(date.getDate() + 14);
+             const next = new Date(date); next.setDate(date.getDate() + 28);
+             
+             insightsHtml += `
+                <div class="card" style="border-color: rgba(var(--p-rgb), 0.3); background: rgba(var(--p-rgb), 0.05);">
+                   <div style="display: flex; gap: 12px; align-items: center;">
+                      <span class="material-symbols-outlined" style="color: var(--p); font-size: 2.5rem;">event_repeat</span>
+                      <div>
+                         <div style="font-size: 0.8rem; color: var(--tx3);">Siklus Ibu (Prediksi)</div>
+                         <div style="font-size: 1rem; font-weight: 700; color: var(--tx);">Haid Berikut: ${next.toLocaleDateString('id-ID', {day:'numeric', month:'short'})}</div>
+                         <div style="font-size: 0.85rem; color: var(--t); margin-top: 4px; font-weight:600;">Puncak Subur: ${ovul.toLocaleDateString('id-ID', {day:'numeric', month:'short'})}</div>
+                      </div>
+                   </div>
+                </div>
+             `;
+             hasInsight = true;
+          }
+       }
+
+       if (pregnancy) {
+          const ageMatch = pregnancy.val.match(/Usia Kandungan: (\d+)/);
+          const hplMatch = pregnancy.val.match(/Tanggal Perkiraan Lahir: ([\d-]+)/);
+          if (ageMatch) {
+             insightsHtml += `
+                <div class="card" style="border-color: rgba(var(--t-rgb), 0.3); background: rgba(var(--t-rgb), 0.05);">
+                   <div style="display: flex; gap: 12px; align-items: center;">
+                      <span class="material-symbols-outlined" style="color: var(--t); font-size: 2.5rem;">child_care</span>
+                      <div>
+                         <div style="font-size: 0.8rem; color: var(--tx3);">Update Kehamilan Ibu</div>
+                         <div style="font-size: 1rem; font-weight: 700; color: var(--tx);">Usia: ${ageMatch[1]} Minggu</div>
+                         <div style="font-size: 0.85rem; color: var(--tx2); margin-top: 4px;">Estimasi Lahir: ${hplMatch ? hplMatch[1] : '--'}</div>
+                      </div>
+                   </div>
+                </div>
+             `;
+             hasInsight = true;
+          }
+       }
+
+       // 2. Children's Vaccination (Visible to adults)
+       const childrenLog = ACTIVITY_LOG.filter(l => l.user === 'Adik' || l.user === 'Kakak');
+       const lastVax = childrenLog.find(l => l.action.toLowerCase().includes('vaksin') || l.action.toLowerCase().includes('imunisasi'));
+       if (lastVax) {
+          insightsHtml += `
+             <div class="card" style="border-color: rgba(var(--b-rgb), 0.3); background: rgba(var(--b-rgb), 0.05);">
+                <div style="display: flex; gap: 12px; align-items: center;">
+                   <span class="material-symbols-outlined" style="color: var(--b); font-size: 2.5rem;">vaccines</span>
+                   <div>
+                      <div style="font-size: 0.8rem; color: var(--tx3);">Vaksin Terakhir Anak</div>
+                      <div style="font-size: 1rem; font-weight: 700; color: var(--tx);">${lastVax.user}: ${lastVax.val.split('|')[0]}</div>
+                      <div style="font-size: 0.85rem; color: var(--tx2); margin-top: 4px;">Tgl Record: ${lastVax.time}</div>
+                   </div>
+                </div>
+             </div>
+          `;
+          hasInsight = true;
+       }
+
+       insightsHtml += `</div>`;
+       
+       if (hasInsight) {
+          if (dashSync) { dashSync.innerHTML = insightsHtml; dashSync.style.display = 'block'; }
+          if (resSync) { resSync.innerHTML = insightsHtml; resSync.style.display = 'block'; }
+       } else {
+          if (dashSync) dashSync.style.display = 'none';
+          if (resSync) resSync.style.display = 'none';
+       }
     }
 
     function renderTimeline() {
