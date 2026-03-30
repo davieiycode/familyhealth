@@ -2209,7 +2209,7 @@
       const isRecord = type === 'record';
       const isProgram = type === 'program';
       
-      const activeUser = PROFILES.find(p => p.active);
+      const activeUser = PROFILES.find(p => p.active) || PROFILES[0];
       const latestLog = isRecord ? ACTIVITY_LOG.find(l => l.user === activeUser.name && (l.action.includes(item.name) || item.name.includes(l.action))) : null;
       
       const isSelected = selectedBatchItems.some(i => i.name === item.name);
@@ -2820,7 +2820,7 @@
 
 
     function toggleActivation(id) {
-      const active = PROFILES.find(p => p.active);
+      const active = PROFILES.find(p => p.active) || PROFILES[0];
       const isMed = MEDICATION_DATA.some(m => m.id === id);
       const arr = isMed ? active.activeMeds : active.activePrograms;
       
@@ -3006,16 +3006,19 @@
       render('doctor-grid-profile', DOCTOR_DATA, 'record');
       render('env-grid', ENV_DATA, 'env');
       
-      // Filter nav chips in Resume/Profile
+      // Filter nav chips in Resume/Profile (only for those using scrollToId)
       document.querySelectorAll('.nav-chip').forEach(chip => {
-        const match = chip.getAttribute('onclick').match(/'([^']+)'/);
-        if (match) {
-          const targetId = match[1];
-          const targetSection = document.getElementById(targetId);
-          if (targetSection) {
-            const hasData = targetId === 'section-summary-reports' || targetSection.querySelector('.card');
-            chip.style.display = hasData ? 'inline-block' : 'none';
-          }
+        const onClick = chip.getAttribute('onclick') || '';
+        if (onClick.includes('scrollToId')) {
+           const match = onClick.match(/'([^']+)'/);
+           if (match) {
+              const targetId = match[1];
+              const targetSection = document.getElementById(targetId);
+              if (targetSection) {
+                 const hasData = targetId === 'section-summary-reports' || targetSection.querySelector('.card');
+                 chip.style.display = hasData ? 'inline-block' : 'none';
+              }
+           }
         }
       });
 
@@ -3024,7 +3027,7 @@
     }
 
     function renderFamilyInsights() {
-       const active = PROFILES.find(p => p.active);
+       const active = PROFILES.find(p => p.active) || PROFILES[0];
        if (!active) return;
 
        // Only show for adults (Ayah/Ibu)
@@ -3139,7 +3142,7 @@
     function renderTimeline() {
        const timeline = document.getElementById('full-journal-timeline');
        if (!timeline) return;
-       const active = PROFILES.find(p => p.active);
+       const active = PROFILES.find(p => p.active) || PROFILES[0];
        
        let userLogs = ACTIVITY_LOG.filter(l => l.user === active.name);
 
@@ -3210,10 +3213,20 @@
     }
 
     function loadFromStorage() {
-      const savedProfiles = localStorage.getItem('VITAFAM_PROFILES');
-      const savedLogs = localStorage.getItem('VITAFAM_LOGS');
-      if (savedProfiles) PROFILES = JSON.parse(savedProfiles);
-      if (savedLogs) ACTIVITY_LOG = JSON.parse(savedLogs);
+      try {
+        const savedProfiles = localStorage.getItem('VITAFAM_PROFILES');
+        const savedLogs = localStorage.getItem('VITAFAM_LOGS');
+        if (savedProfiles) {
+           const parsedProfiles = JSON.parse(savedProfiles);
+           if (Array.isArray(parsedProfiles) && parsedProfiles.length > 0) PROFILES = parsedProfiles;
+        }
+        if (savedLogs) {
+           const parsedLogs = JSON.parse(savedLogs);
+           if (Array.isArray(parsedLogs)) ACTIVITY_LOG = parsedLogs;
+        }
+      } catch (err) {
+        console.error('Gagal memuat data dari storage:', err);
+      }
     }
 
     function resetAllData() {
