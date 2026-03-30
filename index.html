@@ -1050,6 +1050,59 @@
       direction: ltr;
       -webkit-font-smoothing: antialiased;
     }
+    .timeline-date-header {
+       font-size: 0.8rem;
+       font-weight: 800;
+       color: var(--t);
+       text-transform: uppercase;
+       letter-spacing: 1.5px;
+       margin: 24px 0 12px 10px;
+       display: flex;
+       align-items: center;
+       gap: 12px;
+       opacity: 0.8;
+       position: relative;
+    }
+    .timeline-date-header::after {
+       content: '';
+       flex: 1;
+       height: 1px;
+       background: linear-gradient(90deg, rgba(var(--t-rgb), 0.2), transparent);
+    }
+    
+    .nav-chips {
+       -ms-overflow-style: none;
+       scrollbar-width: none;
+    }
+    .nav-chips::-webkit-scrollbar { display: none; }
+    
+    .nav-chip {
+       padding: 10px 20px;
+       background: rgba(255,255,255,0.06);
+       border-radius: 100px;
+       font-size: 0.85rem;
+       font-weight: 700;
+       color: var(--tx2);
+       cursor: pointer;
+       white-space: nowrap;
+       border: 1px solid rgba(255,255,255,0.08);
+       transition: 0.3s;
+    }
+    .nav-chip:hover { background: rgba(255,255,255,0.12); transform: translateY(-2px); border-color: var(--t); }
+    .nav-chip.active { background: var(--t); color: #000; box-shadow: 0 4px 15px rgba(var(--t-rgb), 0.3); border-color: var(--t); }
+    .batch-checkbox {
+       position: absolute;
+       top: 15px;
+       right: 15px;
+       color: var(--tx3);
+       transition: 0.3s;
+       z-index: 10;
+    }
+    .batch-checkbox.active { color: var(--t); transform: scale(1.2); }
+    
+    .card.batch-target { cursor: copy; }
+    .card.batch-target:hover { border-color: var(--t); background: rgba(var(--t-rgb), 0.05); }
+    .card.selected { border-color: var(--t); background: rgba(var(--t-rgb), 0.08); box-shadow: 0 0 30px rgba(var(--t-rgb), 0.2); }
 
   </style>
 </head>
@@ -1360,24 +1413,35 @@
     </section>
 
     <!-- 2. JOURNAL VIEW (CHRONOLOGICAL TIMELINE) -->
-    <section id="view-journal" class="view">
-       <div class="section-container">
-          <div class="section-title">
-             <span class="material-symbols-outlined">history</span>
-             Timeline Kesehatan
-          </div>
-          <p style="color:var(--tx3); font-size:0.9rem; margin-bottom:25px;">Log aktivitas medis harian Anda berdasarkan waktu terbaru.</p>
-          <div id="full-journal-timeline" style="display:flex; flex-direction:column; gap:16px;">
-             <!-- Timeline Items -->
-          </div>
-       </div>
-    </section>
+     <section id="view-journal" class="view">
+        <div class="section-container">
+           <div class="section-title">
+              <span class="material-symbols-outlined">history</span>
+              Timeline Kesehatan
+           </div>
+           
+           <div class="nav-chips" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:15px; margin-bottom: 20px; width: 100%;">
+              <div class="nav-chip active" onclick="filterJournal('All', this)">Semua</div>
+              <div class="nav-chip" onclick="filterJournal('Vitalitas', this)">Vitalitas</div>
+              <div class="nav-chip" onclick="filterJournal('Laboratorium', this)">Lab & Diagnostik</div>
+              <div class="nav-chip" onclick="filterJournal('Medikasi', this)">Obat & Vitamin</div>
+              <div class="nav-chip" onclick="filterJournal('Pertumbuhan', this)">Tumbuh Kembang</div>
+              <div class="nav-chip" onclick="filterJournal('Mental', this)">Mental & Screening</div>
+              <div class="nav-chip" onclick="filterJournal('Lainnya', this)">Aktivitas Lain</div>
+           </div>
+
+           <div id="full-journal-timeline" style="display:flex; flex-direction:column; gap:8px;">
+              <!-- Timeline Items with Date Headers -->
+           </div>
+        </div>
+     </section>
 
     <!-- 3. RESUME VIEW (SUMMARY & CATEGORIES) -->
     <section id="view-resume" class="view">
       <div class="sticky-header" style="background:transparent; border:none; backdrop-filter:none; margin-bottom:20px; padding: 0;">
         <div class="nav-chips" style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; width: 100%;">
-          <div class="nav-chip active" onclick="scrollToId('section-vital')">Vitalitas</div>
+          <div class="nav-chip active" onclick="scrollToId('section-summary-reports')">Ringkasan</div>
+          <div class="nav-chip" onclick="scrollToId('section-vital')">Vitalitas</div>
           <div class="nav-chip" onclick="scrollToId('section-lab')">Laboratorium</div>
           <div class="nav-chip" onclick="scrollToId('section-growth')">Pertumbuhan</div>
           <div class="nav-chip" onclick="scrollToId('section-repro')">Reproduksi</div>
@@ -1386,6 +1450,34 @@
           <div class="nav-chip" onclick="scrollToId('section-meds-journal')">Obat</div>
           <div class="nav-chip" onclick="scrollToId('section-vaccine')">Vaksin</div>
         </div>
+      </div>
+
+      <div class="section-container" id="section-summary-reports" style="margin-bottom: 40px;">
+         <div class="section-title" style="font-size: 1.2rem; color: var(--t); justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 18px;">
+               <span class="material-symbols-outlined" style="font-size: 2rem; color: var(--t);">fact_check</span>
+               Koleksi Laporan & Hasil Analisis
+            </div>
+            <button class="q-btn" id="btn-batch-mode" onclick="toggleBatchMode()" style="font-size: 0.75rem; padding: 6px 12px; border-radius: 100px; display: flex; align-items: center; gap: 6px;">
+               <span class="material-symbols-outlined" style="font-size: 1.1rem;">library_add</span>
+               Mode Batch
+            </button>
+         </div>
+         <p style="color:var(--tx3); font-size:0.85rem; margin-top: -24px; margin-bottom: 20px;">Kumpulan hasil pemeriksaan terakhir untuk semua kategori medis aktif.</p>
+         
+         <div id="batch-actions-bar" style="display: none; background: rgba(var(--t-rgb), 0.1); border: 1.5px solid var(--t); border-radius: 20px; padding: 15px; margin-bottom: 25px; align-items: center; justify-content: space-between; animation: fadeIn 0.3s ease;">
+            <div style="font-size: 0.9rem; font-weight: 700; color: var(--tx);">
+               <span id="batch-count">0</span> Item Terpilih untuk Input Masal
+            </div>
+            <div style="display: flex; gap: 10px;">
+               <button class="btn-action" style="padding: 8px 16px; font-size: 0.85rem; width: auto; background: var(--bg-surface); color: var(--tx2);" onclick="toggleBatchMode()">Batal</button>
+               <button class="btn-submit" style="padding: 8px 24px; font-size: 0.85rem; width: auto; margin-top: 0;" onclick="openBatchModal()">Lanjutkan Input</button>
+            </div>
+         </div>
+
+         <div id="latest-reports-summary" class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+            <!-- Aggregated Latest Reports -->
+         </div>
       </div>
 
       <div id="family-sync-resume" style="margin-bottom: 30px; display: none;">
@@ -2109,14 +2201,31 @@
       { name: 'Suhu Lingkungan', desc: 'Suhu udara di lokasi Anda saat ini untuk pencegahan heatstroke.', key: 'temp', icon: 'device_thermostat' }
     ];
 
+    let isBatchMode = false;
+    let selectedBatchItems = [];
+
     function createCard(item, type = 'default') {
       const isLive = type === 'env';
       const isRecord = type === 'record';
       const isProgram = type === 'program';
+      
+      const activeUser = PROFILES.find(p => p.active);
+      const latestLog = isRecord ? ACTIVITY_LOG.find(l => l.user === activeUser.name && (l.action.includes(item.name) || item.name.includes(l.action))) : null;
+      
+      const isSelected = selectedBatchItems.some(i => i.name === item.name);
+
       return `
-        <div class="card">
+        <div class="card ${latestLog ? 'has-data' : ''} ${isBatchMode && isRecord ? 'batch-target' : ''} ${isSelected ? 'selected' : ''}" 
+             onclick="${isBatchMode && isRecord ? `selectBatchItem(${JSON.stringify(item).replace(/"/g, '&quot;')})` : ''}">
+          
+          ${isBatchMode && isRecord ? `
+            <div class="batch-checkbox ${isSelected ? 'active' : ''}">
+               <span class="material-symbols-outlined">${isSelected ? 'check_circle' : 'radio_button_unchecked'}</span>
+            </div>
+          ` : ''}
+
           <div class="card-top">
-            <div class="icon-box">
+            <div class="icon-box" style="${latestLog ? 'background: var(--t); color: #000;' : ''}">
               <span class="material-symbols-outlined" style="font-size: 1.8rem;">${item.icon}</span>
             </div>
             <div class="content">
@@ -2124,6 +2233,16 @@
               <div class="desc" id="desc-${item.key || ''}">${item.desc}</div>
             </div>
           </div>
+
+          ${latestLog ? `
+            <div style="background: rgba(var(--t-rgb), 0.08); border: 1px solid rgba(var(--t-rgb), 0.2); border-radius: 20px; padding: 15px; margin-top: 5px; position: relative; overflow: hidden;">
+               <div style="font-size: 0.7rem; font-weight: 800; color: var(--t); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px;">Hasil Terakhir</div>
+               <div style="font-size: 1.1rem; font-weight: 700; color: #fff;">${latestLog.val.split('|')[0]}</div>
+               <div style="font-size: 0.75rem; color: var(--tx3); margin-top: 3px;">Tercatat: ${latestLog.time}</div>
+               <span class="material-symbols-outlined" style="position: absolute; right: -10px; bottom: -10px; font-size: 4rem; opacity: 0.05; color: var(--t);">history_edu</span>
+            </div>
+          ` : ''}
+
           <div class="badge-container">
             ${isLive ? `
               <div class="badge live" id="status-${item.key}">
@@ -2137,7 +2256,7 @@
             `}
           </div>
           <div style="display: flex; gap: 8px; margin-top: 15px;">
-            <button class="btn-action" style="flex: 2;" onclick="openActionModal('${item.name}', '${item.icon}', null, '${item.unit || ''}', ${item.subItems ? JSON.stringify(item.subItems).replace(/"/g, '&quot;') : 'null'}, ${item.questions ? JSON.stringify(item.questions).replace(/"/g, '&quot;') : 'null'}, ${item.options ? JSON.stringify(item.options).replace(/"/g, '&quot;') : 'null'})">
+            <button class="btn-action" style="flex: 2;" ${isBatchMode ? 'disabled style="opacity:0.5"' : ''} onclick="openActionModal('${item.name}', '${item.icon}', null, '${item.unit || ''}', ${item.subItems ? JSON.stringify(item.subItems).replace(/"/g, '&quot;') : 'null'}, ${item.questions ? JSON.stringify(item.questions).replace(/"/g, '&quot;') : 'null'}, ${item.options ? JSON.stringify(item.options).replace(/"/g, '&quot;') : 'null'})">
                <span class="material-symbols-outlined" style="font-size: 1.2rem;">${isLive ? 'refresh' : (isRecord ? 'add_circle' : (isProgram ? 'task_alt' : 'add_circle'))}</span>
                ${isLive ? 'Perbarui' : (isRecord ? 'Input Data' : (isProgram ? 'Aktifkan' : 'Mulai'))}
             </button>
@@ -2171,10 +2290,59 @@
     let currentQStep = 0;
     let qAnswers = [];
 
+    function toggleBatchMode() {
+       isBatchMode = !isBatchMode;
+       selectedBatchItems = [];
+       const bar = document.getElementById('batch-actions-bar');
+       const btn = document.getElementById('btn-batch-mode');
+       
+       if (isBatchMode) {
+          bar.style.display = 'flex';
+          btn.classList.add('active');
+          btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.1rem;">close</span> Batal Batch';
+          showToast('Mode Batch Aktif: Pilih beberapa laporan untuk diinput bersamaan.', 'info');
+       } else {
+          bar.style.display = 'none';
+          btn.classList.remove('active');
+          btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.1rem;">library_add</span> Mode Batch';
+       }
+       renderGrids();
+    }
+
+    function selectBatchItem(item) {
+       const idx = selectedBatchItems.findIndex(i => i.name === item.name);
+       if (idx > -1) selectedBatchItems.splice(idx, 1);
+       else selectedBatchItems.push(item);
+       
+       document.getElementById('batch-count').innerText = selectedBatchItems.length;
+       renderGrids();
+    }
+
+    function openBatchModal() {
+       if (selectedBatchItems.length === 0) { showToast('Pilih minimal 1 laporan!', 'error'); return; }
+       
+       // Build combined action modal
+       const compositeSubItems = [];
+       selectedBatchItems.forEach(item => {
+          if (item.subItems) {
+             // Add header for the group
+             compositeSubItems.push({ name: item.name, type: 'header' });
+             item.subItems.forEach(si => compositeSubItems.push(si));
+          } else {
+             compositeSubItems.push({ name: item.name, unit: item.unit || '', type: 'single' });
+          }
+       });
+
+       openActionModal('Input Masal (Multipel)', 'library_add', null, '', compositeSubItems);
+       // Store original items to split them later in submitAction
+       currentAction.isBatchResult = true;
+       currentAction.originalItems = [...selectedBatchItems];
+    }
+
     function openActionModal(name, icon, editData = null, unit = '', subItems = null, questions = null, options = null) {
       currentAction = { name, icon, unit, subItems, questions, options };
       editTargetId = editData ? editData.id : null;
-      document.getElementById('modal-title').innerText = editData ? `Edit: ${name}` : `Input Data: ${name}`;
+      document.getElementById('modal-title').innerText = editData ? `Edit: ${name}` : (name.startsWith('Input Masal') ? name : `Input Data: ${name}`);
       
       const singleGroup = document.getElementById('modal-single-input');
       const subGroup = document.getElementById('modal-sub-inputs');
@@ -2204,15 +2372,19 @@
             singleGroup.style.display = 'none';
             subGroup.style.display = 'flex';
             subGroup.innerHTML = subItems.map((si, idx) => {
+               if (si.type === 'header') {
+                  return `<div style="grid-column: 1/-1; padding-top: 15px; border-top: 1px solid var(--bd); font-size: 0.8rem; font-weight: 800; color: var(--t); text-transform: uppercase;">Laporan: ${si.name}</div>`;
+               }
+
                let inputHtml = '';
                if (si.type === 'select') {
                   inputHtml = `
-                     <select class="form-input modal-sub-input" data-name="${si.name}" data-unit="${si.unit || ''}" style="appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23a0aec0%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 16px center; background-size: 16px;">
+                     <select class="form-input modal-sub-input" data-name="${si.name}" data-group="${si.parentName || ''}" data-unit="${si.unit || ''}" style="appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23a0aec0%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 16px center; background-size: 16px;">
                         ${(si.options || []).map(opt => `<option value="${opt}" style="background: #1a1f35;">${opt}</option>`).join('')}
                      </select>`;
                } else {
                   inputHtml = `
-                     <input type="${si.type || 'text'}" class="form-input modal-sub-input" data-name="${si.name}" data-unit="${si.unit || ''}" style="padding-right: 60px;">
+                     <input type="${si.type === 'single' ? 'text' : (si.type || 'text')}" class="form-input modal-sub-input" data-name="${si.name}" data-unit="${si.unit || ''}" style="padding-right: 60px;">
                      <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--tx3); font-size: 0.8rem;">${si.unit || ''}</span>`;
                }
 
@@ -2334,32 +2506,7 @@
       const dateVal = document.getElementById('modal-date').value;
       const timeVal = document.getElementById('modal-time').value;
       const active = PROFILES.find(p => p.active);
-
-      let finalVal = "";
-      if (currentAction.questions) {
-         let score = 0;
-         qAnswers.forEach(ans => score += ans);
-         const finding = MENTAL_DATA.find(m => m.name === currentAction.name);
-         const interp = finding.interpretation ? finding.interpretation(score) : '';
-         finalVal = `Total Skor: ${score} | Kesimpulan: ${interp}`;
-      } else if (currentAction.subItems) {
-         const subInputs = document.querySelectorAll('.modal-sub-input');
-         finalVal = Array.from(subInputs)
-            .filter(i => i.value.trim() !== '')
-            .map(i => `${i.dataset.name}: ${i.value}${i.dataset.unit}`)
-            .join(' | ');
-      } else {
-         const val = document.getElementById('modal-input').value;
-         if (!val) { showToast('Harap isi data!', 'error'); return; }
-         finalVal = val + (currentAction.unit ? ' ' + currentAction.unit : '');
-      }
-
-      if (!finalVal) { showToast('Harap isi minimal satu data!', 'error'); return; }
-
       const notes = document.getElementById('modal-notes').value.trim();
-      if (notes) {
-         finalVal += ` | Catatan: ${notes}`;
-      }
 
       const btn = document.getElementById('btn-submit');
       const progressWrap = document.getElementById('progress-wrapper');
@@ -2377,26 +2524,84 @@
           clearInterval(interval);
           const dateTimeStr = `${dateVal} @ ${timeVal}`;
 
-          if (editTargetId) {
-            const log = ACTIVITY_LOG.find(l => l.id === editTargetId);
-            if (log) {
-               log.val = finalVal; 
-               log.time = dateTimeStr;
-            }
-            showToast('Riwayat Diperbarui');
+          // Case 1: Batch Mode (Multiple logs from one form)
+          if (currentAction.isBatchResult) {
+             const subInputs = Array.from(document.querySelectorAll('.modal-sub-input'));
+             
+             currentAction.originalItems.forEach(item => {
+                let reportVal = "";
+                if (item.subItems) {
+                   // Gather all inputs that belong to this item
+                   reportVal = item.subItems.map(si => {
+                      const input = subInputs.find(i => i.dataset.name === si.name);
+                      return input && input.value.trim() ? `${si.name}: ${input.value}${si.unit || ''}` : null;
+                   }).filter(v => v !== null).join(' | ');
+                } else {
+                   // Single value input
+                   const input = subInputs.find(i => i.dataset.name === item.name);
+                   reportVal = input && input.value.trim() ? `${input.value}${item.unit || ''}` : "";
+                }
+
+                if (reportVal) {
+                   if (notes) reportVal += ` | Catatan: ${notes}`;
+                   ACTIVITY_LOG.unshift({
+                      id: 'l' + Date.now() + Math.random(),
+                      user: active.name,
+                      action: item.name,
+                      val: reportVal,
+                      time: dateTimeStr,
+                      icon: item.icon
+                   });
+                }
+             });
+             toggleBatchMode(); // Reset batch mode
+             showToast('Semua Laporan Batch Disimpan');
+
           } else {
-            ACTIVITY_LOG.unshift({
-              id: 'l' + Date.now(),
-              user: active.name,
-              action: currentAction.name,
-              val: finalVal,
-              time: dateTimeStr,
-              icon: currentAction.icon
-            });
-            saveToStorage();
-            showToast('Data Berhasil Disimpan');
+             // Case 2: Standard Single/SubItem Input
+             let finalVal = "";
+             if (currentAction.questions) {
+                let score = 0;
+                qAnswers.forEach(ans => score += ans);
+                const finding = MENTAL_DATA.find(m => m.name === currentAction.name);
+                const interp = finding.interpretation ? finding.interpretation(score) : '';
+                finalVal = `Total Skor: ${score} | Kesimpulan: ${interp}`;
+             } else if (currentAction.subItems) {
+                const subInputs = document.querySelectorAll('.modal-sub-input');
+                finalVal = Array.from(subInputs)
+                   .filter(i => i.value.trim() !== '')
+                   .map(i => `${i.dataset.name}: ${i.value}${i.dataset.unit}`)
+                   .join(' | ');
+             } else {
+                const val = document.getElementById('modal-input').value;
+                if (!val) { showToast('Harap isi data!', 'error'); return; }
+                finalVal = val + (currentAction.unit ? ' ' + currentAction.unit : '');
+             }
+
+             if (!finalVal) { showToast('Harap isi minimal satu data!', 'error'); return; }
+             if (notes) finalVal += ` | Catatan: ${notes}`;
+
+             if (editTargetId) {
+               const log = ACTIVITY_LOG.find(l => l.id === editTargetId);
+               if (log) {
+                  log.val = finalVal; 
+                  log.time = dateTimeStr;
+               }
+               showToast('Riwayat Diperbarui');
+             } else {
+               ACTIVITY_LOG.unshift({
+                 id: 'l' + Date.now(),
+                 user: active.name,
+                 action: currentAction.name,
+                 val: finalVal,
+                 time: dateTimeStr,
+                 icon: currentAction.icon
+               });
+               showToast('Data Berhasil Disimpan');
+             }
           }
 
+          saveToStorage();
           editTargetId = null;
           renderGrids();
           closeActionModal();
@@ -2765,6 +2970,33 @@
       render('mental-grid', MENTAL_DATA, 'record');
       render('vaccine-grid', VACCINATION_DATA, 'record');
       
+      // Update Summary (Latest Reports Collection)
+      const summaryGrid = document.getElementById('latest-reports-summary');
+      if (summaryGrid) {
+         // Gather all recordable data definitions
+         const allData = [...VITAL_DATA, ...LAB_DATA, ...MEDICATION_DATA, ...GROWTH_DATA, ...REPRO_DATA, ...SELF_DATA, ...MENTAL_DATA, ...VACCINATION_DATA];
+         
+         // Find unique latest logs for this user that match our data definitions
+         const userLogs = ACTIVITY_LOG.filter(l => l.user === active.name);
+         
+         // Sort items by which has the newest log
+         const withData = allData.filter(item => userLogs.some(l => l.action.includes(item.name) || item.name.includes(l.action)));
+         const sortedWithData = withData.sort((a, b) => {
+            const logA = userLogs.find(l => l.action.includes(a.name) || a.name.includes(l.action));
+            const logB = userLogs.find(l => l.action.includes(b.name) || b.name.includes(l.action));
+            return (logB?.id || 0) - (logA?.id || 0); // Mock sort using ID (Date.now)
+         });
+
+         // Render top 4 latest unique reports
+         const topLatest = sortedWithData.slice(0, 4);
+         if (topLatest.length > 0) {
+            summaryGrid.innerHTML = topLatest.map(i => createCard(i, 'record')).join('');
+            summaryGrid.parentElement.style.display = 'block';
+         } else {
+            summaryGrid.innerHTML = `<div style="grid-column: 1/-1; padding: 30px; text-align: center; color: var(--tx3); background: rgba(255,255,255,0.03); border-radius: 20px; border: 1.5px dashed var(--bd);">Belum ada laporan terekam untuk ${active.name}. Silakan input data di kategori bawah.</div>`;
+         }
+      }
+
       // Profile
       render('history-grid', MEDICAL_HISTORY, 'record');
       render('lifestyle-grid', LIFESTYLE_DATA, 'record');
@@ -2780,9 +3012,8 @@
         if (match) {
           const targetId = match[1];
           const targetSection = document.getElementById(targetId);
-          // Only show chip if the targeted section has visible cards
           if (targetSection) {
-            const hasData = targetSection.querySelector('.card');
+            const hasData = targetId === 'section-summary-reports' || targetSection.querySelector('.card');
             chip.style.display = hasData ? 'inline-block' : 'none';
           }
         }
@@ -2895,41 +3126,82 @@
        }
     }
 
+    let activeJournalFilter = 'All';
+
+    function filterJournal(category, el) {
+       activeJournalFilter = category;
+       const chips = el.parentElement.querySelectorAll('.nav-chip');
+       chips.forEach(c => c.classList.remove('active'));
+       el.classList.add('active');
+       renderTimeline();
+    }
+
     function renderTimeline() {
        const timeline = document.getElementById('full-journal-timeline');
        if (!timeline) return;
        const active = PROFILES.find(p => p.active);
        
-       // Filter logs only for current active user
-       const userLogs = ACTIVITY_LOG.filter(l => l.user === active.name);
+       let userLogs = ACTIVITY_LOG.filter(l => l.user === active.name);
+
+       // Categorization Logic
+       const categorize = (log) => {
+          const icon = log.icon.toLowerCase();
+          const action = log.action.toLowerCase();
+          if (['monitor_heart', 'monitor_weight', 'thermostat', 'body_fat', 'pulse', 'bloodtype', 'accessibility'].includes(icon)) return 'Vitalitas';
+          if (['biotech', 'microscope', 'science'].includes(icon)) return 'Laboratorium';
+          if (['medication', 'pill', 'vaccines', 'syringe'].includes(icon)) return 'Medikasi';
+          if (['height', 'face', 'child_care'].includes(icon)) return 'Pertumbuhan';
+          if (['psychology', 'sentiment_very_satisfied', 'sentiment_dissatisfied'].includes(icon)) return 'Mental';
+          return 'Lainnya';
+       };
+
+       // Apply category filter
+       if (activeJournalFilter !== 'All') {
+          userLogs = userLogs.filter(l => categorize(l) === activeJournalFilter);
+       }
 
        if (userLogs.length === 0) {
           timeline.innerHTML = `
             <div style="text-align:center; padding: 40px; color:var(--tx3); font-size:0.9rem;">
-              Belum ada aktivitas tercatat untuk ${active.name} hari ini.
+              Tidak ada data "${activeJournalFilter}" untuk ${active.name}.
             </div>
           `;
           return;
        }
 
-       timeline.innerHTML = userLogs.map(l => `
-         <div class="log-item" style="padding: 18px 24px;">
-           <div class="log-icon" style="width: 48px; height: 48px; border-radius: 18px;">
-             <span class="material-symbols-outlined" style="font-size: 1.8rem;">${l.icon}</span>
-           </div>
-           <div class="log-content">
-             <div class="log-title" style="font-size: 1rem; display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
-                <span>${l.action}</span>
-                <span class="material-symbols-outlined" style="font-size: 1.2rem; cursor:pointer; opacity:0.6; padding: 4px;" onclick="editLog('${l.id}')">edit</span>
-             </div>
-             <div class="log-meta" style="font-size: 0.8rem; margin-top: 4px;">
-               <span><b>Hasil:</b> ${l.val}</span>
-               <span>•</span>
-               <span>${l.time}</span>
-             </div>
-           </div>
-         </div>
-       `).join('');
+       // Chronological Grouping (by Date Header)
+       const groupedLogs = {};
+       userLogs.forEach(l => {
+          // Extract date part: "Hari ini", "Kemarin", or "2026-03-30"
+          const dateStr = l.time.includes(',') ? l.time.split(',')[0].trim() : (l.time.includes('@') ? l.time.split('@')[0].trim() : l.time);
+          if (!groupedLogs[dateStr]) groupedLogs[dateStr] = [];
+          groupedLogs[dateStr].push(l);
+       });
+
+       let html = '';
+       Object.keys(groupedLogs).forEach(date => {
+          html += `<div class="timeline-date-header">${date}</div>`;
+          html += groupedLogs[date].map(l => `
+            <div class="log-item" style="padding: 16px 20px; margin-bottom: 8px;">
+              <div class="log-icon" style="width: 44px; height: 44px; border-radius: 14px;">
+                <span class="material-symbols-outlined" style="font-size: 1.6rem;">${l.icon}</span>
+              </div>
+              <div class="log-content">
+                <div class="log-title" style="font-size: 0.95rem; display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
+                   <span>${l.action}</span>
+                   <span class="material-symbols-outlined" style="font-size: 1.1rem; cursor:pointer; opacity:0.6;" onclick="editLog('${l.id}')">edit</span>
+                </div>
+                <div class="log-meta" style="font-size: 0.8rem; margin-top: 4px;">
+                  <span><b>${l.val}</b></span>
+                  <span>•</span>
+                  <span>${l.time.includes(',') ? l.time.split(',')[1].trim() : (l.time.includes('@') ? l.time.split('@')[1].trim() : '')}</span>
+                </div>
+              </div>
+            </div>
+          `).join('');
+       });
+
+       timeline.innerHTML = html;
     }
 
     function saveToStorage() {
