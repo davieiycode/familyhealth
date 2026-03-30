@@ -598,6 +598,50 @@
     }
     .btn-submit:hover { transform: translateY(-4px); filter: brightness(1.1); box-shadow: 0 12px 32px rgba(var(--t-rgb), 0.5); }
 
+    .q-btn {
+       background: rgba(255,255,255,0.06);
+       border: 1.5px solid rgba(255,255,255,0.1);
+       color: var(--tx2);
+       padding: 10px 18px;
+       border-radius: 10px;
+       cursor: pointer;
+       font-size: 0.85rem;
+       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+       font-weight: 500;
+    }
+    .q-btn:hover {
+       background: rgba(255,255,255,0.1);
+       border-color: rgba(255,255,255,0.2);
+    }
+    .q-btn.active {
+       background: var(--t);
+       color: #030612;
+       border-color: var(--t);
+       font-weight: 700;
+       box-shadow: 0 0 15px rgba(var(--t-rgb), 0.3);
+    }
+
+    .q-btn-big {
+       background: rgba(255,255,255,0.06);
+       border: 1.5px solid rgba(255,255,255,0.1);
+       color: var(--tx);
+       padding: 20px;
+       border-radius: 18px;
+       cursor: pointer;
+       font-size: 1rem;
+       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+       font-weight: 600;
+       text-align: left;
+    }
+    .q-btn-big:hover {
+       background: rgba(var(--p-rgb), 0.1);
+       border-color: var(--p);
+       transform: translateX(4px);
+    }
+    .q-btn-big:active {
+       transform: scale(0.98);
+    }
+
     /* Settings Modal */
     .settings-modal {
       position: fixed;
@@ -1076,12 +1120,18 @@
            <!-- Dynamic Sub-Inputs -->
         </div>
 
+        <div id="modal-questionnaire" style="display: none; flex-direction: column; gap: 16px; margin-bottom: 24px; min-height: 200px; padding-right: 10px;">
+           <!-- Dynamic Questionnaire Flow -->
+        </div>
+
+        <div id="modal-date-time" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+
         <div class="form-group" style="margin-top: 10px;">
           <label class="form-label">Catatan Tambahan (Opsional)</label>
           <textarea id="modal-notes" class="form-input" style="min-height: 80px; resize: none; font-size: 0.9rem;" placeholder="Contoh: Kondisi badan sedang lelah..."></textarea>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div id="modal-date-time" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
           <div class="form-group">
             <label class="form-label">Tanggal</label>
             <input type="date" id="modal-date" class="form-input">
@@ -1627,27 +1677,55 @@
     const MENTAL_DATA = [
       { 
         name: 'Skrining SRQ-20', 
-        desc: 'Deteksi dini masalah psikologis.', 
+        desc: 'Deteksi dini masalah psikologis (20 pertanyaan).', 
         freq: '6 bln', 
         icon: 'psychology', 
         minAge: 15, 
         unit: 'Skor',
-        subItems: [
-           { name: 'Hasil Skor SRQ', type: 'number', unit: '/20' },
-           { name: 'Kesimpulan', type: 'select', options: ['Normal', 'Perlu Konsultasi Dokter', 'Indikasi Depresi'] }
-        ]
+        questions: [
+           { q: 'Apakah Anda sering merasa sakit kepala?', type: 'yesno' },
+           { q: 'Apakah Anda tidak nafsu makan?', type: 'yesno' },
+           { q: 'Apakah Anda sulit tidur?', type: 'yesno' },
+           { q: 'Apakah Anda mudah merasa takut?', type: 'yesno' },
+           { q: 'Apakah Anda merasa tegang, cemas, atau khawatir?', type: 'yesno' },
+           { q: 'Apakah Anda merasa tangan gemetar?', type: 'yesno' },
+           { q: 'Apakah Anda merasa sulit untuk berpikir jernih?', type: 'yesno' },
+           { q: 'Apakah Anda merasa tidak bahagia?', type: 'yesno' },
+           { q: 'Apakah Anda menangis lebih sering dari biasanya?', type: 'yesno' },
+           { q: 'Apakah Anda merasa sulit untuk menikmati aktivitas sehari-hari?', type: 'yesno' }
+        ],
+        interpretation: (score) => score >= 6 ? 'Indikasi Masalah Psikologis (Lanjutkan ke Profesional)' : 'Hasil Skrining Normal'
       },
       { 
         name: 'Skrining PHQ-9', 
-        desc: 'Evaluasi suasana hati & minat.', 
+        desc: 'Evaluasi suasana hati (9 pertanyaan klinis).', 
         freq: '3-6 bln', 
         icon: 'mood', 
         minAge: 15, 
         unit: 'Skor',
-        subItems: [
-           { name: 'Total Skor PHQ', type: 'number', unit: '/27' },
-           { name: 'Interpretasi', type: 'select', options: ['Minimal / Tidak Ada', 'Ringan', 'Sedang', 'Berat'] }
-        ]
+        questions: [
+           { q: 'Kurang berminat atau bergairah dalam melakukan sesuatu?' },
+           { q: 'Merasa sedih, dehidrasi, atau putus asa?' },
+           { q: 'Sulit tidur atau tidur terlalu banyak?' },
+           { q: 'Merasa lelah atau kurang bertenaga?' },
+           { q: 'Kurang nafsu makan atau makan berlebihan?' },
+           { q: 'Kurang percaya diri atau merasa gagal?' },
+           { q: 'Sulit konsentrasi saat membaca atau menonton TV?' },
+           { q: 'Bergerak atau berbicara sangat lambat/gelisah?' },
+           { q: 'Ada pikiran untuk menyakiti diri sendiri?' }
+        ],
+        options: [
+           { text: 'Tidak Pernah', val: 0 },
+           { text: 'Beberapa Hari', val: 1 },
+           { text: 'Hampir Setiap Hari', val: 2 },
+           { text: 'Setiap Hari', val: 3 }
+        ],
+        interpretation: (score) => {
+           if (score < 5) return 'Minimal (Relatif Stabil)';
+           if (score < 10) return 'Ringan (Pantau Gejala)';
+           if (score < 15) return 'Sedang (Butuh Dukungan)';
+           return 'Berat (Segera Konsultasi Psikiater)';
+        }
       },
       { 
         name: 'Mood Tracker', 
@@ -2052,7 +2130,7 @@
             `}
           </div>
           <div style="display: flex; gap: 8px; margin-top: 15px;">
-            <button class="btn-action" style="flex: 2;" onclick="openActionModal('${item.name}', '${item.icon}', null, '${item.unit || ''}', ${item.subItems ? JSON.stringify(item.subItems).replace(/"/g, '&quot;') : 'null'})">
+            <button class="btn-action" style="flex: 2;" onclick="openActionModal('${item.name}', '${item.icon}', null, '${item.unit || ''}', ${item.subItems ? JSON.stringify(item.subItems).replace(/"/g, '&quot;') : 'null'}, ${item.questions ? JSON.stringify(item.questions).replace(/"/g, '&quot;') : 'null'}, ${item.options ? JSON.stringify(item.options).replace(/"/g, '&quot;') : 'null'})">
                <span class="material-symbols-outlined" style="font-size: 1.2rem;">${isLive ? 'refresh' : (isRecord ? 'add_circle' : (isProgram ? 'task_alt' : 'add_circle'))}</span>
                ${isLive ? 'Perbarui' : (isRecord ? 'Input Data' : (isProgram ? 'Aktifkan' : 'Mulai'))}
             </button>
@@ -2083,43 +2161,68 @@
     let currentAction = null;
     let editTargetId = null;
 
-    function openActionModal(name, icon, editData = null, unit = '', subItems = null) {
-      currentAction = { name, icon, unit, subItems };
+    let currentQStep = 0;
+    let qAnswers = [];
+
+    function openActionModal(name, icon, editData = null, unit = '', subItems = null, questions = null, options = null) {
+      currentAction = { name, icon, unit, subItems, questions, options };
       editTargetId = editData ? editData.id : null;
-      document.getElementById('modal-title').innerText = editData ? `Edit: ${name}` : `Input: ${name}`;
+      document.getElementById('modal-title').innerText = editData ? `Edit: ${name}` : `Input Data: ${name}`;
       
       const singleGroup = document.getElementById('modal-single-input');
       const subGroup = document.getElementById('modal-sub-inputs');
+      const qGroup = document.getElementById('modal-questionnaire');
+      const notesGroup = document.getElementById('modal-notes').parentElement;
+      const dateTimeGroup = document.getElementById('modal-date-time');
+      const btnSubmit = document.getElementById('btn-submit');
       
-      if (subItems && subItems.length > 0) {
+      if (questions) {
+         currentQStep = 0;
+         qAnswers = [];
          singleGroup.style.display = 'none';
-         subGroup.style.display = 'flex';
-         subGroup.innerHTML = subItems.map((si, idx) => {
-            let inputHtml = '';
-            if (si.type === 'select') {
-               inputHtml = `
-                  <select class="form-input modal-sub-input" data-name="${si.name}" data-unit="${si.unit || ''}" style="appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23a0aec0%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 16px center; background-size: 16px;">
-                     ${(si.options || []).map(opt => `<option value="${opt}" style="background: #1a1f35;">${opt}</option>`).join('')}
-                  </select>`;
-            } else {
-               inputHtml = `
-                  <input type="${si.type || 'text'}" class="form-input modal-sub-input" data-name="${si.name}" data-unit="${si.unit || ''}" style="padding-right: 60px;">
-                  <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--tx3); font-size: 0.8rem;">${si.unit || ''}</span>`;
-            }
-
-            return `
-               <div class="form-group" style="margin-bottom:0">
-                  <label class="form-label" style="font-size: 0.8rem; opacity: 0.7;">${si.name}</label>
-                  <div style="position: relative;">
-                     ${inputHtml}
-                  </div>
-               </div>`;
-         }).join('');
-      } else {
-         singleGroup.style.display = 'block';
          subGroup.style.display = 'none';
-         document.getElementById('modal-input').value = editData ? editData.val.replace(unit, '').trim() : '';
-         document.getElementById('modal-unit').innerText = unit;
+         notesGroup.style.display = 'none';
+         dateTimeGroup.style.display = 'none';
+         qGroup.style.display = 'flex';
+         btnSubmit.style.display = 'none';
+         renderQStep();
+      } else {
+         qGroup.style.display = 'none';
+         notesGroup.style.display = 'block';
+         dateTimeGroup.style.display = 'grid';
+         btnSubmit.style.display = 'block';
+         btnSubmit.innerText = 'Simpan';
+         
+         if (subItems && subItems.length > 0) {
+            singleGroup.style.display = 'none';
+            subGroup.style.display = 'flex';
+            subGroup.innerHTML = subItems.map((si, idx) => {
+               let inputHtml = '';
+               if (si.type === 'select') {
+                  inputHtml = `
+                     <select class="form-input modal-sub-input" data-name="${si.name}" data-unit="${si.unit || ''}" style="appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23a0aec0%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C/polyline%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 16px center; background-size: 16px;">
+                        ${(si.options || []).map(opt => `<option value="${opt}" style="background: #1a1f35;">${opt}</option>`).join('')}
+                     </select>`;
+               } else {
+                  inputHtml = `
+                     <input type="${si.type || 'text'}" class="form-input modal-sub-input" data-name="${si.name}" data-unit="${si.unit || ''}" style="padding-right: 60px;">
+                     <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--tx3); font-size: 0.8rem;">${si.unit || ''}</span>`;
+               }
+
+               return `
+                  <div class="form-group" style="margin-bottom:0">
+                     <label class="form-label" style="font-size: 0.8rem; opacity: 0.7;">${si.name}</label>
+                     <div style="position: relative;">
+                        ${inputHtml}
+                     </div>
+                  </div>`;
+            }).join('');
+         } else {
+            singleGroup.style.display = 'block';
+            subGroup.style.display = 'none';
+            document.getElementById('modal-input').value = editData ? editData.val.replace(unit, '').trim() : '';
+            document.getElementById('modal-unit').innerText = unit;
+         }
       }
       
       const now = new Date();
@@ -2128,6 +2231,83 @@
       document.getElementById('modal-notes').value = '';
 
       document.getElementById('action-modal').classList.add('active');
+    }
+
+    function renderQStep() {
+       const qGroup = document.getElementById('modal-questionnaire');
+       const { questions, options, name } = currentAction;
+       
+       if (currentQStep === 0) {
+          // Welcome Screen
+          qGroup.innerHTML = `
+             <div style="text-align: center; padding: 20px 0;">
+                <div class="icon-box" style="width: 80px; height: 80px; margin: 0 auto 24px; border-radius: 20px; background: rgba(var(--p-rgb), 0.15);">
+                   <span class="material-symbols-outlined" style="font-size: 3rem; color: var(--p);">${currentAction.icon}</span>
+                </div>
+                <div style="font-size: 1.2rem; font-weight: 800; margin-bottom: 12px;">Mulai Skrining</div>
+                <div style="font-size: 0.95rem; color: var(--tx2); line-height: 1.6; margin-bottom: 30px;">
+                   Anda akan menjawab <b>${questions.length} pertanyaan</b> terkait ${name}. <br>
+                   Silakan jawab dengan jujur sesuai kondisi Anda saat ini.
+                </div>
+                <button class="btn-submit" style="width: 100%;" onclick="currentQStep=1; renderQStep()">Mulai Sekarang</button>
+             </div>
+          `;
+       } else if (currentQStep <= questions.length) {
+          // Question Step
+          const q = questions[currentQStep - 1];
+          qGroup.innerHTML = `
+             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--p); text-transform: uppercase;">Pertanyaan ${currentQStep} dari ${questions.length}</div>
+                <div style="width: 60px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
+                   <div style="width: ${(currentQStep/questions.length)*100}%; height: 100%; background: var(--p);"></div>
+                </div>
+             </div>
+             <div style="background: rgba(255,255,255,0.03); padding: 24px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); min-height: 140px; display: flex; align-items: center; font-size: 1.15rem; line-height: 1.5; font-weight: 500;">
+                ${q.q}
+             </div>
+             <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                ${q.type === 'yesno' ? `
+                   <button class="q-btn-big" onclick="recordQAnswer(1)">Ya</button>
+                   <button class="q-btn-big" onclick="recordQAnswer(0)">Tidak</button>
+                ` : (options || []).map(opt => `
+                   <button class="q-btn-big" onclick="recordQAnswer(${opt.val})">${opt.text}</button>
+                `).join('')}
+             </div>
+          `;
+       } else {
+          // Final Confirmation Screen
+          const score = qAnswers.reduce((a, b) => a + b, 0);
+          const finding = MENTAL_DATA.find(m => m.name === currentAction.name);
+          const interp = finding.interpretation ? finding.interpretation(score) : '';
+
+          qGroup.innerHTML = `
+             <div style="text-align: center; padding: 10px 0;">
+                <div class="icon-box" style="width: 60px; height: 60px; margin: 0 auto 15px; border-radius: 15px; background: rgba(var(--t-rgb), 0.15);">
+                   <span class="material-symbols-outlined" style="font-size: 2rem; color: var(--t);">task_alt</span>
+                </div>
+                <div style="font-size: 1.1rem; font-weight: 800; margin-bottom: 8px;">Skrining Selesai</div>
+                <div style="font-size: 0.9rem; color: var(--tx2); margin-bottom: 20px;">
+                   Hasil skor Anda: <b>${score}</b> <br>
+                   ${interp}
+                </div>
+                <div style="text-align: left;">
+                   <div style="font-size: 0.8rem; font-weight: 700; color: var(--tx3); margin-bottom: 8px; text-transform: uppercase;">Catatan Tambahan</div>
+                   <p style="font-size: 0.85rem; color: var(--tx3); margin-bottom: 0;">Silakan tambahkan catatan di bawah jika ada keluhan spesifik sebelum menyimpan hasil.</p>
+                </div>
+             </div>
+          `;
+          document.getElementById('modal-notes').parentElement.style.display = 'block';
+          document.getElementById('modal-date-time').style.display = 'grid';
+          const btnSubmit = document.getElementById('btn-submit');
+          btnSubmit.style.display = 'block';
+          btnSubmit.innerText = 'Kirim & Simpan Hasil';
+       }
+    }
+
+    function recordQAnswer(val) {
+       qAnswers.push(val);
+       currentQStep++;
+       renderQStep();
     }
 
     function editLog(id) {
@@ -2149,7 +2329,13 @@
       const active = PROFILES.find(p => p.active);
 
       let finalVal = "";
-      if (currentAction.subItems) {
+      if (currentAction.questions) {
+         let score = 0;
+         qAnswers.forEach(ans => score += ans);
+         const finding = MENTAL_DATA.find(m => m.name === currentAction.name);
+         const interp = finding.interpretation ? finding.interpretation(score) : '';
+         finalVal = `Total Skor: ${score} | Kesimpulan: ${interp}`;
+      } else if (currentAction.subItems) {
          const subInputs = document.querySelectorAll('.modal-sub-input');
          finalVal = Array.from(subInputs)
             .filter(i => i.value.trim() !== '')
