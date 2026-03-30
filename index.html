@@ -1245,6 +1245,13 @@
                  <div class="settings-subtitle">Bahasa Indonesia (Default)</div>
               </div>
            </div>
+           <div class="settings-item" onclick="resetAllData()" style="border-color: rgba(255, 77, 122, 0.2); background: rgba(255, 77, 122, 0.04);">
+              <span class="material-symbols-outlined" style="color: #ff4d7a">delete_forever</span>
+              <div class="settings-info">
+                 <div class="settings-title" style="color: #ff4d7a">Kosongkan Semua Data</div>
+                 <div class="settings-subtitle">Hapus riwayat lokal & kembalikan ke awal.</div>
+              </div>
+           </div>
         </div>
         <button class="btn-submit" style="background: rgba(255,255,255,0.05); color: var(--tx2); width: 100%; margin-top: 25px;" onclick="closeSettingsModal()">Tutup</button>
       </div>
@@ -1514,12 +1521,12 @@
   </div>
 
   <script>
-    const PROFILES = [
+    let PROFILES = [
       { 
         id: 'ayah', name: 'Ayah', icon: 'person', active: true, color: '#4facfe',
         gender: 'Male', age: 41, blood: 'O+', dob: '12 Mei 1985', pob: 'Jakarta', 
         status: 'Kepala Keluarga', insurance: 'Prudential Prime', bpjs: '000123456789',
-        activePrograms: ['diet-rendah-gula', 'target-langkah'], activeMeds: ['vitamin-c']
+        activePrograms: ['diet-rendah-gula', 'target-langkah', 'vitamins'], activeMeds: ['vitamins']
       },
       { 
         id: 'ibu', name: 'Ibu', icon: 'person', active: false, color: '#f78fb3',
@@ -2144,7 +2151,7 @@
       `;
     }
 
-    const ACTIVITY_LOG = [
+    let ACTIVITY_LOG = [
       { id: 'l1', user: 'Ayah', action: 'Input Tekanan Darah', val: '120/80 mmHg', time: 'Hari ini, 08:30', icon: 'monitor_heart' },
       { id: 'l2', user: 'Ibu', action: 'Minum Asam Folat', val: '1 tablet (Rutin)', time: 'Hari ini, 07:00', icon: 'medication' },
       { id: 'l3', user: 'Adik', action: 'Update Berat Badan', val: '24.5 kg', time: 'Kemarin, 16:45', icon: 'monitor_weight' },
@@ -2386,6 +2393,7 @@
               time: dateTimeStr,
               icon: currentAction.icon
             });
+            saveToStorage();
             showToast('Data Berhasil Disimpan');
           }
 
@@ -2617,6 +2625,7 @@
       
       renderProfiles();
       renderGrids();
+      saveToStorage();
       showToast('Konfigurasi Pengingat Diperbarui');
     }
 
@@ -2651,6 +2660,7 @@
       
       renderProfiles();
       closeEditProfileModal();
+      saveToStorage();
       showToast('Profil Berhasil Diperbarui');
     }
 
@@ -2711,13 +2721,14 @@
 
     function switchProfile(id) {
       PROFILES.forEach(p => p.active = (p.id === id));
+      saveToStorage();
       renderProfiles();
       renderGrids();
       closeProfileModal();
       showToast(`Profil beralih ke: ${PROFILES.find(p => p.id === id).name}`);
     }
     function renderGrids() {
-      const active = PROFILES.find(p => p.active);
+      const active = PROFILES.find(p => p.active) || PROFILES[0];
       const filter = (item) => {
         const gMatch = !item.gender || item.gender === 'All' || item.gender === active.gender;
         const aMatch = (!item.minAge || active.age >= item.minAge) && (!item.maxAge || active.age <= item.maxAge);
@@ -2921,6 +2932,35 @@
        `).join('');
     }
 
+    function saveToStorage() {
+      localStorage.setItem('VITAFAM_PROFILES', JSON.stringify(PROFILES));
+      localStorage.setItem('VITAFAM_LOGS', JSON.stringify(ACTIVITY_LOG));
+    }
+
+    function loadFromStorage() {
+      const savedProfiles = localStorage.getItem('VITAFAM_PROFILES');
+      const savedLogs = localStorage.getItem('VITAFAM_LOGS');
+      if (savedProfiles) PROFILES = JSON.parse(savedProfiles);
+      if (savedLogs) ACTIVITY_LOG = JSON.parse(savedLogs);
+    }
+
+    function resetAllData() {
+      if (confirm('Apakah Anda yakin ingin menghapus semua data dan kembali ke default?')) {
+        localStorage.clear();
+        location.reload();
+      }
+    }
+
+    // Initialize Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW Registered'))
+          .catch(err => console.log('SW Fail', err));
+      });
+    }
+
+    loadFromStorage();
     renderProfiles();
     renderGrids();
 
