@@ -1331,6 +1331,16 @@
           <div class="section-title"><span class="material-symbols-outlined">medication</span>Obat & Rutinitas</div>
           <div class="grid" id="medication-grid-dash"></div>
        </div>
+
+       <div class="section-container" style="margin-top:20px;">
+          <div class="section-title"><span class="material-symbols-outlined">auto_awesome</span>Program & Kebiasaan</div>
+          <div class="grid" id="program-grid"></div>
+       </div>
+
+       <div class="section-container" style="margin-top:20px;">
+          <div class="section-title"><span class="material-symbols-outlined">medical_services</span>Layanan Dokter</div>
+          <div class="grid" id="doctor-grid-dash"></div>
+       </div>
     </section>
 
     <button class="fab" onclick="window.location.href = 'entry.html'" id="main-fab" style="display: none;">
@@ -1518,13 +1528,14 @@
         status: 'Anak Pertama', insurance: 'Sinar Mas', bpjs: '000555444333',
         activePrograms: [], activeMeds: ['manual-med']
       },
-      { 
-        id: 'adik', name: 'Adik', icon: 'child_care', active: false, color: '#b197fc',
-        gender: 'Female', age: 8, blood: 'O+', dob: '15 Sep 2018', pob: 'Jakarta', 
-        status: 'Anak Kedua', insurance: 'BPJS Mandiri', bpjs: '000222111000',
-        activePrograms: ['imunisasi-rutin'], activeMeds: ['manual-med']
       }
     ]));
+
+    // Initialize Active Profile if missing
+    if (!PROFILES.find(p => p.active) && PROFILES.length > 0) {
+      PROFILES[0].active = true;
+      localStorage.setItem('vitaFamProfiles', JSON.stringify(PROFILES));
+    }
 
     const MEDICATION_DATA = [
       { 
@@ -2525,9 +2536,9 @@
     });
 
     function renderProfiles() {
-      const active = PROFILES.find(p => p.active);
+      const active = PROFILES.find(p => p.active) || PROFILES[0] || {};
       const profileNameEl = document.getElementById('active-profile-name');
-      if (profileNameEl) profileNameEl.innerText = active.name;
+      if (active.name && profileNameEl) profileNameEl.innerText = active.name;
       
       const pillAvatar = document.querySelector('.pill-avatar');
       if (pillAvatar) {
@@ -2744,10 +2755,12 @@
       showToast(`Profil beralih ke: ${PROFILES.find(p => p.id === id).name}`);
     }
     function renderGrids() {
-      const active = PROFILES.find(p => p.active);
+      const active = PROFILES.find(p => p.active) || PROFILES[0] || {};
+      if (!active.id) return;
+
       const filter = (item) => {
         const gMatch = !item.gender || item.gender === 'All' || item.gender === active.gender;
-        const aMatch = (!item.minAge || active.age >= item.minAge) && (!item.maxAge || active.age <= item.maxAge);
+        const aMatch = (!item.minAge || (active.age || 0) >= item.minAge) && (!item.maxAge || (active.age || 0) <= item.maxAge);
         return gMatch && aMatch;
       };
 
