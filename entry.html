@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+  <title>Input Laporan Kesehatan · VitaFam</title>
+  <meta name="theme-color" content="#030612">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,0" />
+  <style>
+    :root {
+      --bg: #030409;
+      --bg-surface: #0a0e1a;
+      --bg-glass: rgba(18, 22, 40, 0.7);
+      --bg-glass-heavy: rgba(22, 28, 52, 0.98);
+      --t: #00ffc3;
+      --t-rgb: 0, 255, 195;
+      --p: #bf95ff;
+      --p-rgb: 191, 149, 255;
+      --b: #4facfe;
+      --b-rgb: 79, 172, 254;
+      --r: #ff4d7a;
+      --r-rgb: 255, 77, 122;
+      --tx: #ffffff;
+      --tx2: #f0f2f5;
+      --tx3: #a0aec0;
+      --bd: rgba(255, 255, 255, 0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      background: var(--bg);
+      color: var(--tx);
+      font-family: 'Lexend', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.6;
+      padding: 40px 20px 100px;
+      background-image: 
+        radial-gradient(circle at 0% 0%, rgba(var(--t-rgb), 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 100% 100%, rgba(var(--p-rgb), 0.05) 0%, transparent 40%);
+    }
+
+    .form-container { width: 100%; max-width: 650px; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+    .brand-logo { width: 44px; height: 44px; background: linear-gradient(135deg, var(--t), var(--b)); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #030612; }
+    .brand-name { font-size: 1.4rem; font-weight: 800; }
+
+    .card {
+      background: var(--bg-glass-heavy);
+      border: 1px solid var(--bd);
+      border-radius: 32px;
+      padding: 32px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(20px);
+    }
+
+    .section-title { font-size: 1.1rem; font-weight: 700; color: var(--tx2); margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+    .section-title .material-symbols-outlined { color: var(--t); font-size: 1.6rem; }
+
+    .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .form-label { font-size: 0.8rem; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-input {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      padding: 16px 20px;
+      color: var(--tx);
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.3s;
+      width: 100%;
+    }
+    .form-input:focus { border-color: var(--t); background: rgba(255,255,255,0.08); box-shadow: 0 0 20px rgba(var(--t-rgb), 0.1); }
+
+    .input-group {
+       display: flex;
+       align-items: center;
+       background: rgba(255,255,255,0.05);
+       border: 1.5px solid rgba(255,255,255,0.1);
+       border-radius: 20px;
+       overflow: hidden;
+       transition: 0.3s;
+    }
+    .input-group:focus-within { border-color: var(--t); background: rgba(255,255,255,0.08); box-shadow: 0 0 20px rgba(var(--t-rgb), 0.1); }
+    .input-group .form-input { 
+       background: transparent; 
+       border: none; 
+       border-radius: 0; 
+       box-shadow: none; 
+       flex: 1;
+    }
+    .input-unit {
+       padding-right: 20px;
+       color: var(--tx3);
+       font-weight: 700;
+       font-size: 0.85rem;
+       white-space: nowrap;
+       user-select: none;
+       pointer-events: none;
+    }
+
+    .btn-add {
+       width: 100%;
+       padding: 24px;
+       border-radius: 24px;
+       border: 2px dashed rgba(var(--t-rgb), 0.3);
+       background: rgba(var(--t-rgb), 0.03);
+       color: var(--t);
+       font-weight: 700;
+       cursor: pointer;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       gap: 12px;
+       transition: 0.3s;
+       margin-bottom: 40px;
+    }
+    .btn-add:hover { background: rgba(var(--t-rgb), 0.08); transform: translateY(-3px); border-color: var(--t); }
+
+    .test-item {
+       background: rgba(255,255,255,0.02);
+       border-radius: 28px;
+       padding: 28px;
+       border: 1px solid rgba(255,255,255,0.08);
+       margin-bottom: 20px;
+       animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+    .test-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+    .test-title-input { background: none; border: none; border-bottom: 1.5px solid var(--t); color: var(--t); font-weight: 800; font-size: 1.1rem; outline: none; padding: 4px 0; font-family: inherit; width: 80%; }
+    .btn-remove { cursor: pointer; color: var(--r); opacity: 0.5; transition: 0.3s; padding: 8px; border-radius: 50%; background: rgba(var(--r-rgb), 0.1); }
+    .btn-remove:hover { opacity: 1; transform: rotate(90deg); }
+
+    .grid-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 500px) { .grid-fields { grid-template-columns: 1fr; } }
+
+    .status-toggle {
+       display: flex;
+       align-items: center;
+       gap: 12px;
+       background: rgba(255,255,255,0.04);
+       padding: 12px 20px;
+       border-radius: 100px;
+       cursor: pointer;
+       user-select: none;
+       border: 1px solid rgba(255,255,255,0.05);
+       transition: 0.3s;
+       justify-content: center;
+    }
+    .status-toggle.normal { color: var(--t); background: rgba(var(--t-rgb), 0.1); border-color: var(--t); }
+    .status-toggle.abnormal { color: var(--r); background: rgba(var(--r-rgb), 0.1); border-color: var(--r); }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--t), var(--b));
+      color: #030612;
+      border: none;
+      border-radius: 100px;
+      padding: 22px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      cursor: pointer;
+      box-shadow: 0 15px 40px rgba(var(--t-rgb), 0.3);
+      transition: 0.3s;
+      margin-top: 20px;
+    }
+    .btn-submit:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(var(--t-rgb), 0.5); filter: brightness(1.1); }
+
+    #picker-overlay {
+       position: fixed;
+       inset: 0;
+       background: rgba(0,0,0,0.92);
+       backdrop-filter: blur(20px);
+       z-index: 1000;
+       display: none;
+       align-items: center;
+       justify-content: center;
+       padding: 20px;
+    }
+    #picker-dialog {
+       background: var(--bg-glass-heavy);
+       width: 100%;
+       max-width: 500px;
+       border-radius: 40px;
+       padding: 30px;
+       border: 1px solid var(--bd);
+       max-height: 85vh;
+       overflow-y: auto;
+       display: flex;
+       flex-direction: column;
+       gap: 15px;
+    }
+    .search-input {
+       background: rgba(255,255,255,0.06);
+       border: 1px solid rgba(255,255,255,0.1);
+       border-radius: 100px;
+       padding: 14px 20px 14px 48px;
+       color: var(--tx);
+       font-family: inherit;
+       font-size: 0.95rem;
+       outline: none;
+       width: 100%;
+       transition: 0.3s;
+    }
+    .search-input:focus { border-color: var(--t); background: rgba(255,255,255,0.1); }
+    .search-container { position: sticky; top: 0; background: var(--bg-glass-heavy); z-index: 5; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .search-icon { position: absolute; left: 18px; top: 16px; color: var(--tx3); font-size: 1.4rem; pointer-events: none; }
+
+    .picker-item {
+       padding: 16px 24px;
+       border-radius: 20px;
+       background: rgba(255,255,255,0.03);
+       margin-bottom: 12px;
+       cursor: pointer;
+       display: flex;
+       align-items: center;
+       gap: 15px;
+       transition: 0.3s;
+    }
+    .picker-item:hover { background: rgba(var(--t-rgb), 0.15); transform: translateX(8px); border-color: var(--t); }
+    .picker-item .item-icon { color: var(--t); font-size: 1.8rem; }
+    .picker-item.custom { border: 1.5px dashed var(--p); color: var(--p); }
+    .picker-item.custom .item-icon { color: var(--p); }
+
+    .toast {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--t);
+      color: #030612;
+      padding: 18px 36px;
+      border-radius: 100px;
+      font-weight: 700;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+      z-index: 2000;
+      display: none;
+      animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popUp { from { transform: translate(-50%, 60px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+
+  </style>
+</head>
+
+<body>
+  <div class="form-container">
+    <header>
+      <a href="index.html" class="brand">
+        <div class="brand-logo"><span class="material-symbols-outlined">health_and_safety</span></div>
+        <div class="brand-name">VitaFam</div>
+      </a>
+      <a href="index.html" style="color: var(--tx3); text-decoration: none; font-size: 0.9rem; font-weight: 600;">Batal</a>
+    </header>
+
+    <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 8px;">Entri Laporan Baru</h1>
+    <p style="color: var(--tx3); margin-bottom: 35px; font-size: 1rem;">Buat laporan kesehatan komprehensif dari hasil pemeriksaan rutin atau tes lab.</p>
+
+    <div class="card">
+       <div class="section-title"><span class="material-symbols-outlined">description</span>Informasi Laporan</div>
+       <div class="form-group">
+          <label class="form-label">Nama Laporan (Opsional)</label>
+          <input type="text" id="report-name" class="form-input" placeholder="Contoh: Hasil Tes Klinik, MCU Tahunan, dll.">
+       </div>
+       <div class="grid-fields">
+          <div class="form-group">
+            <label class="form-label">Tgl Pemeriksaan</label>
+            <input type="date" id="report-date" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Waktu</label>
+            <input type="time" id="report-time" class="form-input">
+          </div>
+       </div>
+       <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Catatan Tambahan</label>
+          <textarea id="report-notes" class="form-input" style="min-height: 90px; resize: none;" placeholder="Catatan khusus, misal: 'sedang flu saat tes'"></textarea>
+       </div>
+    </div>
+
+    <div id="test-list-container">
+       <!-- Test items will be added here -->
+    </div>
+
+    <button class="btn-add" onclick="openPicker()">
+       <span class="material-symbols-outlined">add_circle</span>
+       Tambah Item / Indikator Hasil
+    </button>
+
+    <button class="btn-submit" onclick="submitReport()">Simpan Laporan Sekarang</button>
+  </div>
+
+  <div id="picker-overlay" onclick="closePicker()">
+     <div id="picker-dialog" onclick="event.stopPropagation()">
+        <div style="font-size: 1.3rem; font-weight: 800; text-align: center;">Pilih Pemeriksaan</div>
+        <div class="search-container">
+           <span class="material-symbols-outlined search-icon">search</span>
+           <input type="text" id="picker-search" class="search-input" placeholder="Cari nama tes (misal: Gula, Jantung...)" onkeyup="filterPicker()">
+        </div>
+        <div style="overflow-y: auto; flex: 1;">
+           <div class="picker-item custom" onclick="addTestItem('Item Baru', '', 'biotech', true)">
+               <span class="material-symbols-outlined item-icon">post_add</span>
+               <div style="font-weight: 800;">Lainnya / Nama Tes Kustom</div>
+           </div>
+           <div id="picker-list"></div>
+        </div>
+     </div>
+  </div>
+
+  <div id="toast" class="toast">Data Berhasil Disimpan</div>
+
+  <script>
+    const CATALOG = [
+      // Vitals & Basics
+      { name: 'Sistolik', unit: 'mmHg', icon: 'compress', range: '< 130' },
+      { name: 'Diastolik', unit: 'mmHg', icon: 'expand', range: '< 85' },
+      { name: 'Denyut Nadi', unit: 'bpm', icon: 'monitor_heart', range: '60 - 100' },
+      { name: 'Suhu Tubuh', unit: 'thermostat', icon: 'thermostat', range: '36.5 - 37.5' },
+      { name: 'Frekuensi Nafas', unit: 'x/menit', icon: 'airwave', range: '12 - 20' },
+      { name: 'Saturasi Oksigen (SpO2)', unit: '%', icon: 'bloodtype', range: '> 95' },
+      { name: 'Berat Badan', unit: 'kg', icon: 'monitor_weight', range: '-' },
+      { name: 'Tinggi Badan', unit: 'cm', icon: 'height', range: '-' },
+      { name: 'Lingkar Perut', unit: 'cm', icon: 'straighten', range: '< 90 (P) / 80 (W)' },
+      { name: 'Indeks Massa Tubuh (BMI)', unit: 'kg/m2', icon: 'speed', range: '18.5 - 25' },
+      
+      // Laboratory - Metabolism
+      { name: 'Gula Darah Puasa', unit: 'mg/dL', icon: 'water_drop', range: '70 - 100' },
+      { name: 'Gula Darah Sewaktu', unit: 'mg/dL', icon: 'water_drop', range: '< 200' },
+      { name: 'Gula Darah 2 Jam PP', unit: 'mg/dL', icon: 'water_drop', range: '< 140' },
+      { name: 'HbA1c', unit: '%', icon: 'analytics', range: '< 5.7' },
+      { name: 'Kolesterol Total', unit: 'mg/dL', icon: 'monitoring', range: '< 200' },
+      { name: 'LDL (Koles. Jahat)', unit: 'mg/dL', icon: 'monitoring', range: '< 130' },
+      { name: 'HDL (Koles. Baik)', unit: 'mg/dL', icon: 'favorite', range: '> 40 (P) / 50 (W)' },
+      { name: 'Trigliserida', unit: 'mg/dL', icon: 'opacity', range: '< 150' },
+      { name: 'Asam Urat', unit: 'mg/dL', icon: 'science', range: '3.5 - 7.0' },
+      
+      // Kidney & Liver
+      { name: 'Ureum', unit: 'mg/dL', icon: 'biotech', range: '15 - 45' },
+      { name: 'Kreatinin', unit: 'mg/dL', icon: 'biotech', range: '0.7 - 1.3' },
+      { name: 'SGOT (AST)', unit: 'U/L', icon: 'labs', range: '< 35' },
+      { name: 'SGPT (ALT)', unit: 'U/L', icon: 'labs', range: '< 41' },
+      { name: 'Bilirubin Total', unit: 'mg/dL', icon: 'opacity', range: '< 1.1' },
+      
+      // Blood
+      { name: 'Hemoglobin (Hb)', unit: 'g/dL', icon: 'bloodtype', range: '12 - 16' },
+      { name: 'Leukosit (Sel Putih)', unit: 'uL', icon: 'microbiology', range: '4.500 - 11.000' },
+      { name: 'Trombosit', unit: 'uL', icon: 'microbiology', range: '150.000 - 450.000' },
+      { name: 'Hematokrit', unit: '%', icon: 'analytics', range: '37 - 52' }
+    ];
+
+    // Initialize defaults
+    const now = new Date();
+    document.getElementById('report-date').valueAsDate = now;
+    document.getElementById('report-time').value = now.toLocaleTimeString('id-id', { hour12: false, hour: '2-digit', minute: '2-digit' });
+
+    function openPicker() {
+       document.getElementById('picker-overlay').style.display = 'flex';
+       document.getElementById('picker-search').value = '';
+       filterPicker();
+    }
+
+    function filterPicker() {
+       const q = document.getElementById('picker-search').value.toLowerCase();
+       const list = document.getElementById('picker-list');
+       const filtered = CATALOG.filter(t => t.name.toLowerCase().includes(q));
+       
+       list.innerHTML = filtered.map(t => `
+          <div class="picker-item" onclick="addTestItem('${t.name}', '${t.unit}', '${t.icon}', false, '${t.range}')">
+             <span class="material-symbols-outlined item-icon">${t.icon}</span>
+             <div>
+                <div style="font-weight: 700; font-size: 1rem;">${t.name}</div>
+                <div style="font-size: 0.75rem; color: var(--tx3);">Normal: ${t.range}</div>
+             </div>
+          </div>
+       `).join('');
+    }
+
+    function closePicker() { document.getElementById('picker-overlay').style.display = 'none'; }
+
+    function addTestItem(name, unit, icon, isCustom = false, range = '') {
+       closePicker();
+       const container = document.getElementById('test-list-container');
+       const entryId = 'entry-' + Date.now();
+       
+       const item = document.createElement('div');
+       item.className = 'test-item';
+       item.id = entryId;
+       
+       const titleHtml = isCustom 
+          ? `<input type="text" class="test-title-input test-name" placeholder="Nama Tes..." value="">`
+          : `<span class="test-name" style="font-weight: 800; color: var(--t); font-size: 1.1rem; display: flex; align-items: center; gap: 8px;"><span class="material-symbols-outlined">${icon}</span>${name}</span>`;
+
+       item.innerHTML = `
+          <div class="test-header">
+             ${titleHtml}
+             <span class="material-symbols-outlined btn-remove" onclick="document.getElementById('${entryId}').remove()">close</span>
+          </div>
+          <div class="grid-fields">
+             <div class="form-group">
+                <label class="form-label">Hasil / Nilai</label>
+                <div class="input-group">
+                   <input type="text" class="form-input test-value" placeholder="Hasil..." onkeyup="autoCheckStatus(this)">
+                   <span class="input-unit">${unit || ''}</span>
+                </div>
+             </div>
+             <div class="form-group">
+                <label class="form-label">Rentang Normal</label>
+                <input type="text" class="form-input test-range" placeholder="Contoh: 70 - 100" value="${range}" onkeyup="autoCheckStatus(this.parentElement.parentElement.querySelector('.test-value'))">
+             </div>
+             <div class="form-group">
+                <label class="form-label">Status Hasil</label>
+                <div class="status-toggle normal" onclick="toggleStatus(this)">
+                   <span class="material-symbols-outlined">check_circle</span>
+                   <span>Normal</span>
+                </div>
+                <input type="hidden" class="test-status" value="Normal">
+             </div>
+             ${isCustom ? `
+             <div class="form-group">
+                <label class="form-label">Satuan</label>
+                <input type="text" class="form-input custom-unit" placeholder="Contoh: mg/dL" onkeyup="this.parentElement.parentElement.parentElement.querySelector('.input-unit').innerText=this.value">
+             </div>` : ''}
+          </div>
+       `;
+       container.appendChild(item);
+    }
+
+    function toggleStatus(el) {
+       const hidden = el.parentElement.querySelector('.test-status');
+       const span = el.querySelector('span:last-child');
+       const icon = el.querySelector('.material-symbols-outlined');
+       
+       if (hidden.value === 'Normal') {
+          updateStatusUI(el, 'Tidak Normal');
+       } else {
+          updateStatusUI(el, 'Normal');
+       }
+    }
+
+    function updateStatusUI(el, status) {
+       const hidden = el.parentElement.querySelector('.test-status');
+       const span = el.querySelector('span:last-child');
+       const icon = el.querySelector('.material-symbols-outlined');
+       
+       hidden.value = status;
+       span.innerText = status;
+       if (status === 'Normal') {
+          icon.innerText = 'check_circle';
+          el.className = 'status-toggle normal';
+       } else {
+          icon.innerText = 'warning';
+          el.className = 'status-toggle abnormal';
+       }
+    }
+
+    function autoCheckStatus(inputEl) {
+       const val = parseFloat(inputEl.value);
+       const rangeStr = inputEl.parentElement.parentElement.parentElement.querySelector('.test-range').value.trim();
+       const toggleEl = inputEl.parentElement.parentElement.parentElement.querySelector('.status-toggle');
+       
+       if (isNaN(val) || !rangeStr || rangeStr === '-') return;
+
+       let isNormal = true;
+       try {
+          if (rangeStr.includes('-')) {
+             const [min, max] = rangeStr.split('-').map(s => parseFloat(s.trim()));
+             if (!isNaN(min) && !isNaN(max)) isNormal = (val >= min && val <= max);
+          } else if (rangeStr.includes('<')) {
+             const limit = parseFloat(rangeStr.replace('<', '').trim());
+             if (!isNaN(limit)) isNormal = (val < limit);
+          } else if (rangeStr.includes('>')) {
+             const limit = parseFloat(rangeStr.replace('>', '').trim());
+             if (!isNaN(limit)) isNormal = (val > limit);
+          }
+       } catch(e) {}
+
+       updateStatusUI(toggleEl, isNormal ? 'Normal' : 'Tidak Normal');
+    }
+
+    function submitReport() {
+       const reportName = document.getElementById('report-name').value.trim();
+       const reportDate = document.getElementById('report-date').value;
+       const reportTime = document.getElementById('report-time').value;
+       const notes = document.getElementById('report-notes').value.trim();
+       
+       const items = document.querySelectorAll('.test-item');
+       if (items.length === 0) { alert('Harap masukkan minimal satu item pemeriksaan!'); return; }
+       
+       const results = [];
+       items.forEach(it => {
+          const nameEl = it.querySelector('.test-name');
+          const name = nameEl.tagName === 'INPUT' ? nameEl.value.trim() : nameEl.innerText.trim();
+          const val = it.querySelector('.test-value').value.trim();
+          const unit = it.querySelector('.form-unit').innerText.trim();
+          const range = it.querySelector('.test-range').value.trim();
+          const status = it.querySelector('.test-status').value;
+          
+          if (name && val) {
+             results.push(`${name}: ${val}${unit} (${status}${range ? ', Range: ' + range : ''})`);
+          }
+       });
+
+       if (results.length === 0) { alert('Harap isi data hasil pemeriksaan!'); return; }
+
+       const dateArr = reportDate.split('-');
+       let finalVal = reportName ? `Laporan: ${reportName} || ` : "";
+       finalVal += results.join(' || ');
+       if (notes) finalVal += ` || Catatan: ${notes}`;
+
+       const logEntry = {
+          id: 'l' + Date.now(),
+          user: 'Ayah', // Usually dynamic
+          action: 'Laporan Rekapitulasi',
+          val: finalVal,
+          time: `${dateArr[2]} ${getMonthName(dateArr[1])}, ${reportTime}`,
+          icon: 'biotech'
+       };
+
+       const existingLogs = JSON.parse(localStorage.getItem('vitaFamLogs') || '[]');
+       existingLogs.unshift(logEntry);
+       localStorage.setItem('vitaFamLogs', JSON.stringify(existingLogs));
+
+       const toast = document.getElementById('toast');
+       toast.style.display = 'block';
+       setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+    }
+
+    function getMonthName(m) {
+       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+       return months[parseInt(m) - 1];
+    }
+  </script>
+</body>
+
+</html>
