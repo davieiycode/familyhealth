@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Profil Keluarga | FamilyHealth</title>
+    <title>Keluarga & Kontak Darurat | FamilyHealth</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -31,61 +31,39 @@
         .back-btn { background: white; border: 1px solid var(--border); padding: 0.5rem; border-radius: 50%; cursor: pointer; color: var(--text-muted); transition: 0.2s; height: 40px; width: 40px; display: flex; align-items: center; justify-content: center; }
         .back-btn:hover { border-color: var(--primary); color: var(--primary); }
 
-        .form-card { background: var(--card-bg); border-radius: var(--radius-lg); padding: 2rem; border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 2rem; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
-        
         .form-group { margin-bottom: 1.25rem; }
         label { display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted); text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border); font-size: 0.95rem; }
-        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px var(--primary-light); }
+        input, select, textarea { width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border); font-size: 0.95rem; outline: none; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
 
-        .btn { padding: 0.75rem 1.25rem; border-radius: var(--radius-md); font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); font-size: 0.85rem; text-decoration: none; outline: none; }
-        .btn:active { transform: scale(0.98); }
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2); }
-        .btn-primary:hover { background: #4f46e5; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3); }
-        .btn-secondary { background: var(--primary-light); color: var(--primary); }
-        .btn-secondary:hover { background: #e0e7ff; }
+        .btn { padding: 0.75rem 1.25rem; border-radius: var(--radius-md); font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: 0.2s; font-size: 0.85rem; text-decoration: none; }
+        .btn-primary { background: var(--primary); color: white; }
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
-        .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
-        .btn-danger { background: #fef2f2; color: var(--danger); border: 1px solid #fee2e2; }
-        .btn-danger:hover { background: var(--danger); color: white; border-color: var(--danger); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-secondary { background: var(--primary-light); color: var(--primary); }
 
-        .delete-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: #fff1f2; color: var(--danger); border: 1px solid #fecaca; cursor: pointer; transition: 0.2s; }
+        .profile-card, .emergency-card { background: white; padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; transition: 0.2s; margin-bottom: 1rem; }
+        .profile-info, .emergency-info { display: flex; align-items: center; gap: 1rem; }
+        .profile-avatar, .emergency-avatar { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 1.5rem; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: white; border-radius: var(--radius-lg); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; animation: slideUp 0.3s ease; }
+        .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 10; }
+        .modal-body { padding: 1.5rem; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .delete-btn { color: var(--danger); background: #fef2f2; border: none; padding: 0.5rem; border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
         .delete-btn:hover { background: var(--danger); color: white; }
 
-        .profile-list, .emergency-list { display: grid; gap: 1rem; }
-        .profile-card, .emergency-card { background: white; padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-        .profile-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow); }
-        
-        .profile-info, .emergency-info { display: flex; align-items: center; gap: 1rem; }
-        .profile-avatar, .emergency-avatar { width: 48px; height: 48px; border-radius: 12px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; }
-        
-        .profile-details h3, .emergency-details h3 { font-size: 1rem; font-weight: 700; }
-        .profile-details p, .emergency-details p { font-size: 0.8rem; color: var(--text-muted); }
-
+        .data-card { background: var(--bg); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 0.75rem; border: 1px solid var(--border); }
         .sidebar-nav { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); padding: 0.75rem 2rem; border-radius: 40px; display: flex; gap: 2rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); z-index: 1000; }
         .nav-link { color: rgba(255,255,255,0.6); text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; gap: 4px; }
         .nav-link.active { color: white; }
-
-        .delete-btn { color: var(--danger); background: #fef2f2; border: none; padding: 0.5rem; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-        .delete-btn:hover { background: var(--danger); color: white; }
-
-        /* Modal Styles */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 1.5rem; }
-        .modal-overlay.active { display: flex; }
-        .modal-content { background: white; border-radius: var(--radius-lg); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); position: relative; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 10; }
-        .modal-body { padding: 1.5rem; }
-        .detail-item { margin-bottom: 1.25rem; }
-        .detail-label { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.25rem; }
-        .detail-value { font-size: 1rem; font-weight: 600; color: var(--text-main); }
-        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .data-card { background: var(--bg); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 0.75rem; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
+
     <div class="container" style="padding-bottom: 8rem;">
         <header>
             <button class="back-btn" onclick="history.back()"><i data-lucide="arrow-left"></i></button>
@@ -95,7 +73,6 @@
             </div>
         </header>
 
-        <!-- Profiles Section -->
         <section style="margin-bottom: 3rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h2 style="font-size: 1.1rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem;">
@@ -103,12 +80,9 @@
                 </h2>
                 <button class="btn btn-primary" onclick="openProfileModal()"><i data-lucide="user-plus"></i> Tambah</button>
             </div>
-            <div class="profile-list" id="profileList">
-                <!-- Profiles populated here -->
-            </div>
+            <div id="profileList"></div>
         </section>
 
-        <!-- Emergency Contacts Section -->
         <section style="border-top: 2px dashed var(--border); padding-top: 3rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <h2 style="font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; gap: 0.75rem;">
@@ -118,11 +92,7 @@
                     <i data-lucide="plus"></i> Tambah
                 </button>
             </div>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Kontak penting yang dapat dihubungi oleh seluruh anggota keluarga.</p>
-            
-            <div class="emergency-list" id="emergencyList">
-                <!-- Emergency contacts populated here -->
-            </div>
+            <div id="emergencyList"></div>
         </section>
     </div>
 
@@ -130,70 +100,29 @@
     <div id="profileModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="font-size: 1.1rem; color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
-                    <i data-lucide="user-plus"></i> <span id="formTitle">Tambah Profil Baru</span>
-                </h2>
-                <button onclick="closeProfileModal()" class="btn-outline" style="width:32px; height:32px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center;">
-                    <i data-lucide="x" style="width:16px;"></i>
-                </button>
+                <h2 id="formTitle" style="font-size: 1.1rem; color: var(--primary);">Tambah Profil Baru</h2>
+                <button onclick="closeProfileModal()" class="btn-outline" style="width:32px; height:32px; border-radius:50%; padding:0;"><i data-lucide="x" style="width:16px;"></i></button>
             </div>
             <div class="modal-body">
                 <form id="profileForm">
                     <input type="hidden" id="editIndex" value="-1">
-                    <div class="form-group">
-                        <label>Nama Lengkap</label>
-                        <input type="text" id="name" placeholder="Contoh: Rafieiy" required>
+                    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="name" required></div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+                        <div class="form-group"><label>Gender</label><select id="gender"><option value="Male">Laki-laki</option><option value="Female">Perempuan</option></select></div>
+                        <div class="form-group"><label>Goldar</label><input type="text" id="bloodType"></div>
+                        <div class="form-group"><label>Lahir</label><input type="date" id="dob" required></div>
                     </div>
-                    <div class="form-grid-3">
-                        <div class="form-group">
-                            <label>Jenis Kelamin</label>
-                            <select id="gender" required>
-                                <option value="">Pilih...</option>
-                                <option value="Male">Laki-laki</option>
-                                <option value="Female">Perempuan</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Golongan Darah</label>
-                            <select id="bloodType">
-                                <option value="-">-</option>
-                                <option value="A+">A+</option><option value="A-">A-</option>
-                                <option value="B+">B+</option><option value="B-">B-</option>
-                                <option value="AB+">AB+</option><option value="AB-">AB-</option>
-                                <option value="O+">O+</option><option value="O-">O-</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Tgl Lahir</label>
-                            <input type="date" id="dob" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Tempat Lahir</label>
-                        <input type="text" id="pob" placeholder="Contoh: Jakarta">
-                    </div>
-                    
-                    <div style="border-top: 1px solid var(--border); padding-top: 1.5rem; margin: 1rem 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3 style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800;">ASURANSI / BPJS</h3>
-                            <button type="button" class="btn btn-secondary" onclick="addInsuranceRow()" style="height: 28px; font-size: 0.7rem; padding: 0 0.75rem;">+ Tambah</button>
-                        </div>
+                    <div class="form-group"><label>Tempat Lahir</label><input type="text" id="pob"></div>
+                    <div style="border-top:1px solid var(--border); padding-top:1rem; margin:1rem 0;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1rem;"><strong>Asuransi / BPJS</strong> <button type="button" class="btn btn-secondary" onclick="addInsuranceRow()" style="padding:0.2rem 0.5rem; font-size:0.7rem;">+ Tambah</button></div>
                         <div id="insuranceContainer"></div>
                     </div>
-
-                    <div style="border-top: 1px solid var(--border); padding-top: 1.5rem; margin-bottom: 1.5rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h3 style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800;">NOMOR REKAM MEDIS</h3>
-                            <button type="button" class="btn btn-secondary" onclick="addMedRecRow()" style="height: 28px; font-size: 0.7rem; padding: 0 0.75rem;">+ Tambah</button>
-                        </div>
+                    <div style="border-top:1px solid var(--border); padding-top:1rem; margin-bottom:1rem;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:1rem;"><strong>Nomor Rekam Medis</strong> <button type="button" class="btn btn-secondary" onclick="addMedRecRow()" style="padding:0.2rem 0.5rem; font-size:0.7rem;">+ Tambah</button></div>
                         <div id="medRecContainer"></div>
                     </div>
-
-                    <div class="form-group">
-                        <label>Catatan Medis (Alergi, dsb)</label>
-                        <textarea id="notes" rows="2" placeholder="Opsional..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary" id="saveBtn" style="width: 100%;"><i data-lucide="save"></i> Simpan Profil</button>
+                    <div class="form-group"><label>Catatan Medis</label><textarea id="notes" rows="2"></textarea></div>
+                    <button type="submit" class="btn btn-primary" style="width:100%"><i data-lucide="save"></i> Simpan Profil</button>
                 </form>
             </div>
         </div>
@@ -203,70 +132,33 @@
     <div id="emergencyModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 style="font-size: 1.1rem; color: var(--warning); display: flex; align-items: center; gap: 0.5rem;">
-                    <i data-lucide="phone-call"></i> Tambah Kontak Darurat
-                </h3>
-                <button onclick="closeEmergencyModal()" class="btn-outline" style="width:32px; height:32px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center;">
-                    <i data-lucide="x" style="width:16px;"></i>
-                </button>
+                <h3>Tambah Kontak Darurat</h3>
+                <button onclick="closeEmergencyModal()" class="btn-outline" style="width:32px; height:32px; border-radius:50%;"><i data-lucide="x" style="width:16px;"></i></button>
             </div>
             <div class="modal-body">
                 <form id="emergencyForm">
-                    <div class="form-group">
-                        <label>Nama Kontak</label>
-                        <input type="text" id="eName" placeholder="Nama..." required>
-                    </div>
-                    <div class="form-group">
-                        <label>Hubungan / Peran</label>
-                        <input type="text" id="eRelation" placeholder="Misal: Dokter Keluarga" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Nomor Telepon</label>
-                        <input type="tel" id="ePhone" placeholder="08..." required>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="background: var(--warning); width: 100%;"><i data-lucide="phone-call"></i> Simpan Kontak</button>
+                    <div class="form-group"><label>Nama</label><input type="text" id="eName" required></div>
+                    <div class="form-group"><label>Hubungan</label><input type="text" id="eRelation" required></div>
+                    <div class="form-group"><label>Telepon</label><input type="tel" id="ePhone" required></div>
+                    <button type="submit" class="btn btn-primary" style="background:var(--warning); width:100%"><i data-lucide="phone"></i> Simpan</button>
                 </form>
             </div>
         </div>
     </div>
-    </div>
 
-    <!-- Profile Detail Modal -->
-    <div class="modal-overlay" id="detailModal">
+    <!-- DETAIL MODAL -->
+    <div id="detailModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <div style="display:flex; align-items:center; gap:1rem;">
-                    <div class="profile-avatar" id="mAvatar" style="width:40px; height:40px; font-size:1rem;">U</div>
-                    <h2 id="mName" style="font-size:1.25rem;">Detail Profil</h2>
-                </div>
-                <button onclick="closeModal()" class="btn-outline" style="width:32px; height:32px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center;">
-                    <i data-lucide="x" style="width:16px;"></i>
-                </button>
+                <h2 id="mName">Detail Profil</h2>
+                <button onclick="closeModal()" class="btn-outline" style="width:32px; height:32px; border-radius:50%;"><i data-lucide="x" style="width:16px;"></i></button>
             </div>
             <div class="modal-body" id="mBody">
-                <div class="detail-grid">
-                    <div class="detail-item"><div class="detail-label">Jenis Kelamin</div><div class="detail-value" id="mGender"></div></div>
-                    <div class="detail-item"><div class="detail-label">Gol. Darah & Rh</div><div class="detail-value" id="mBlood"></div></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+                    <div><label>Gender</label><div id="mGender"></div></div>
+                    <div><label>Darah</label><div id="mBlood"></div></div>
                 </div>
-                <div class="detail-grid">
-                    <div class="detail-item"><div class="detail-label">Tanggal Lahir</div><div class="detail-value" id="mDob"></div></div>
-                    <div class="detail-item"><div class="detail-label">Tempat Lahir</div><div class="detail-value" id="mPob"></div></div>
-                </div>
-                
-                <div style="margin: 1.5rem 0; border-top: 1px solid var(--border); padding-top: 1.5rem;">
-                    <div class="detail-label" style="margin-bottom:1rem;">Asuransi Terdaftar</div>
-                    <div id="mInsurances"></div>
-                </div>
-
-                <div style="margin: 1.5rem 0; border-top: 1px solid var(--border); padding-top: 1.5rem;">
-                    <div class="detail-label" style="margin-bottom:1rem;">Nomor Rekam Medis</div>
-                    <div id="mMedRec"></div>
-                </div>
-
-                <div style="margin-top: 1.5rem; padding:1rem; background: var(--primary-light); border-radius:var(--radius-md);">
-                    <div class="detail-label" style="color:var(--primary);">Catatan Medis</div>
-                    <div id="mNotes" style="font-size:0.9rem; line-height:1.6;"></div>
-                </div>
+                <div><label>Catatan Medis</label><div id="mNotes" style="background:var(--primary-light); padding:1rem; border-radius:8px;"></div></div>
             </div>
         </div>
     </div>
@@ -279,107 +171,40 @@
 
     <script>
         lucide.createIcons();
-
-        // Data Management
         let profiles = JSON.parse(localStorage.getItem('health_profiles_v2') || '[]');
         let emergencyContacts = JSON.parse(localStorage.getItem('health_emergency_contacts') || '[]');
-        
-        // Migrate legacy profiles (string array) to new object array
-        const legacyProfiles = JSON.parse(localStorage.getItem('health_profiles') || '["Utama"]');
-        if (profiles.length === 0 && legacyProfiles.length > 0) {
-            profiles = legacyProfiles.map(name => ({ name, gender: 'Male', dob: '1990-01-01', pob: '-', bloodType: '-', notes: '', insurance: '' }));
-            saveProfiles();
-        }
 
-        const profileForm = document.getElementById('profileForm');
-        const profileList = document.getElementById('profileList');
-        const insuranceContainer = document.getElementById('insuranceContainer');
-        const medRecContainer = document.getElementById('medRecContainer');
-        const emergencyForm = document.getElementById('emergencyForm');
-        const emergencyListList = document.getElementById('emergencyList');
-
-        function saveProfiles() {
+        function saveAll() {
             localStorage.setItem('health_profiles_v2', JSON.stringify(profiles));
             localStorage.setItem('health_profiles', JSON.stringify(profiles.map(p => p.name)));
-        }
-
-        function saveEmergency() {
             localStorage.setItem('health_emergency_contacts', JSON.stringify(emergencyContacts));
         }
 
-        // Dynamic Rows Logic
-        window.addInsuranceRow = (data = {}) => {
-            const div = document.createElement('div');
-            div.style.display = 'grid';
-            div.style.gridTemplateColumns = '1fr 1fr 120px 45px';
-            div.style.gap = '0.75rem';
-            div.style.marginBottom = '0.75rem';
-            div.className = 'insurance-row';
-            div.innerHTML = `
-                <input type="text" class="i-provider" placeholder="Penyedia (Asuransi)" value="${data.provider || ''}">
-                <input type="text" class="i-number" placeholder="No. Polis / Kartu" value="${data.number || ''}">
-                <input type="text" class="i-type" placeholder="Kelas" value="${data.type || ''}">
-                <button type="button" class="delete-btn" onclick="this.parentElement.remove()" style="height: 100%;"><i data-lucide="x" style="width:16px;"></i></button>
-            `;
-            insuranceContainer.appendChild(div);
-            lucide.createIcons();
-        };
+        window.openProfileModal = () => { resetForm(); document.getElementById('profileModal').classList.add('active'); };
+        window.closeProfileModal = () => document.getElementById('profileModal').classList.remove('active');
+        window.openEmergencyModal = () => { document.getElementById('emergencyForm').reset(); document.getElementById('emergencyModal').classList.add('active'); };
+        window.closeEmergencyModal = () => document.getElementById('emergencyModal').classList.remove('active');
+        window.closeModal = () => document.getElementById('detailModal').classList.remove('active');
 
-        window.addMedRecRow = (data = {}) => {
-            const div = document.createElement('div');
-            div.style.display = 'grid';
-            div.style.gridTemplateColumns = '1fr 150px 45px';
-            div.style.gap = '0.75rem';
-            div.style.marginBottom = '0.75rem';
-            div.className = 'medrec-row';
-            div.innerHTML = `
-                <input type="text" class="m-hospital" placeholder="Fasilitas Kesehatan / Rumah Sakit" value="${data.hospital || ''}">
-                <input type="text" class="m-number" placeholder="Nomor RM" value="${data.number || ''}">
-                <button type="button" class="delete-btn" onclick="this.parentElement.remove()" style="height: 100%;"><i data-lucide="x" style="width:16px;"></i></button>
-            `;
-            medRecContainer.appendChild(div);
-            lucide.createIcons();
-        };
+        function addInsuranceRow(data = {}) {
+            const div = document.createElement('div'); div.className = 'insurance-row'; div.style.display = 'flex'; div.style.gap = '5px'; div.style.marginBottom = '5px';
+            div.innerHTML = `<input type="text" class="i-provider" placeholder="Asuransi" value="${data.provider||''}" style="flex:1">
+                             <input type="text" class="i-number" placeholder="No." value="${data.number||''}" style="flex:1">
+                             <button type="button" onclick="this.parentElement.remove()" class="delete-btn">×</button>`;
+            document.getElementById('insuranceContainer').appendChild(div);
+        }
 
-        // Modal Control Logic
-        window.openProfileModal = () => {
-            resetForm();
-            document.getElementById('profileModal').classList.add('active');
-        };
+        function addMedRecRow(data = {}) {
+            const div = document.createElement('div'); div.className = 'medrec-row'; div.style.display = 'flex'; div.style.gap = '5px'; div.style.marginBottom = '5px';
+            div.innerHTML = `<input type="text" class="m-hospital" placeholder="RS" value="${data.hospital||''}" style="flex:1">
+                             <input type="text" class="m-number" placeholder="RM" value="${data.number||''}" style="flex:1">
+                             <button type="button" onclick="this.parentElement.remove()" class="delete-btn">×</button>`;
+            document.getElementById('medRecContainer').appendChild(div);
+        }
 
-        window.closeProfileModal = () => {
-            document.getElementById('profileModal').classList.remove('active');
-        };
-
-        window.openEmergencyModal = () => {
-            emergencyForm.reset();
-            document.getElementById('emergencyModal').classList.add('active');
-        };
-
-        window.closeEmergencyModal = () => {
-            document.getElementById('emergencyModal').classList.remove('active');
-        };
-
-        profileForm.onsubmit = (e) => {
+        document.getElementById('profileForm').onsubmit = (e) => {
             e.preventDefault();
             const editIndex = parseInt(document.getElementById('editIndex').value);
-            
-            // Collect Insurances
-            const insurances = Array.from(document.querySelectorAll('.insurance-row')).map(row => ({
-                provider: row.querySelector('.i-provider').value,
-                number: row.querySelector('.i-number').value,
-                type: row.querySelector('.i-type').value
-            }));
-
-            // Collect Medical Records
-            const medicalRecords = Array.from(document.querySelectorAll('.m-hospital')).map(input => {
-                const row = input.parentElement;
-                return {
-                    hospital: input.value,
-                    number: row.querySelector('.m-number').value
-                };
-            });
-
             const data = {
                 name: document.getElementById('name').value,
                 gender: document.getElementById('gender').value,
@@ -387,195 +212,74 @@
                 pob: document.getElementById('pob').value,
                 bloodType: document.getElementById('bloodType').value,
                 notes: document.getElementById('notes').value,
-                insurances: insurances,
-                medicalRecords: medicalRecords
+                insurances: Array.from(document.querySelectorAll('.insurance-row')).map(r => ({ provider: r.querySelector('.i-provider').value, number: r.querySelector('.i-number').value })),
+                medicalRecords: Array.from(document.querySelectorAll('.medrec-row')).map(r => ({ hospital: r.querySelector('.m-hospital').value, number: r.querySelector('.m-number').value }))
             };
-
-            if (editIndex > -1) {
-                profiles[editIndex] = data;
-            } else {
-                profiles.push(data);
-            }
-
-            saveProfiles();
-            closeProfileModal();
-            renderProfiles();
+            if(editIndex > -1) profiles[editIndex] = data; else profiles.push(data);
+            saveAll(); renderProfiles(); closeProfileModal();
         };
 
-        emergencyForm.onsubmit = (e) => {
+        document.getElementById('emergencyForm').onsubmit = (e) => {
             e.preventDefault();
-            const data = {
-                id: Date.now(),
-                name: document.getElementById('eName').value,
-                relation: document.getElementById('eRelation').value,
-                phone: document.getElementById('ePhone').value
-            };
-            emergencyContacts.push(data);
-            saveEmergency();
-            closeEmergencyModal();
-            renderEmergencyContacts();
+            emergencyContacts.push({ name: document.getElementById('eName').value, relation: document.getElementById('eRelation').value, phone: document.getElementById('ePhone').value });
+            saveAll(); renderEmergencyContacts(); closeEmergencyModal();
         };
 
         function renderProfiles() {
-            profileList.innerHTML = '';
-            if (profiles.length === 0) {
-                profileList.innerHTML = '<div style="text-align:center; padding:3rem; color:var(--text-muted); border:2px dashed var(--border); border-radius:16px;">Belum ada profil keluarga.</div>';
-                return;
-            }
-            profiles.forEach((p, idx) => {
-                const div = document.createElement('div');
-                div.className = 'profile-card';
-                const avatarBg = p.gender === 'Female' ? '#fdf2f8' : '#eef2ff';
-                const avatarColor = p.gender === 'Female' ? '#db2777' : '#6366f1';
-                div.innerHTML = `
+            const list = document.getElementById('profileList');
+            list.innerHTML = profiles.length ? profiles.map((p, idx) => `
+                <div class="profile-card">
                     <div class="profile-info">
-                        <div class="profile-avatar" style="background:${avatarBg}; color:${avatarColor}">${p.name.charAt(0)}</div>
-                        <div class="profile-details">
-                            <h3>${p.name}</h3>
-                            <p>${p.gender === 'Male' ? 'Laki-laki' : 'Perempuan'} • Goldar: ${p.bloodType}</p>
-                            <p style="font-size: 0.7rem; color: var(--primary); font-weight: 600; margin-top: 4px;">
-                                <i data-lucide="shield" style="width:10px; vertical-align:middle;"></i> ${p.insurances?.length || 0} Asuransi • 
-                                <i data-lucide="hospital" style="width:10px; vertical-align:middle;"></i> ${p.medicalRecords?.length || 0} Rekam Medis
-                            </p>
-                        </div>
+                        <div class="profile-avatar" style="background:${p.gender==='Female'?'#fdf2f8':'#eef2ff'}; color:${p.gender==='Female'?'#db2777':'#6366f1'}">${p.name[0]}</div>
+                        <div><div style="font-weight:800;">${p.name}</div><div style="font-size:0.8rem; color:var(--text-muted);">${p.gender==='Male'?'Laki-laki':'Perempuan'} • ${p.bloodType}</div></div>
                     </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button onclick="viewProfileDetail(${idx})" class="btn" style="padding: 0.5rem; background: #f8fafc; color: var(--text-muted); border-radius: 8px;"><i data-lucide="eye" style="width:16px;"></i></button>
-                        <button onclick="editProfile(${idx})" class="btn" style="padding: 0.5rem; background: var(--primary-light); color: var(--primary); border-radius: 8px;"><i data-lucide="edit-2" style="width:16px;"></i></button>
+                    <div style="display:flex; gap:0.5rem;">
+                        <button onclick="editProfile(${idx})" class="btn" style="padding:0.5rem; background:var(--primary-light); color:var(--primary);"><i data-lucide="edit-2" style="width:16px;"></i></button>
                         <button onclick="deleteProfile(${idx})" class="delete-btn"><i data-lucide="trash-2" style="width:16px;"></i></button>
                     </div>
-                `;
-                profileList.appendChild(div);
-            });
+                </div>
+            `).join('') : '<div style="text-align:center; padding:3rem; color:var(--text-muted); border:2px dashed var(--border); border-radius:16px;">Belum ada profil.</div>';
             lucide.createIcons();
         }
 
         function renderEmergencyContacts() {
-            emergencyListList.innerHTML = '';
-            if (emergencyContacts.length === 0) {
-                emergencyListList.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-muted); font-size:0.85rem;">Belum ada kontak darurat.</div>';
-                return;
-            }
-            emergencyContacts.forEach((c, idx) => {
-                const div = document.createElement('div');
-                div.className = 'emergency-card';
-                div.innerHTML = `
+            const list = document.getElementById('emergencyList');
+            list.innerHTML = emergencyContacts.length ? emergencyContacts.map((c, idx) => `
+                <div class="emergency-card">
                     <div class="emergency-info">
-                        <div class="emergency-avatar" style="background: #fffbeb; color: var(--warning);"><i data-lucide="phone"></i></div>
-                        <div class="emergency-details">
-                            <h3>${c.name}</h3>
-                            <p>${c.relation} • ${c.phone}</p>
-                        </div>
+                        <div class="emergency-avatar" style="background:#fffbeb; color:var(--warning);"><i data-lucide="phone"></i></div>
+                        <div><div style="font-weight:700;">${c.name}</div><div style="font-size:0.8rem; color:var(--text-muted);">${c.relation} • ${c.phone}</div></div>
                     </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <a href="tel:${c.phone}" class="btn" style="background: var(--success); color: white; padding: 0.5rem; border-radius: 8px;"><i data-lucide="phone-call" style="width:16px;"></i></a>
+                    <div style="display:flex; gap:0.5rem;">
+                        <a href="tel:${c.phone}" class="btn" style="background:var(--success); color:white; padding:0.5rem;"><i data-lucide="phone-call" style="width:16px;"></i></a>
                         <button onclick="deleteEmergency(${idx})" class="delete-btn"><i data-lucide="trash-2" style="width:16px;"></i></button>
                     </div>
-                `;
-                emergencyListList.appendChild(div);
-            });
+                </div>
+            `).join('') : '<div style="text-align:center; padding:2rem; color:var(--text-muted); font-size:0.85rem;">Belum ada kontak darurat.</div>';
             lucide.createIcons();
         }
 
-        window.deleteEmergency = (idx) => {
-            if(confirm('Hapus kontak darurat ini?')) {
-                emergencyContacts.splice(idx, 1);
-                saveEmergency();
-                renderEmergencyContacts();
-            }
-        };
-
         window.editProfile = (idx) => {
             const p = profiles[idx];
+            document.getElementById('editIndex').value = idx;
             document.getElementById('name').value = p.name;
             document.getElementById('gender').value = p.gender;
             document.getElementById('dob').value = p.dob;
             document.getElementById('pob').value = p.pob;
             document.getElementById('bloodType').value = p.bloodType;
             document.getElementById('notes').value = p.notes;
-            
-            // Populate Dynamic Rows
-            insuranceContainer.innerHTML = '';
-            (p.insurances || []).forEach(i => addInsuranceRow(i));
-            
-            medRecContainer.innerHTML = '';
-            (p.medicalRecords || []).forEach(m => addMedRecRow(m));
-
-            document.getElementById('editIndex').value = idx;
-            document.getElementById('formTitle').innerText = 'Edit Profil: ' + p.name;
-            document.getElementById('saveBtn').innerHTML = '<i data-lucide="check"></i> Simpan Perubahan';
-            
+            document.getElementById('insuranceContainer').innerHTML = ''; (p.insurances||[]).forEach(i => addInsuranceRow(i));
+            document.getElementById('medRecContainer').innerHTML = ''; (p.medicalRecords||[]).forEach(m => addMedRecRow(m));
+            document.getElementById('formTitle').innerText = 'Edit Profil';
             document.getElementById('profileModal').classList.add('active');
             lucide.createIcons();
         };
 
-        window.viewProfileDetail = (idx) => {
-            const p = profiles[idx];
-            document.getElementById('mAvatar').innerText = p.name.charAt(0);
-            document.getElementById('mAvatar').style.background = p.gender === 'Female' ? '#fdf2f8' : '#eef2ff';
-            document.getElementById('mAvatar').style.color = p.gender === 'Female' ? '#db2777' : '#6366f1';
-            document.getElementById('mName').innerText = p.name;
-            document.getElementById('mGender').innerText = p.gender === 'Male' ? 'Laki-laki' : 'Perempuan';
-            document.getElementById('mBlood').innerText = p.bloodType || '-';
-            document.getElementById('mDob').innerText = p.dob || '-';
-            document.getElementById('mPob').innerText = p.pob || '-';
-            document.getElementById('mNotes').innerText = p.notes || 'Tidak ada catatan khusus.';
-
-            const insCont = document.getElementById('mInsurances');
-            insCont.innerHTML = (p.insurances && p.insurances.length) ? p.insurances.map(i => `
-                <div class="data-card">
-                    <div style="font-weight:700; color:var(--primary); font-size:0.9rem;">${i.provider}</div>
-                    <div style="font-family:monospace; margin:4px 0;">${i.number}</div>
-                    <div style="font-size:0.75rem; color:var(--text-muted);">${i.type}</div>
-                </div>
-            `).join('') : '<p style="font-size:0.85rem; color:var(--text-muted);">Belum ada asuransi.</p>';
-
-            const mrCont = document.getElementById('mMedRec');
-            mrCont.innerHTML = (p.medicalRecords && p.medicalRecords.length) ? p.medicalRecords.map(m => `
-                <div class="data-card">
-                    <div style="font-weight:700; font-size:0.9rem;">${m.hospital}</div>
-                    <div style="font-family:monospace; color:var(--primary); font-weight:700;">${m.number}</div>
-                </div>
-            `).join('') : '<p style="font-size:0.85rem; color:var(--text-muted);">Belum ada nomor rekam medis.</p>';
-
-            document.getElementById('detailModal').classList.add('active');
-            lucide.createIcons();
-        };
-
-        window.closeModal = () => document.getElementById('detailModal').classList.remove('active');
-
-        window.resetForm = () => {
-            profileForm.reset();
-            insuranceContainer.innerHTML = '';
-            medRecContainer.innerHTML = '';
-            document.getElementById('editIndex').value = -1;
-            document.getElementById('formTitle').innerText = 'Tambah Profil Baru';
-            document.getElementById('saveBtn').innerHTML = '<i data-lucide="save"></i> Simpan Profil';
-            lucide.createIcons();
-        };
-
-        window.deleteProfile = (idx) => {
-            if (confirm('Hapus profil ' + profiles[idx].name + '?')) {
-                profiles.splice(idx, 1);
-                saveProfiles();
-                renderProfiles();
-            }
-        };
-
-        renderProfiles();
-        renderEmergencyContacts();
-    </script>
-
-        window.deleteProfile = (idx) => {
-            if (confirm('Hapus profil ' + profiles[idx].name + '?')) {
-                profiles.splice(idx, 1);
-                saveProfiles();
-                renderProfiles();
-            }
-        };
-
-        renderProfiles();
-        renderEmergencyContacts();
+        window.deleteProfile = (idx) => { if(confirm('Hapus profil?')) { profiles.splice(idx, 1); saveAll(); renderProfiles(); } };
+        window.deleteEmergency = (idx) => { if(confirm('Hapus kontak?')) { emergencyContacts.splice(idx, 1); saveAll(); renderEmergencyContacts(); } };
+        function resetForm() { document.getElementById('profileForm').reset(); document.getElementById('editIndex').value = -1; document.getElementById('formTitle').innerText = 'Tambah Profil'; document.getElementById('insuranceContainer').innerHTML = ''; document.getElementById('medRecContainer').innerHTML = ''; }
+        
+        renderProfiles(); renderEmergencyContacts();
     </script>
 </body>
 </html>
