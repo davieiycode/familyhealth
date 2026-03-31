@@ -16,27 +16,40 @@
       --bg: #030409;
       --bg-surface: #0a0e1a;
       --bg-glass: rgba(18, 22, 40, 0.7);
-      --bg-glass-heavy: rgba(22, 28, 52, 0.98);
-      --t: #00ffc3;
-      /* Vibrant Mint */
+      --bg-glass-heavy: rgba(22, 28, 52, 0.92);
+      --t: #00ffc3; /* Mint */
       --t-rgb: 0, 255, 195;
       --p: #bf95ff;
-      /* Soft Purple */
       --p-rgb: 191, 149, 255;
       --b: #4facfe;
-      /* Deep Blue */
       --b-rgb: 79, 172, 254;
       --r: #ff4d7a;
-      /* Vivid Rose */
       --r-rgb: 255, 77, 122;
       --g: #00e676;
-      /* Emerald Green */
       --tx: #ffffff;
       --tx2: #f0f2f5;
       --tx3: #a0aec0;
-      --bd: rgba(255, 255, 255, 0.15);
-      --rr: 32px;
-      --shadow: 0 12px 48px rgba(0, 0, 0, 0.7);
+      --bd: rgba(255, 255, 255, 0.12);
+      --rr: 28px;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      
+      /* Typography Scale - Mobile First Defaults */
+      --fs-base: 14px; 
+      --fs-h1: 1.6rem;
+      --fs-h2: 1.3rem;
+      --fs-title: 1.1rem;
+      --fs-body: 0.85rem;
+      --fs-label: 0.75rem;
+      --fs-mini: 0.7rem;
+    }
+
+    [data-font-size="small"] { --fs-base: 13px; }
+    [data-font-size="large"] { --fs-base: 16px; }
+
+    @media (min-width: 900px) {
+      :root {
+        --fs-base: 16px; /* Larger base for desktop */
+      }
     }
 
     * {
@@ -55,12 +68,13 @@
       background: var(--bg);
       color: var(--tx);
       font-family: 'Lexend', sans-serif;
+      font-size: var(--fs-base);
       min-height: 100vh;
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
-      line-height: 1.6;
+      line-height: 1.5;
       background-image:
         radial-gradient(circle at 0% 0%, rgba(var(--t-rgb), 0.05) 0%, transparent 40%),
         radial-gradient(circle at 100% 100%, rgba(var(--p-rgb), 0.05) 0%, transparent 40%);
@@ -144,7 +158,7 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 100px;
       color: var(--tx2);
-      font-size: 0.85rem;
+      font-size: var(--fs-body);
       font-weight: 700;
       white-space: nowrap;
       cursor: pointer;
@@ -204,10 +218,10 @@
     }
 
     .trend-tab {
-      padding: 12px 24px;
+      padding: 10px 20px;
       background: rgba(255, 255, 255, 0.04);
       border-radius: 14px;
-      font-size: 0.9rem;
+      font-size: var(--fs-body);
       font-weight: 700;
       color: var(--tx2);
       cursor: pointer;
@@ -301,7 +315,7 @@
       gap: 5px;
       color: var(--tx3);
       text-decoration: none;
-      font-size: 0.75rem;
+      font-size: var(--fs-mini);
       font-weight: 700;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
@@ -398,7 +412,7 @@
     }
 
     .brand-name {
-      font-size: 1.5rem;
+      font-size: 1.35rem;
       font-weight: 800;
       letter-spacing: -1px;
       background: linear-gradient(135deg, #fff, #999);
@@ -729,13 +743,13 @@
     }
 
     .log-title {
-      font-size: 1rem;
+      font-size: var(--fs-body);
       font-weight: 700;
       color: var(--tx);
     }
 
     .log-meta {
-      font-size: 0.8rem;
+      font-size: var(--fs-mini);
       color: var(--tx3);
       display: flex;
       gap: 12px;
@@ -1012,7 +1026,7 @@
     }
 
     .section-title {
-      font-size: 1.7rem;
+      font-size: var(--fs-h2);
       font-weight: 800;
       color: var(--tx);
       display: flex;
@@ -1099,14 +1113,14 @@
     }
 
     .title {
-      font-size: 1.3rem;
+      font-size: var(--fs-title);
       font-weight: 700;
       color: var(--tx);
       margin-bottom: 6px;
     }
 
     .desc {
-      font-size: 0.95rem;
+      font-size: var(--fs-body);
       color: var(--tx3);
       line-height: 1.5;
     }
@@ -1782,6 +1796,48 @@
           Pengaturan & Sistem
         </div>
         <div class="settings-list">
+          <div class="settings-item" style="cursor: default; flex-direction: column; align-items: flex-start; gap: 15px; background: rgba(var(--t-rgb), 0.05); border: 1px solid rgba(var(--t-rgb), 0.2);">
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <span class="material-symbols-outlined" style="color:var(--t)">table_view</span>
+              <div class="settings-title" style="color:var(--t)">Konfigurasi Spreadsheet</div>
+            </div>
+            <div class="form-group" style="width: 100%;">
+              <label class="form-label" style="font-size: 0.7rem;">URL CSV Referensi (Macam Uji)</label>
+              <input type="text" id="settings-ref-url" class="form-input" style="font-size: 0.8rem; padding: 10px;" placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv">
+            </div>
+            <div class="form-group" style="width: 100%;">
+              <label class="form-label" style="font-size: 0.7rem;">URL Endpoint Submit (GAS URL)</label>
+              <input type="text" id="settings-submit-url" class="form-input" style="font-size: 0.8rem; padding: 10px;" placeholder="https://script.google.com/macros/s/.../exec">
+            </div>
+            <button class="btn-submit" onclick="saveSettings()" style="margin-top: 0; padding: 10px; font-size: 0.8rem;">Update Spreadsheet</button>
+          </div>
+          <div class="settings-item" style="cursor: default; flex-direction: column; align-items: flex-start; gap: 12px; background: rgba(var(--b-rgb), 0.05); border: 1px solid rgba(var(--b-rgb), 0.2);">
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <span class="material-symbols-outlined" style="color:var(--b)">palette</span>
+              <div class="settings-title" style="color:var(--b)">Tampilan & Ukuran</div>
+            </div>
+            
+            <div class="form-group" style="width: 100%;">
+              <label class="form-label" style="font-size: 0.7rem;">Ukuran Huruf (Mobile Optimized)</label>
+              <div style="display: flex; gap: 8px; margin-top: 5px;">
+                 <button class="q-btn" style="flex:1" onclick="updateFontSize('small')">Kecil</button>
+                 <button class="q-btn active" style="flex:1" onclick="updateFontSize('normal')">Normal</button>
+                 <button class="q-btn" style="flex:1" onclick="updateFontSize('large')">Besar</button>
+              </div>
+            </div>
+
+            <div class="form-group" style="width: 100%;">
+              <label class="form-label" style="font-size: 0.7rem;">Warna Tema Utama</label>
+              <div style="display: flex; gap: 14px; margin-top: 8px; justify-content: center;">
+                 <div style="width:34px; height:34px; border-radius:50%; background:#00ffc3; cursor:pointer; border:2px solid #fff;" onclick="updateThemeColor('#00ffc3')"></div>
+                 <div style="width:34px; height:34px; border-radius:50%; background:#4facfe; cursor:pointer;" onclick="updateThemeColor('#4facfe')"></div>
+                 <div style="width:34px; height:34px; border-radius:50%; background:#bf95ff; cursor:pointer;" onclick="updateThemeColor('#bf95ff')"></div>
+                 <div style="width:34px; height:34px; border-radius:50%; background:#ff4d7a; cursor:pointer;" onclick="updateThemeColor('#ff4d7a')"></div>
+                 <div style="width:34px; height:34px; border-radius:50%; background:#ff9f43; cursor:pointer;" onclick="updateThemeColor('#ff9f43')"></div>
+              </div>
+            </div>
+          </div>
+          
           <div class="settings-item" onclick="showToast('Mengekspor data ke PDF...')">
             <span class="material-symbols-outlined">picture_as_pdf</span>
             <div class="settings-info">
@@ -1796,18 +1852,11 @@
               <div class="settings-subtitle">Lihat semua catatan sistem dan input.</div>
             </div>
           </div>
-          <div class="settings-item" onclick="showToast('Keamanan Biometrik Aktif')">
-            <span class="material-symbols-outlined">fingerprint</span>
+          <div class="settings-item" onclick="resetAllData()">
+            <span class="material-symbols-outlined" style="color:var(--r)">delete_forever</span>
             <div class="settings-info">
-              <div class="settings-title">Keamanan & Privasi</div>
-              <div class="settings-subtitle">Data dienkripsi secara end-to-end.</div>
-            </div>
-          </div>
-          <div class="settings-item" onclick="showToast('Preferensi Bahasasegera hadir')">
-            <span class="material-symbols-outlined">language</span>
-            <div class="settings-info">
-              <div class="settings-title">Bahasa Aplikasi</div>
-              <div class="settings-subtitle">Bahasa Indonesia (Default)</div>
+              <div class="settings-title" style="color:var(--r)">Reset Semua Data</div>
+              <div class="settings-subtitle">Menghapus semua profil dan log.</div>
             </div>
           </div>
         </div>
@@ -1841,6 +1890,32 @@
         <button class="btn-submit"
           style="background: rgba(255,255,255,0.05); color: var(--tx2); width: 100%; margin-top: 25px;"
           onclick="closeTrendModal()">Tutup Analisis</button>
+      </div>
+    </div>
+
+    <!-- 6. Report Detail Modal -->
+    <div class="trend-modal" id="report-detail-modal" onclick="closeReportDetailModal()">
+      <div class="trend-dialog" onclick="event.stopPropagation()" style="max-width: 550px;">
+        <div class="dialog-header" style="justify-content:space-between; margin-bottom: 20px;">
+          <div id="rd-title" style="font-size: 1.25rem; font-weight: 800; color: var(--t);">Detail Laporan</div>
+          <span class="material-symbols-outlined" style="cursor:pointer; opacity:0.6;"
+            onclick="closeReportDetailModal()">close</span>
+        </div>
+        
+        <div id="rd-meta" style="margin-bottom: 25px; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 18px; border: 1px solid var(--bd);">
+           <div id="rd-time" style="font-size: 0.85rem; color: var(--tx3);">Waktu</div>
+           <div id="rd-name" style="font-size: 1.1rem; font-weight: 700; color: var(--tx); margin-top: 4px;">Nama Laporan</div>
+        </div>
+
+        <div id="rd-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; max-height: 400px; overflow-y: auto; padding-right: 5px;">
+           <!-- Items will be injected here -->
+        </div>
+
+        <div id="rd-notes" style="font-size: 0.9rem; color: var(--tx2); padding: 15px; background: rgba(var(--p-rgb), 0.05); border-radius: 18px; border: 1px solid rgba(var(--p-rgb), 0.2); display: none; margin-bottom: 25px;">
+           <!-- Notes -->
+        </div>
+
+        <button class="btn-submit" style="width: 100%; margin-top: 0; background: rgba(255,255,255,0.06); color: var(--tx2); box-shadow: none;" onclick="closeReportDetailModal()">Tutup Laporan</button>
       </div>
     </div>
 
@@ -2134,7 +2209,7 @@
         status: 'Anak Kedua', insurance: 'BPJS Mandiri', bpjs: '000222111000',
         activePrograms: ['imunisasi-rutin'], activeMeds: ['manual-med']
       }
-    ]));
+    ];
 
     // Initialize Active Profile if missing
     if (!PROFILES.find(p => p.active) && PROFILES.length > 0) {
@@ -2527,6 +2602,63 @@
       }
     ];
 
+    // --- SPREADSHEET DYNAMIC LOGIC ---
+    let DYNAMIC_CATALOG = [];
+    const SHEET_CONFIG = {
+      referenceUrl: localStorage.getItem('VITAFAM_REF_URL') || '',
+      submitUrl: localStorage.getItem('VITAFAM_SUBMIT_URL') || ''
+    };
+
+    async function fetchDynamicCatalog() {
+      if (!SHEET_CONFIG.referenceUrl) return;
+      try {
+        const response = await fetch(SHEET_CONFIG.referenceUrl);
+        const csvText = await response.text();
+        const rows = csvText.split('\n').map(r => r.split(','));
+        const headers = rows[0].map(h => h.trim().toLowerCase());
+        
+        DYNAMIC_CATALOG = rows.slice(1).filter(r => r.length > 1).map(row => {
+          const item = {};
+          headers.forEach((h, i) => {
+            item[h] = row[i]?.trim();
+          });
+          return {
+            name: item['test name'],
+            unit: item['unit'],
+            lowerLimit: parseFloat(item['lower limit']),
+            lowerIndicator: item['lower limit indicators'],
+            lowerSuggestion: item['lower limit suggestions'],
+            upperLimit: parseFloat(item['upper limit']),
+            upperIndicator: item['upper limit indicators'],
+            upperSuggestion: item['upper limit suggestions'],
+            category: item['category'],
+            icon: 'biotech', // Default icon for dynamic items
+            freq: 'Rutin'
+          };
+        });
+        renderGrids();
+      } catch (err) {
+        console.error('Error fetching dynamic catalog:', err);
+      }
+    }
+
+    function calculateIndication(name, value) {
+      const test = DYNAMIC_CATALOG.find(t => t.name === name);
+      if (!test) return { indication: 'Normal', suggestion: '' };
+
+      const val = parseFloat(value);
+      if (isNaN(val)) return { indication: 'Data Tidak Valid', suggestion: 'Pastikan input berupa angka.' };
+
+      if (test.lowerLimit && val < test.lowerLimit) {
+        return { indication: test.lowerIndicator || 'Rendah', suggestion: test.lowerSuggestion || '' };
+      }
+      if (test.upperLimit && val > test.upperLimit) {
+        return { indication: test.upperIndicator || 'Tinggi', suggestion: test.upperSuggestion || '' };
+      }
+      return { indication: 'Normal', suggestion: 'Tetap pertahankan pola hidup sehat.' };
+    }
+    // --- END SPREADSHEET LOGIC ---
+
 
     const MEDICAL_HISTORY = [
       {
@@ -2721,18 +2853,20 @@
     ];
 
     function createCard(item, type = 'default') {
-      const isLive = type === 'env';
-      const isRecord = type === 'record';
-      const isProgram = type === 'program';
-      return `
-        <div class="card">
+      try {
+        const isLive = type === 'env';
+        const isRecord = type === 'record';
+        const isProgram = type === 'program';
+        const latestLog = ACTIVITY_LOG.find(l => l.action === item.name);
+        return `
+        <div class="card ${isRecord ? 'record-card' : ''}">
           <div class="card-top">
             <div class="icon-box" style="${latestLog ? 'background: var(--t); color: #000;' : ''}">
               <span class="material-symbols-outlined" style="font-size: 1.8rem;">${item.icon}</span>
             </div>
             <div class="content">
               <div class="title">${item.name}</div>
-              <div class="desc" id="desc-${item.key || ''}">${item.desc}</div>
+              <div class="desc" id="desc-${item.key || ''}">${item.desc || (item.unit ? 'Satuan: ' + item.unit : '')}</div>
             </div>
           </div>
           <div class="badge-container">
@@ -2748,7 +2882,7 @@
             `}
           </div>
           <div style="display: flex; gap: 8px; margin-top: 15px;">
-            <button class="btn-action" style="flex: 2;" ${isBatchMode ? 'disabled style="opacity:0.5"' : ''} onclick="openActionModal('${item.name}', '${item.icon}', null, '${item.unit || ''}', ${item.subItems ? JSON.stringify(item.subItems).replace(/"/g, '&quot;') : 'null'}, ${item.questions ? JSON.stringify(item.questions).replace(/"/g, '&quot;') : 'null'}, ${item.options ? JSON.stringify(item.options).replace(/"/g, '&quot;') : 'null'})">
+            <button class="btn-action" style="flex: 2;" onclick="openActionModal('${item.name}', '${item.icon}', null, '${item.unit || ''}', ${item.subItems ? JSON.stringify(item.subItems).replace(/"/g, '&quot;') : 'null'})">
                <span class="material-symbols-outlined" style="font-size: 1.2rem;">${isLive ? 'refresh' : (isRecord ? 'add_circle' : (isProgram ? 'task_alt' : 'add_circle'))}</span>
                ${isLive ? 'Perbarui' : (isRecord ? 'Input Data' : (isProgram ? 'Aktifkan' : 'Mulai'))}
             </button>
@@ -2760,10 +2894,10 @@
           </div>
         </div>
       `;
-    } catch (e) {
-      console.error('createCard fail', e, item);
-      return `<div style="padding:10px; color:var(--r);">Card Error</div>`;
-    }
+      } catch (e) {
+        console.error('createCard fail', e, item);
+        return `<div style="padding:10px; color:var(--r);">Card Error</div>`;
+      }
     }
 
     let ACTIVITY_LOG = [
@@ -2916,44 +3050,101 @@
 
           } else {
             // Case 2: Standard Single/SubItem Input
-            let finalVal = "";
+            let subEntries = [];
             if (currentAction.questions) {
               let score = 0;
               qAnswers.forEach(ans => score += ans);
               const finding = MENTAL_DATA.find(m => m.name === currentAction.name);
               const interp = finding.interpretation ? finding.interpretation(score) : '';
               finalVal = `Total Skor: ${score} | Kesimpulan: ${interp}`;
+              subEntries.push({ name: currentAction.name, val: score, unit: 'Skor', indication: interp, suggestion: '', category: 'Mental' });
             } else if (currentAction.subItems) {
               const subInputs = document.querySelectorAll('.modal-sub-input');
               finalVal = Array.from(subInputs)
                 .filter(i => i.value.trim() !== '')
-                .map(i => `${i.dataset.name}: ${i.value}${i.dataset.unit}`)
+                .map(i => {
+                  const res = calculateIndication(i.dataset.name, i.value);
+                  subEntries.push({ 
+                    name: i.dataset.name, 
+                    val: i.value, 
+                    unit: i.dataset.unit, 
+                    indication: res.indication, 
+                    suggestion: res.suggestion,
+                    category: currentAction.category || 'Laboratorium'
+                  });
+                  return `${i.dataset.name}: ${i.value}${i.dataset.unit} (${res.indication})`;
+                })
                 .join(' | ');
             } else {
               const val = document.getElementById('modal-input').value;
               if (!val) { showToast('Harap isi data!', 'error'); return; }
-              finalVal = val + (currentAction.unit ? ' ' + currentAction.unit : '');
+              const res = calculateIndication(currentAction.name, val);
+              finalVal = val + (currentAction.unit ? ' ' + currentAction.unit : '') + ` (${res.indication})`;
+              subEntries.push({ 
+                name: currentAction.name, 
+                val: val, 
+                unit: currentAction.unit, 
+                indication: res.indication, 
+                suggestion: res.suggestion,
+                category: currentAction.category || 'Lainnya'
+              });
             }
 
             if (!finalVal) { showToast('Harap isi minimal satu data!', 'error'); return; }
-            if (notes) finalVal += ` | Catatan: ${notes}`;
+            const noteText = notes ? ` | Catatan: ${notes}` : '';
+            finalVal += noteText;
 
             if (editTargetId) {
               const log = ACTIVITY_LOG.find(l => l.id === editTargetId);
               if (log) {
                 log.val = finalVal;
                 log.time = dateTimeStr;
+                log.subEntries = subEntries;
               }
               showToast('Riwayat Diperbarui');
             } else {
-              ACTIVITY_LOG.unshift({
-                id: 'l' + Date.now(),
+              const logId = 'l' + Date.now();
+              const reportName = document.getElementById('modal-report-name')?.value || '';
+              
+              const newLog = {
+                id: logId,
                 user: active.name,
                 action: currentAction.name,
                 val: finalVal,
                 time: dateTimeStr,
-                icon: currentAction.icon
-              });
+                icon: currentAction.icon,
+                notes: notes,
+                reportName: reportName,
+                subEntries: subEntries
+              };
+              
+              ACTIVITY_LOG.unshift(newLog);
+              
+              // Push to Spreadsheet if configured
+              if (SHEET_CONFIG.submitUrl) {
+                subEntries.forEach(se => {
+                  const logPayload = {
+                    log_id: logId,
+                    timestamp: new Date().toISOString(),
+                    author: active.name,
+                    test_name: se.name,
+                    value: se.val,
+                    unit: se.unit,
+                    indication: se.indication,
+                    suggestions: se.suggestion,
+                    category: se.category,
+                    notes: notes,
+                    report_name: reportName
+                  };
+                  fetch(SHEET_CONFIG.submitUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(logPayload)
+                  }).catch(console.error);
+                });
+              }
+              
               showToast('Data Berhasil Disimpan');
             }
           }
@@ -3255,11 +3446,85 @@
     }
 
     function openSettingsModal() {
+      // Load current configs
+      document.getElementById('settings-ref-url').value = SHEET_CONFIG.referenceUrl;
+      document.getElementById('settings-submit-url').value = SHEET_CONFIG.submitUrl;
       document.getElementById('settings-modal').classList.add('active');
+    }
+
+    function saveSettings() {
+      const refUrl = document.getElementById('settings-ref-url').value.trim();
+      const submitUrl = document.getElementById('settings-submit-url').value.trim();
+      
+      localStorage.setItem('VITAFAM_REF_URL', refUrl);
+      localStorage.setItem('VITAFAM_SUBMIT_URL', submitUrl);
+      SHEET_CONFIG.referenceUrl = refUrl;
+      SHEET_CONFIG.submitUrl = submitUrl;
+      
+      showToast('Pengaturan Disimpan');
+      closeSettingsModal();
+      if (refUrl) fetchDynamicCatalog();
     }
 
     function closeSettingsModal() {
       document.getElementById('settings-modal').classList.remove('active');
+    }
+
+    function updateFontSize(size) {
+      document.documentElement.setAttribute('data-font-size', size);
+      localStorage.setItem('VITAFAM_FONT_SIZE', size);
+      
+      // Update UI buttons
+      const buttons = document.querySelectorAll('.q-btn');
+      buttons.forEach(btn => {
+         if (btn.innerText.toLowerCase() === (size === 'normal' ? 'normal' : (size === 'small' ? 'kecil' : 'besar'))) {
+            btn.classList.add('active');
+         } else if (['kecil', 'normal', 'besar'].includes(btn.innerText.toLowerCase())) {
+            btn.classList.remove('active');
+         }
+      });
+      showToast(`Ukuran huruf diubah ke ${size}`);
+    }
+
+    function updateThemeColor(hex) {
+      document.documentElement.style.setProperty('--t', hex);
+      const rgb = hexToRgb(hex);
+      if (rgb) {
+        document.documentElement.style.setProperty('--t-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+      }
+      localStorage.setItem('VITAFAM_THEME_COLOR', hex);
+      showToast('Warna tema diperbarui');
+    }
+
+    function hexToRgb(hex) {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : null;
+    }
+
+    function applySavedSettings() {
+      const savedSize = localStorage.getItem('VITAFAM_FONT_SIZE') || 'normal';
+      const savedColor = localStorage.getItem('VITAFAM_THEME_COLOR');
+      
+      document.documentElement.setAttribute('data-font-size', savedSize);
+      // Update toggle buttons in settings
+      const buttons = document.querySelectorAll('.q-btn');
+      buttons.forEach(btn => {
+         if (btn.innerText.toLowerCase() === (savedSize === 'normal' ? 'normal' : (savedSize === 'small' ? 'kecil' : 'besar'))) {
+            btn.classList.add('active');
+         }
+      });
+
+      if (savedColor) {
+        document.documentElement.style.setProperty('--t', savedColor);
+        const rgb = hexToRgb(savedColor);
+        if (rgb) {
+          document.documentElement.style.setProperty('--t-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+        }
+      }
     }
 
     function quickAdd(name) {
@@ -3431,6 +3696,23 @@
 
       try { renderTimeline(); } catch (e) { console.error(e); }
       try { renderFamilyInsights(); } catch (e) { console.error(e); }
+
+      // Map dynamic items to grids
+      DYNAMIC_CATALOG.forEach(item => {
+        let gridId = 'lab-grid'; // Default
+        const cat = (item.category || '').toLowerCase();
+        if (cat.includes('vital')) gridId = 'vital-grid';
+        else if (cat.includes('pertumbuhan') || cat.includes('growth')) gridId = 'growth-grid';
+        else if (cat.includes('repro')) gridId = 'repro-grid';
+        else if (cat.includes('mental')) gridId = 'mental-grid';
+        else if (cat.includes('mandiri') || cat.includes('self')) gridId = 'self-grid';
+        
+        const grid = document.getElementById(gridId);
+        if (grid && filter(item)) {
+          grid.innerHTML += createCard(item, 'record');
+          grid.parentElement.style.display = 'block';
+        }
+      });
     }
 
     function renderFamilyInsights() {
@@ -3733,8 +4015,15 @@
       if (!timeline) return;
       const active = PROFILES.find(p => p.active);
 
-      // Filter logs only for current active user
-      const userLogs = ACTIVITY_LOG.filter(l => l.user === active.name);
+      // Filter logs only for current active user AND applied category filter
+      let userLogs = ACTIVITY_LOG.filter(l => l.user === active.name);
+      
+      if (activeJournalFilter !== 'All') {
+         userLogs = userLogs.filter(l => {
+            const catStr = (l.subEntries && l.subEntries.length) ? l.subEntries[0].category : '';
+            return catStr.toLowerCase().includes(activeJournalFilter.toLowerCase());
+         });
+      }
 
       if (userLogs.length === 0) {
         timeline.innerHTML = `
@@ -3745,10 +4034,35 @@
         return;
       }
 
+      // Grouping Logic: Report Name + Time
+      const finalItems = [];
+      const handledReports = new Set();
+
+      userLogs.forEach(l => {
+        const reportKey = (l.reportName && l.time) ? `${l.reportName}|${l.time}` : null;
+        
+        if (reportKey) {
+          if (!handledReports.has(reportKey)) {
+             const group = userLogs.filter(item => item.reportName === l.reportName && item.time === l.time);
+             finalItems.push({
+                isGroup: true,
+                id: l.id,
+                reportName: l.reportName,
+                time: l.time,
+                icon: 'description',
+                items: group,
+                notes: group.find(i => i.notes)?.notes || ''
+             });
+             handledReports.add(reportKey);
+          }
+        } else {
+           finalItems.push(l);
+        }
+      });
+
       // Chronological Grouping (by Date Header)
       const groupedLogs = {};
-      userLogs.forEach(l => {
-        // Extract date part: "Hari ini", "Kemarin", or "2026-03-30"
+      finalItems.forEach(l => {
         const dateStr = l.time.includes(',') ? l.time.split(',')[0].trim() : (l.time.includes('@') ? l.time.split('@')[0].trim() : l.time);
         if (!groupedLogs[dateStr]) groupedLogs[dateStr] = [];
         groupedLogs[dateStr].push(l);
@@ -3757,27 +4071,126 @@
       let html = '';
       Object.keys(groupedLogs).forEach(date => {
         html += `<div class="timeline-date-header">${date}</div>`;
-        html += groupedLogs[date].map(l => `
-            <div class="log-item" style="padding: 16px 20px; margin-bottom: 8px;">
-              <div class="log-icon" style="width: 44px; height: 44px; border-radius: 14px;">
-                <span class="material-symbols-outlined" style="font-size: 1.6rem;">${l.icon}</span>
-              </div>
-              <div class="log-content">
-                <div class="log-title" style="font-size: 0.95rem; display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
-                   <span>${l.action}</span>
-                   <span class="material-symbols-outlined" style="font-size: 1.1rem; cursor:pointer; opacity:0.6;" onclick="editLog('${l.id}')">edit</span>
+        html += groupedLogs[date].map(l => {
+            if (l.isGroup) {
+               return `
+                  <div class="log-item" style="padding: 16px 20px; border-left: 4px solid var(--t); margin-bottom: 8px; cursor: pointer;" onclick="showReportDetail('${l.id}')">
+                    <div class="log-icon" style="width: 44px; height: 44px; border-radius: 14px; background: rgba(var(--t-rgb), 0.15);">
+                      <span class="material-symbols-outlined" style="font-size: 1.6rem; color: var(--t);">description</span>
+                    </div>
+                    <div class="log-content">
+                      <div class="log-title" style="font-size: 0.95rem; font-weight: 800; color: var(--tx);">
+                         ${l.reportName}
+                      </div>
+                      <div class="log-meta" style="font-size: 0.8rem; margin-top: 4px;">
+                        <span style="color: var(--t)">${l.items.length} Item Pemeriksaan</span>
+                        <span>•</span>
+                        <span>${l.time.includes(',') ? l.time.split(',')[1].trim() : (l.time.includes('@') ? l.time.split('@')[1].trim() : '')}</span>
+                      </div>
+                    </div>
+                    <span class="material-symbols-outlined" style="opacity: 0.4;">chevron_right</span>
+                  </div>
+               `;
+            }
+            return `
+              <div class="log-item" style="padding: 16px 20px; margin-bottom: 8px;">
+                <div class="log-icon" style="width: 44px; height: 44px; border-radius: 14px;">
+                  <span class="material-symbols-outlined" style="font-size: 1.6rem;">${l.icon}</span>
                 </div>
-                <div class="log-meta" style="font-size: 0.8rem; margin-top: 4px;">
-                  <span><b>${l.val}</b></span>
-                  <span>•</span>
-                  <span>${l.time.includes(',') ? l.time.split(',')[1].trim() : (l.time.includes('@') ? l.time.split('@')[1].trim() : '')}</span>
+                <div class="log-content">
+                  <div class="log-title" style="font-size: 0.95rem; display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
+                     <span>${l.action}</span>
+                     <div style="display: flex; gap: 8px;">
+                        <span class="material-symbols-outlined" style="font-size: 1.1rem; cursor:pointer; opacity:0.6;" onclick="editLog('${l.id}')">edit</span>
+                        <span class="material-symbols-outlined" style="font-size: 1.1rem; cursor:pointer; opacity:0.6; color: var(--r);" onclick="deleteLog('${l.id}')">delete</span>
+                     </div>
+                  </div>
+                  <div class="log-meta" style="font-size: 0.8rem; margin-top: 4px;">
+                    <span><b>${l.val}</b></span>
+                    <span>•</span>
+                    <span>${l.time.includes(',') ? l.time.split(',')[1].trim() : (l.time.includes('@') ? l.time.split('@')[1].trim() : '')}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          `).join('');
+            `;
+        }).join('');
       });
 
       timeline.innerHTML = html;
+    }
+
+    function showReportDetail(logId) {
+       // Search for grouped info
+       const active = PROFILES.find(p => p.active);
+       const l = ACTIVITY_LOG.find(l => l.id === logId);
+       if (!l) return;
+
+       const group = ACTIVITY_LOG.filter(item => item.user === active.name && item.reportName === l.reportName && item.time === l.time);
+       
+       document.getElementById('rd-title').innerText = "Detail Laporan Kesehatan";
+       document.getElementById('rd-name').innerText = l.reportName;
+       document.getElementById('rd-time').innerText = l.time;
+       
+       const list = document.getElementById('rd-list');
+       let listHtml = '';
+       
+       group.forEach(entry => {
+          // Check for subEntries or parse the string val
+          if (entry.subEntries && entry.subEntries.length) {
+             entry.subEntries.forEach(se => {
+                listHtml += `
+                   <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 12px;">
+                      <div>
+                         <div style="font-size: 0.9rem; font-weight: 700; color: var(--tx2);">${se.name || se.test_name}</div>
+                         <div style="font-size: 0.75rem; color: var(--tx3);">${entry.action !== 'Laporan Rekapitulasi' ? entry.action : ''}</div>
+                      </div>
+                      <div style="text-align: right;">
+                         <div style="font-size: 1rem; font-weight: 800; color: ${se.indication === 'Normal' ? 'var(--t)' : 'var(--r)'}">${se.val}${se.unit}</div>
+                         <div style="font-size: 0.7rem; color: ${se.indication === 'Normal' ? 'var(--t)' : 'var(--r)'}; opacity: 0.8;">${se.indication}</div>
+                      </div>
+                   </div>
+                `;
+             });
+          } else {
+             // Fallback for concatenated string
+             listHtml += `
+                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 12px;">
+                    <div>
+                       <div style="font-size: 0.9rem; font-weight: 700; color: var(--tx2);">${entry.action}</div>
+                    </div>
+                    <div style="text-align: right;">
+                       <div style="font-size: 0.9rem; font-weight: 700; color: var(--t);">${entry.val}</div>
+                    </div>
+                 </div>
+             `;
+          }
+       });
+       
+       list.innerHTML = listHtml;
+       
+       const notesEl = document.getElementById('rd-notes');
+       const notes = group.find(i => i.notes)?.notes || "";
+       if (notes) {
+          notesEl.innerHTML = `<span class="material-symbols-outlined" style="font-size: 1.1rem; vertical-align: middle; margin-right: 6px;">notes</span>Catatan: ${notes}`;
+          notesEl.style.display = 'block';
+       } else {
+          notesEl.style.display = 'none';
+       }
+       
+       document.getElementById('report-detail-modal').classList.add('active');
+    }
+
+    function closeReportDetailModal() {
+       document.getElementById('report-detail-modal').classList.remove('active');
+    }
+
+    function deleteLog(id) {
+       if (confirm('Hapus entri riwayat ini?')) {
+          ACTIVITY_LOG = ACTIVITY_LOG.filter(l => l.id !== id);
+          saveToStorage();
+          renderGrids();
+          showToast('Entri Dihapus', 'success');
+       }
     }
 
     function saveToStorage() {
@@ -3820,7 +4233,9 @@
 
     try {
       loadFromStorage();
+      applySavedSettings(); // Apply font/color preferences
       renderProfiles();
+      fetchDynamicCatalog(); // Start fetching spreadsheet data
       renderGrids();
       setTimeout(updateEnvData, 1000);
     } catch (err) {

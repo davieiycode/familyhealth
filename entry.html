@@ -360,6 +360,66 @@
       { name: 'Hematokrit', unit: '%', icon: 'analytics', range: '37 - 52' }
     ];
 
+    // --- SPREADSHEET DYNAMIC LOGIC ---
+    let DYNAMIC_CATALOG = [];
+    const SHEET_CONFIG = {
+      referenceUrl: localStorage.getItem('VITAFAM_REF_URL') || '',
+      submitUrl: localStorage.getItem('VITAFAM_SUBMIT_URL') || ''
+    };
+
+    async function fetchDynamicCatalog() {
+      if (!SHEET_CONFIG.referenceUrl) return;
+      try {
+        const response = await fetch(SHEET_CONFIG.referenceUrl);
+        const csvText = await response.text();
+        const rows = csvText.split('\n').map(r => r.split(','));
+        const headers = rows[0].map(h => h.trim().toLowerCase());
+        
+        DYNAMIC_CATALOG = rows.slice(1).filter(r => r.length > 1).map(row => {
+          const item = {};
+          headers.forEach((h, i) => {
+            item[h] = row[i]?.trim();
+          });
+          return {
+            name: item['test name'],
+            unit: item['unit'],
+            lowerLimit: parseFloat(item['lower limit']),
+            lowerIndicator: item['lower limit indicators'],
+            lowerSuggestion: item['lower limit suggestions'],
+            upperLimit: parseFloat(item['upper limit']),
+            upperIndicator: item['upper limit indicators'],
+            upperSuggestion: item['upper limit suggestions'],
+            category: item['category'],
+            icon: 'biotech', // Default icon
+            range: (item['lower limit'] && item['upper limit']) ? (item['lower limit'] + ' - ' + item['upper limit']) : (item['lower limit'] ? '> ' + item['lower limit'] : item['upper limit'] ? '< ' + item['upper limit'] : '-')
+          };
+        });
+        filterPicker(); // Refresh picker
+      } catch (err) {
+        console.error('Error fetching dynamic catalog:', err);
+      }
+    }
+
+    function calculateIndication(name, value) {
+      const test = DYNAMIC_CATALOG.find(t => t.name === name);
+      if (!test) return { indication: 'Normal', suggestion: '' };
+
+      const val = parseFloat(value);
+      if (isNaN(val)) return { indication: 'Data Tidak Valid', suggestion: 'Pastikan input berupa angka.' };
+
+      if (test.lowerLimit && val < test.lowerLimit) {
+        return { indication: test.lowerIndicator || 'Rendah', suggestion: test.lowerSuggestion || '' };
+      }
+      if (test.upperLimit && val > test.upperLimit) {
+        return { indication: test.upperIndicator || 'Tinggi', suggestion: test.upperSuggestion || '' };
+      }
+      return { indication: 'Normal', suggestion: 'Tetap pertahankan pola hidup sehat.' };
+    }
+    
+    // Fetch on load
+    fetchDynamicCatalog();
+    // --- END SPREADSHEET LOGIC ---
+
     // Initialize defaults
     const now = new Date();
     document.getElementById('report-date').valueAsDate = now;
@@ -373,15 +433,15 @@
 
     function filterPicker() {
        const q = document.getElementById('picker-search').value.toLowerCase();
-       const list = document.getElementById('picker-list');
-       const filtered = CATALOG.filter(t => t.name.toLowerCase().includes(q));
+       const combined = [...CATALOG, ...DYNAMIC_CATALOG];
+       const filtered = combined.filter(t => t.name.toLowerCase().includes(q));
        
        list.innerHTML = filtered.map(t => `
           <div class="picker-item" onclick="addTestItem('${t.name}', '${t.unit}', '${t.icon}', false, '${t.range}')">
              <span class="material-symbols-outlined item-icon">${t.icon}</span>
              <div>
                 <div style="font-weight: 700; font-size: 1rem;">${t.name}</div>
-                <div style="font-size: 0.75rem; color: var(--tx3);">Normal: ${t.range}</div>
+                <div style="font-size: 0.75rem; color: var(--tx3); font-weight:700;">Normal: ${t.range}</div>
              </div>
           </div>
        `).join('');
@@ -489,53 +549,97 @@
        updateStatusUI(toggleEl, isNormal ? 'Normal' : 'Tidak Normal');
     }
 
-    function submitReport() {
-       const reportName = document.getElementById('report-name').value.trim();
-       const reportDate = document.getElementById('report-date').value;
-       const reportTime = document.getElementById('report-time').value;
-       const notes = document.getElementById('report-notes').value.trim();
-       
-       const items = document.querySelectorAll('.test-item');
-       if (items.length === 0) { alert('Harap masukkan minimal satu item pemeriksaan!'); return; }
-       
-       const results = [];
-       items.forEach(it => {
-          const nameEl = it.querySelector('.test-name');
-          const name = nameEl.tagName === 'INPUT' ? nameEl.value.trim() : nameEl.innerText.trim();
-          const val = it.querySelector('.test-value').value.trim();
-          const unit = it.querySelector('.form-unit').innerText.trim();
-          const range = it.querySelector('.test-range').value.trim();
-          const status = it.querySelector('.test-status').value;
-          
-          if (name && val) {
-             results.push(`${name}: ${val}${unit} (${status}${range ? ', Range: ' + range : ''})`);
-          }
-       });
+     function submitReport() {
+        const reportName = document.getElementById('report-name').value.trim();
+        const reportDate = document.getElementById('report-date').value;
+        const reportTime = document.getElementById('report-time').value;
+        const notes = document.getElementById('report-notes').value.trim();
+        
+        const items = document.querySelectorAll('.test-item');
+        if (items.length === 0) { alert('Harap masukkan minimal satu item pemeriksaan!'); return; }
+        
+        const results = [];
+        const detailedEntries = [];
+        const activeProfile = JSON.parse(localStorage.getItem('VITAFAM_PROFILES') || '[]').find(p => p.active) || { name: 'Ayah' };
 
-       if (results.length === 0) { alert('Harap isi data hasil pemeriksaan!'); return; }
+        items.forEach(it => {
+           const nameEl = it.querySelector('.test-name');
+           const name = nameEl.tagName === 'INPUT' ? nameEl.value.trim() : nameEl.innerText.trim();
+           const val = it.querySelector('.test-value').value.trim();
+           const unit = it.querySelector('.input-unit').innerText.trim();
+           const range = it.querySelector('.test-range').value.trim();
+           const status = it.querySelector('.test-status').value;
+           
+           if (name && val) {
+              const res = calculateIndication(name, val);
+              results.push(`${name}: ${val}${unit} (${res.indication})`);
+              
+              detailedEntries.push({
+                test_name: name,
+                value: val,
+                unit: unit,
+                indication: res.indication,
+                suggestions: res.suggestion,
+                category: DYNAMIC_CATALOG.find(t => t.name === name)?.category || 'Laboratorium'
+              });
+           }
+        });
 
-       const dateArr = reportDate.split('-');
-       let finalVal = reportName ? `Laporan: ${reportName} || ` : "";
-       finalVal += results.join(' || ');
-       if (notes) finalVal += ` || Catatan: ${notes}`;
+        if (results.length === 0) { alert('Harap isi data hasil pemeriksaan!'); return; }
 
-       const logEntry = {
-          id: 'l' + Date.now(),
-          user: 'Ayah', // Usually dynamic
-          action: 'Laporan Rekapitulasi',
-          val: finalVal,
-          time: `${dateArr[2]} ${getMonthName(dateArr[1])}, ${reportTime}`,
-          icon: 'biotech'
-       };
+        const dateArr = reportDate.split('-');
+        let finalVal = reportName ? `Laporan: ${reportName} || ` : "";
+        finalVal += results.join(' || ');
+        if (notes) finalVal += ` || Catatan: ${notes}`;
 
-       const existingLogs = JSON.parse(localStorage.getItem('vitaFamLogs') || '[]');
-       existingLogs.unshift(logEntry);
-       localStorage.setItem('vitaFamLogs', JSON.stringify(existingLogs));
+        const logId = 'l' + Date.now();
+        const dateTimeStr = `${dateArr[2]} ${getMonthName(dateArr[1])}, ${reportTime}`;
 
-       const toast = document.getElementById('toast');
-       toast.style.display = 'block';
-       setTimeout(() => { window.location.href = 'index.html'; }, 1500);
-    }
+        const logEntry = {
+           id: logId,
+           user: activeProfile.name,
+           action: 'Laporan Rekapitulasi',
+           val: finalVal,
+           time: dateTimeStr,
+           icon: 'biotech',
+           reportName: reportName,
+           notes: notes,
+           subEntries: detailedEntries
+        };
+
+        const existingLogs = JSON.parse(localStorage.getItem('VITAFAM_LOGS') || '[]');
+        existingLogs.unshift(logEntry);
+        localStorage.setItem('VITAFAM_LOGS', JSON.stringify(existingLogs));
+
+        // Push to Spreadsheet if configured
+        if (SHEET_CONFIG.submitUrl) {
+          detailedEntries.forEach(se => {
+            const logPayload = {
+              log_id: logId,
+              timestamp: new Date().toISOString(),
+              author: activeProfile.name,
+              test_name: se.test_name,
+              value: se.value,
+              unit: se.unit,
+              indication: se.indication,
+              suggestions: se.suggestions,
+              category: se.category,
+              notes: notes,
+              report_name: reportName
+            };
+            fetch(SHEET_CONFIG.submitUrl, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(logPayload)
+            }).catch(console.error);
+          });
+        }
+
+        const toast = document.getElementById('toast');
+        toast.style.display = 'block';
+        setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+     }
 
     function getMonthName(m) {
        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
