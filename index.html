@@ -327,13 +327,42 @@
 
     .side-item .material-symbols-outlined { font-size: 1.6rem; }
 
-    /* Responsive Desktop Optimization */
+    /* Responsive Desktop Optimization (Professional Dashboard Look) */
     @media (min-width: 1024px) {
+      body {
+        align-items: flex-start; /* Fix: Stop centering everything on wide screens */
+        padding-left: 300px;     /* Space for fixed sidebar */
+      }
+      
       .sidebar { display: flex; }
       .bottom-nav { display: none !important; }
-      #app { padding-left: 320px; }
-      .header { left: 320px; width: calc(100% - 344px) !important; max-width: 900px; }
+      
+      #app { 
+        padding: 40px 60px 140px; 
+        margin: 0;
+        max-width: 1400px; /* Allowing more breathing room */
+        text-align: left;
+      }
+
+      .header { 
+        position: sticky;
+        top: 20px;
+        left: 300px; 
+        width: calc(100% - 60px); 
+        max-width: 1200px;
+        margin-left: 0;
+      }
+
+      .section-container {
+        max-width: 1200px;
+      }
+
       .fab { right: 40px; bottom: 40px; }
+      
+      /* Multi-column grids for desktop */
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      }
     }
 
     /* Bottom Navigation (Mobile Default) */
@@ -1083,8 +1112,8 @@
     /* Grid Layout */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+      gap: 20px;
     }
 
     /* Premium Modern Card */
@@ -1691,9 +1720,11 @@
 
   <!-- DESKTOP SIDEBAR -->
   <div class="sidebar">
-    <div class="brand" style="margin-bottom: 40px; padding: 0 10px;">
-       <div class="brand-logo" style="width: 48px; height: 48px;"><span class="material-symbols-outlined" style="font-size: 2rem;">pill</span></div>
-       <div class="brand-name" style="display: block; font-size: 1.4rem;">VitaFam</div>
+    <div class="brand" style="margin-bottom: 30px; padding: 0 15px;">
+       <div class="brand-logo" style="width: 48px; height: 48px; background: var(--t); color: #000;">
+          <span class="material-symbols-outlined" style="font-size: 2rem;">pill</span>
+       </div>
+       <div class="brand-name" style="display: block; font-size: 1.5rem; background: linear-gradient(135deg, #fff, #aaa); -webkit-background-clip: text; background-clip: text; color: transparent;">VitaFam</div>
     </div>
     <div class="side-item active" onclick="switchView('dashboard', this)">
       <span class="material-symbols-outlined">dashboard</span>Utama
@@ -1980,9 +2011,7 @@
       </div>
     </div>
 
-    <!-- VIEWS SECTION -->
-    <section id="view-dashboard" class="view active">
-      <!-- Dashboard Content (Consolidated later if needed) -->
+    <!-- VIEWS SECTION -->    <section id="view-dashboard" class="view active">
       <div class="analysis-container" id="analysis-summary">
         <div class="analysis-card score">
           <div class="analysis-header"><span class="material-symbols-outlined">health_metrics</span>Skor Kesehatan</div>
@@ -1992,30 +2021,29 @@
           </div>
         </div>
         <div class="analysis-card alert">
-          <div class="analysis-header"><span class="material-symbols-outlined"
-              style="color:var(--r)">warning</span>Peringatan</div>
-          <div style="font-size:0.9rem; color:var(--tx2)">Hasil lab terbaru menunjukkan kolesterol Ibu agak tinggi.
-          </div>
+          <div class="analysis-header"><span class="material-symbols-outlined" style="color:var(--r)">warning</span>Peringatan</div>
+          <div style="font-size:0.9rem; color:var(--tx2)">Hasil lab terbaru menunjukkan kolesterol Ibu agak tinggi.</div>
         </div>
       </div>
+
       <div id="family-sync-dashboard" style="margin-top:20px;"></div>
-  </div>
 
-  <div class="section-container" style="margin-top:20px;">
-    <div class="section-title"><span class="material-symbols-outlined">medication</span>Obat & Rutinitas</div>
-    <div class="grid" id="medication-grid-dash"></div>
-  </div>
+      <div class="section-container" style="margin-top:20px;">
+        <div class="section-title"><span class="material-symbols-outlined">medication</span>Obat & Rutinitas</div>
+        <div class="grid" id="medication-grid-dash"></div>
+      </div>
 
-  <div class="section-container" style="margin-top:20px;">
-    <div class="section-title"><span class="material-symbols-outlined">auto_awesome</span>Program & Kebiasaan</div>
-    <div class="grid" id="program-grid"></div>
-  </div>
+      <div class="section-container" style="margin-top:20px;">
+        <div class="section-title"><span class="material-symbols-outlined">auto_awesome</span>Program & Kebiasaan</div>
+        <div class="grid" id="program-grid"></div>
+      </div>
 
-  <div class="section-container" style="margin-top:20px;">
-    <div class="section-title"><span class="material-symbols-outlined">medical_services</span>Layanan Dokter</div>
-    <div class="grid" id="doctor-grid-dash"></div>
-  </div>
-  </section>
+      <div class="section-container" style="margin-top:20px;">
+        <div class="section-title"><span class="material-symbols-outlined">medical_services</span>Layanan Dokter</div>
+        <div class="grid" id="doctor-grid-dash"></div>
+      </div>
+    </section>
+
 
   <button class="fab" onclick="window.location.href = 'entry.html'" id="main-fab" style="display: none;">
     <span class="material-symbols-outlined">add</span>
