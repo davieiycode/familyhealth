@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Kesehatan | FamilyHealth</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #eef2ff;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius-xl: 20px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); padding: 1.5rem; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding-bottom: 8rem; }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .brand { display: flex; align-items: center; gap: 0.75rem; }
+        .brand-icon { background: linear-gradient(135deg, var(--primary), #8b5cf6); color: white; width: 44px; height: 44px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3); }
+        .brand-text h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.025em; }
+
+        .profile-switcher { display: flex; align-items: center; gap: 0.5rem; background: white; padding: 0.4rem 1rem; border-radius: 30px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; position: relative; }
+        .profile-switcher:hover { border-color: var(--primary); background: var(--primary-light); }
+        .profile-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; }
+        .profile-name { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+
+        .profile-menu { position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid var(--border); width: 220px; padding: 0.5rem; display: none; z-index: 1100; text-align: left; }
+        .profile-menu.active { display: block; }
+        .profile-opt { padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 0.75rem; color: var(--text-muted); }
+        .profile-opt:hover { background: var(--primary-light); color: var(--primary); }
+        .profile-opt.active { background: var(--primary-light); color: var(--primary); font-weight: 700; }
+
+        .card { background: var(--card-bg); border-radius: var(--radius-lg); padding: 2rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 2rem; }
+        .section-header { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.1rem; }
+
+        .report-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+        .test-entry-row { display: grid; grid-template-columns: 2fr 1fr 1fr 40px; gap: 1rem; margin-bottom: 1rem; align-items: start; background: #fcfdfe; padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border); position: relative; }
+        .test-entry-row:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
+
+        label { display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text-muted); text-transform: uppercase; }
+        input, select { width: 100%; padding: 0.7rem 0.9rem; border-radius: var(--radius-md); border: 1px solid var(--border); font-size: 0.9rem; transition: all 0.2s; background: #fff; }
+        input:focus { border-color: var(--primary); outline: none; }
+        input[readonly] { background: #f1f5f9; cursor: not-allowed; }
+
+        .btn { padding: 0.75rem 1.25rem; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; text-decoration: none; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: var(--primary-light); color: var(--primary); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+
+        .table-container { background: var(--card-bg); border-radius: var(--radius-lg); border: 1px solid var(--border); overflow: hidden; box-shadow: var(--shadow-md); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { background: #f8fafc; padding: 1rem; text-align: left; font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; border-bottom: 2px solid var(--border); }
+        td { padding: 1rem; border-bottom: 1px solid var(--border); }
+        
+        .tag { padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .tag-normal { background: #ecfdf5; color: var(--success); }
+        .tag-high { background: #fffbeb; color: var(--warning); }
+        .tag-low { background: #fef2f2; color: var(--danger); }
+
+        .sidebar-nav { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); padding: 0.75rem 2rem; border-radius: 40px; display: flex; gap: 2rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); z-index: 1000; }
+        .nav-link { color: rgba(255,255,255,0.6); text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; gap: 4px; transition: 0.2s; }
+        .nav-link:hover, .nav-link.active { color: white; }
+        .nav-link i { width: 20px; height: 20px; }
+
+        #toast { position: fixed; top: 2rem; right: 2rem; padding: 1rem 1.5rem; background: #1e293b; color: white; border-radius: var(--radius-md); display: flex; align-items: center; gap: 0.75rem; transform: translateX(120%); transition: transform 0.3s; z-index: 9999; pointer-events: none; }
+        #toast.active { transform: translateX(0); }
+
+        @media (max-width: 1000px) {
+            .test-entry-row { grid-template-columns: 1fr 1fr; }
+            .report-meta { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="brand">
+                <div class="brand-icon"><i data-lucide="clipboard-list"></i></div>
+                <div class="brand-text">
+                    <h1>Log Kesehatan</h1>
+                    <p>Input Multi-Tes Otomatis.</p>
+                </div>
+            </div>
+            <div style="display:flex; gap: 0.75rem; align-items: center;">
+                <div class="profile-switcher" onclick="toggleProfileMenu(event)">
+                    <div class="profile-avatar" id="activeAvatar">U</div>
+                    <span class="profile-name" id="activeProfileName">Utama</span>
+                    <i data-lucide="chevron-down" style="width:14px; color:var(--text-muted);"></i>
+                    <div class="profile-menu" id="profileMenu">
+                        <div style="font-size:0.7rem; color:var(--text-muted); font-weight:700; padding: 0.5rem; text-transform: uppercase;">Pilih Profil</div>
+                        <div id="profileOptionsList"></div>
+                        <div style="border-top:1px solid var(--border); margin:5px 0;"></div>
+                        <a href="health-profiles.html" class="profile-opt" style="text-decoration:none;">
+                            <i data-lucide="users" style="width:16px;"></i> Kelola Profil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="card">
+                <div class="section-header">
+                    <i data-lucide="file-plus" style="width:20px;"></i>
+                    Entri Laporan <span id="activePatientLabel" style="color:var(--primary); margin-left: 0.5rem;"></span>
+                </div>
+                <form id="reportForm">
+                    <div class="report-meta">
+                        <div>
+                            <label>Nama Laporan</label>
+                            <input type="text" id="reportName" placeholder="Hasil Lab..." required>
+                        </div>
+                        <div>
+                            <label>Nama Pasien</label>
+                            <input type="text" id="author" readonly style="background:#f1f5f9;">
+                        </div>
+                        <div>
+                            <label>Tanggal</label>
+                            <input type="datetime-local" id="timestamp" required>
+                        </div>
+                    </div>
+
+                    <div id="testsContainer">
+                        <div class="test-entry-row" data-index="0">
+                            <div>
+                                <label>Nama Tes</label>
+                                <input type="text" list="testRefList" class="test-name" oninput="handleTestInput(this)" required>
+                            </div>
+                            <div>
+                                <label>Hasil</label>
+                                <input type="number" step="any" class="test-value" oninput="handleValueInput(this)" required>
+                            </div>
+                            <div>
+                                <label>Satuan</label>
+                                <input type="text" class="test-unit" readonly>
+                            </div>
+                            <div style="padding-top: 1.6rem;">
+                                <button type="button" class="btn-outline" onclick="removeRow(this)" style="padding: 0.5rem; display:none; border-radius: 8px;">
+                                    <i data-lucide="x" style="width:14px; color:var(--danger);"></i>
+                                </button>
+                            </div>
+                            <input type="hidden" class="test-indication">
+                            <input type="hidden" class="test-category">
+                            <input type="hidden" class="test-suggestions">
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content: space-between; margin-top: 1.5rem;">
+                        <button type="button" class="btn btn-secondary" onclick="addRow()">
+                             <i data-lucide="plus"></i> Tambah Tes
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                             <i data-lucide="save"></i> Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="log-section">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem;">
+                    <h2>Riwayat Pemeriksaan</h2>
+                    <button class="btn btn-outline" onclick="exportLogs()"><i data-lucide="download"></i> CSV</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal & Pasien</th>
+                                <th>Laporan</th>
+                                <th>Tes & Kategori</th>
+                                <th>Hasil</th>
+                                <th>Indikasi & Saran</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="health-log.html" class="nav-link active"><i data-lucide="clipboard-list"></i> Log</a>
+        <a href="health-analytics.html" class="nav-link"><i data-lucide="bar-chart-3"></i> Analisis</a>
+        <a href="health-reference.html" class="nav-link"><i data-lucide="settings"></i> Referensi</a>
+    </nav>
+
+    <div id="toast">
+        <span id="toastMsg"></span>
+    </div>
+
+    <datalist id="testRefList"></datalist>
+
+    <script>
+        lucide.createIcons();
+        const refData = JSON.parse(localStorage.getItem('health_reference_data') || '[]');
+        let logs = JSON.parse(localStorage.getItem('health_logs') || '[]');
+        let profiles = JSON.parse(localStorage.getItem('health_profiles') || '["Utama"]');
+        let activeProfile = localStorage.getItem('active_health_profile') || 'Utama';
+
+        function init() {
+            document.getElementById('timestamp').value = new Date().toISOString().slice(0, 16);
+            populateDatalist();
+            setupProfiles();
+            renderLogs();
+        }
+
+        function populateDatalist() {
+            const dl = document.getElementById('testRefList');
+            refData.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r.testName;
+                dl.appendChild(opt);
+            });
+        }
+
+        function shortenName(name) {
+            if (!name) return '';
+            const firstName = name.split(' ')[0];
+            return firstName.length > 10 ? firstName.substring(0, 10) + '...' : firstName;
+        }
+
+        function setupProfiles() {
+            const list = document.getElementById('profileOptionsList');
+            list.innerHTML = '';
+            profiles.forEach(p => {
+                const opt = document.createElement('div');
+                opt.className = `profile-opt ${p === activeProfile ? 'active' : ''}`;
+                opt.innerHTML = `<i data-lucide="user" style="width:16px;"></i> ${p}`;
+                opt.onclick = (e) => { e.stopPropagation(); switchProfile(p); };
+                list.appendChild(opt);
+            });
+            document.getElementById('activeProfileName').innerText = shortenName(activeProfile);
+            document.getElementById('activeAvatar').innerText = activeProfile.charAt(0);
+            document.getElementById('activePatientLabel').innerText = `(${shortenName(activeProfile)})`;
+            document.getElementById('author').value = activeProfile;
+            lucide.createIcons();
+        }
+
+        window.toggleProfileMenu = (e) => {
+            e.stopPropagation();
+            document.getElementById('profileMenu').classList.toggle('active');
+        };
+
+        window.switchProfile = (name) => {
+            activeProfile = name;
+            localStorage.setItem('active_health_profile', name);
+            document.getElementById('profileMenu').classList.remove('active');
+            setupProfiles();
+            renderLogs();
+        };
+
+        window.addNewProfile = (e) => {
+            e.stopPropagation();
+            const name = prompt("Nama Profil Baru:");
+            if (name && !profiles.includes(name)) {
+                profiles.push(name);
+                localStorage.setItem('health_profiles', JSON.stringify(profiles));
+                switchProfile(name);
+            }
+        };
+
+        window.onclick = () => document.getElementById('profileMenu').classList.remove('active');
+
+        window.addRow = () => {
+            const container = document.getElementById('testsContainer');
+            const newRow = container.querySelector('.test-entry-row').cloneNode(true);
+            newRow.querySelectorAll('input').forEach(i => i.value = '');
+            newRow.querySelector('button').style.display = 'block';
+            container.appendChild(newRow);
+            lucide.createIcons();
+        };
+
+        window.removeRow = (btn) => btn.closest('.test-entry-row').remove();
+
+        window.handleTestInput = (input) => {
+            const row = input.closest('.test-entry-row');
+            const match = refData.find(r => r.testName.toLowerCase() === input.value.toLowerCase());
+            if (match) {
+                row.querySelector('.test-unit').value = match.unit;
+                row.querySelector('.test-category').value = match.category;
+                row.dataset.low = match.lowerLimit;
+                row.dataset.high = match.upperLimit;
+                row.dataset.lowInd = match.lowerLimitIndicators;
+                row.dataset.lowSug = match.lowerLimitSuggestions;
+                row.dataset.highInd = match.upperLimitIndicators;
+                row.dataset.highSug = match.upperLimitSuggestions;
+                handleValueInput(row.querySelector('.test-value'));
+            }
+        };
+
+        window.handleValueInput = (input) => {
+            const row = input.closest('.test-entry-row');
+            const val = parseFloat(input.value);
+            const low = parseFloat(row.dataset.low);
+            const high = parseFloat(row.dataset.high);
+            const ind = row.querySelector('.test-indication');
+            const sug = row.querySelector('.test-suggestions');
+            if (isNaN(val) || isNaN(low)) return;
+            if (val < low) { ind.value = row.dataset.lowInd || 'Rendah'; sug.value = row.dataset.lowSug; }
+            else if (val > high) { ind.value = row.dataset.highInd || 'Tinggi'; sug.value = row.dataset.highSug; }
+            else { ind.value = 'Normal'; sug.value = 'Hasi dalam rentang normal.'; }
+        };
+
+        document.getElementById('reportForm').onsubmit = (e) => {
+            e.preventDefault();
+            const reportName = document.getElementById('reportName').value;
+            const author = document.getElementById('author').value;
+            const timestamp = document.getElementById('timestamp').value;
+            const newEntries = Array.from(document.querySelectorAll('.test-entry-row')).map(row => ({
+                logId: Date.now() + Math.random().toString(36).substr(2, 5),
+                reportName, author, timestamp,
+                testName: row.querySelector('.test-name').value,
+                value: row.querySelector('.test-value').value,
+                unit: row.querySelector('.test-unit').value,
+                indication: row.querySelector('.test-indication').value,
+                suggestions: row.querySelector('.test-suggestions').value,
+                category: row.querySelector('.test-category').value,
+            }));
+            logs = [...newEntries, ...logs];
+            localStorage.setItem('health_logs', JSON.stringify(logs));
+            showToast(`Berhasil menyimpan ${newEntries.length} tes!`);
+            location.reload(); 
+        };
+
+        function renderLogs() {
+            const body = document.getElementById('logTableBody');
+            body.innerHTML = '';
+            const filtered = logs.filter(l => l.author === activeProfile).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            filtered.forEach(log => {
+                const tr = document.createElement('tr');
+                const tag = `tag-${log.indication.toLowerCase().replace(/ /g, '-')}`;
+                tr.innerHTML = `
+                    <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.7rem">${new Date(log.timestamp).toLocaleDateString()}</div></td>
+                    <td>${log.reportName}</td>
+                    <td><div style="font-weight:600; color:var(--primary);">${log.testName}</div><div style="font-size:0.7rem; color:var(--text-muted);">${log.category}</div></td>
+                    <td>${log.value} ${log.unit}</td>
+                    <td><span class="tag ${tag}">${log.indication}</span><div style="font-size:0.7rem; margin-top:4px;">${log.suggestions}</div></td>
+                    <td><button class="btn-outline" onclick="deleteLog('${log.logId}')" style="padding:4px;"><i data-lucide="trash-2" style="width:14px; color:var(--danger);"></i></button></td>
+                `;
+                body.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        window.deleteLog = (id) => {
+            if(confirm('Hapus log?')) { logs = logs.filter(l => l.logId != id); localStorage.setItem('health_logs', JSON.stringify(logs)); renderLogs(); }
+        };
+
+        function showToast(msg) {
+            document.getElementById('toastMsg').innerText = msg;
+            document.getElementById('toast').classList.add('active');
+            setTimeout(() => document.getElementById('toast').classList.remove('active'), 3000);
+        }
+
+        window.exportLogs = () => {
+            const csv = ["Tanggal,Patient,Report,Test,Value,Unit,Indication", ...logs.map(l => `${l.timestamp},${l.author},${l.reportName},${l.testName},${l.value},${l.unit},${l.indication}`)].join('\n');
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'logs.csv';
+            a.click();
+        };
+
+        init();
+    </script>
+</body>
+</html>
