@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Nilai Normal Tes Kesehatan | FamilyHealth</title>
-    <meta name="description" content="Alat manajemen data referensi nilai normal untuk berbagai tes kesehatan diri.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Sentra Referensi Kesehatan | FamilyHealth</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
             --primary: #4f46e5;
             --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
             --secondary: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
@@ -24,719 +24,411 @@
             --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); line-height: 1.5; padding: 2rem 1rem; }
+        .container { max-width: 1000px; margin: 0 auto; }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            line-height: 1.5;
-            padding: 2rem 1rem;
-        }
+        .form-card { background: var(--card-bg); border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 2rem; }
+        .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; color: var(--primary); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        
+        .form-group { margin-bottom: 1.25rem; }
+        label { display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted); text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border); background: #fff; font-size: 0.95rem; outline: none; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
+        .limit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; padding: 1.5rem; background: #f1f5f9; border-radius: var(--radius-md); margin-bottom: 1.5rem; }
+        .limit-title { grid-column: 1 / -1; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; }
 
-        header {
-            margin-bottom: 2rem;
-            text-align: center;
-        }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.75rem 1.25rem; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; transition: 0.2s; border: none; gap: 0.5rem; font-size: 0.85rem; text-decoration: none; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
 
-        header h1 {
-            font-size: 2.25rem;
-            font-weight: 700;
-            color: var(--text-main);
-            letter-spacing: -0.025em;
-            margin-bottom: 0.5rem;
-        }
-
-        header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
-
-        .form-card {
-            background: var(--card-bg);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            margin-bottom: 2rem;
-            transition: transform 0.2s ease;
-        }
-
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            color: var(--primary);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: var(--text-main);
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            background: #fff;
-            font-size: 1rem;
-            transition: all 0.2s;
-            outline: none;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-        }
-
-        .limit-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            padding: 1.5rem;
-            background: #f1f5f9;
-            border-radius: var(--radius-md);
-            margin-bottom: 1.5rem;
-        }
-
-        .limit-title {
-            grid-column: 1 / -1;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-        }
-
-        .btn-container {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-        }
-
-        .btn-outline:hover {
-            background-color: #f1f5f9;
-            color: var(--text-main);
-        }
-
-        /* Results List */
-        .results-section {
-            margin-top: 3rem;
-        }
-
-        .card-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .result-card {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .result-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--primary);
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-
-        .result-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-
-        .result-category {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            background: #eef2ff;
-            color: var(--primary);
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-
-        .result-range {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-        }
-
-        .result-details {
-            border-top: 1px solid var(--border);
-            padding-top: 1rem;
-            font-size: 0.85rem;
-        }
-
-        .detail-row {
-            margin-bottom: 0.5rem;
-        }
-
-        .detail-label {
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.1rem 0.4rem;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            margin-left: 0.5rem;
-        }
-
-        .badge-low { background: #fee2e2; color: #ef4444; }
-        .badge-high { background: #ffedd5; color: #f59e0b; }
-
-        @media (max-width: 640px) {
-            body { padding: 1rem 0.5rem; }
-            .grid, .limit-grid { grid-template-columns: 1fr; }
-            .form-card { padding: 1.25rem; }
-            header h1 { font-size: 1.75rem; }
-        }
-
-        /* Success Message Overlay */
-        #toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: #10b981;
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow);
-            transform: translateY(150%);
-            transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-weight: 600;
-        }
-
-        #toast.show {
-            transform: translateY(0);
-        }
         .sidebar-nav { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); padding: 0.75rem 2rem; border-radius: 40px; display: flex; gap: 2rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); z-index: 1000; }
         .nav-link { color: rgba(255,255,255,0.6); text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; gap: 4px; transition: 0.2s; }
         .nav-link:hover, .nav-link.active { color: white; }
         .nav-link i { width: 20px; height: 20px; }
 
-        @media (max-width: 640px) {
-            body { padding: 1rem 0.5rem; }
-            .grid, .limit-grid { grid-template-columns: 1fr; }
-            .form-card { padding: 1.25rem; }
-            header h1 { font-size: 1.75rem; }
-        }
+        /* Tabs */
+        .tab-container { display: flex; gap: 0.5rem; margin-bottom: 2rem; background: #f1f5f9; padding: 0.4rem; border-radius: 14px; overflow-x: auto; scrollbar-width: none; }
+        .tab { padding: 0.6rem 1.25rem; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); transition: 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 0.5rem; border: none; background: none; }
+        .tab.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        .repo-section { display: none; }
+        .repo-section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .data-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+        .data-card { background: white; padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: relative; }
+        .data-card:hover { border-color: var(--primary); transform: translateY(-2px); transition: 0.2s; }
+        .card-tag { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 0.25rem 0.5rem; border-radius: 4px; display: inline-block; margin-bottom: 0.5rem; }
+
+        #toast { position: fixed; bottom: 6rem; right: 2rem; background: var(--secondary); color: white; padding: 1rem 1.5rem; border-radius: var(--radius-md); transform: translateY(150%); transition: 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); z-index: 1000; font-weight: 700; box-shadow: var(--shadow); }
+        #toast.show { transform: translateY(0); }
+
+        /* Modal / Form Overlay */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 1rem; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: white; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; border-radius: var(--radius-lg); padding: 2rem; position: relative; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .repo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
     </style>
 </head>
 <body>
 
     <div class="container" style="padding-bottom: 8rem;">
-        <header>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <i data-lucide="shield-check" style="width: 42px; height: 42px; color: var(--primary);"></i>
-                    <h1 style="margin:0;">Referensi Nilai</h1>
+        <header style="margin-bottom: 2.5rem;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                <div style="background: var(--primary); color: white; width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center;">
+                    <i data-lucide="book-open"></i>
+                </div>
+                <div>
+                    <h1 style="font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; margin: 0;">Sentra Referensi</h1>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Database kesehatan pribadi keluarga Anda.</p>
                 </div>
             </div>
-            <p>Kelola ambang batas normal untuk pemantauan kesehatan keluarga yang akurat.</p>
         </header>
 
+        <div class="tab-container">
+            <button class="tab active" onclick="switchTab('tests')"><i data-lucide="beaker"></i> Nilai Normal</button>
+            <button class="tab" onclick="switchTab('meds')"><i data-lucide="pill"></i> Obat-obatan</button>
+            <button class="tab" onclick="switchTab('docs')"><i data-lucide="user-cog"></i> Daftar Dokter</button>
+            <button class="tab" onclick="switchTab('clinics')"><i data-lucide="hospital"></i> Faskes</button>
+        </div>
+
         <main>
-            <div class="form-card">
-                <form id="healthForm">
-                    <div class="section-title">
-                        <i data-lucide="beaker"></i>
-                        Parameter Tes Kesehatan
-                    </div>
-                    
-                    <div class="grid">
-                        <div class="form-group">
-                            <label for="testName">Nama Tes / Parameter</label>
-                            <input type="text" id="testName" placeholder="Contoh: Hemoglobin, Kolesterol Total" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="unit">Satuan Ukur</label>
-                            <input type="text" id="unit" placeholder="Contoh: mg/dL, g/dL, %" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="category">Kategori Utama</label>
-                            <input type="text" id="category" list="categoryList" placeholder="Contoh: Darah, Ginjal, Jantung" required>
-                            <datalist id="categoryList">
-                                <option value="Profil Lipid">
-                                <option value="Fungsi Ginjal">
-                                <option value="Hematologi">
-                                <option value="Elektrolit">
-                                <option value="Fungsi Hati">
-                                <option value="Diabetes">
-                                <option value="Urinalisis">
-                                <option value="Hormon">
-                            </datalist>
-                        </div>
-                    </div>
-
-                    <div class="limit-grid">
-                        <div class="limit-title">Rentang Normal & Indikator Batas Bawah</div>
-                        <div class="form-group">
-                            <label for="lowerLimit">Batas Bawah (Min)</label>
-                            <input type="number" step="any" id="lowerLimit" placeholder="0.0" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="lowerLimitIndicators">Indikator Rendah</label>
-                            <input type="text" id="lowerLimitIndicators" placeholder="Contoh: Rendah, Anemia">
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label for="lowerLimitSuggestions">Saran Medis/Nutrisi (Rendah)</label>
-                            <textarea id="lowerLimitSuggestions" rows="1" placeholder="Rekomendasi tindakan jika di bawah batas..."></textarea>
-                        </div>
-                    </div>
-
-                    <div class="limit-grid" style="background: #fff7ed;">
-                        <div class="limit-title">Rentang Normal & Indikator Batas Atas</div>
-                        <div class="form-group">
-                            <label for="upperLimit">Batas Atas (Max)</label>
-                            <input type="number" step="any" id="upperLimit" placeholder="100.0" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="upperLimitIndicators">Indikator Tinggi</label>
-                            <input type="text" id="upperLimitIndicators" placeholder="Contoh: Tinggi, Hipertensi">
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label for="upperLimitSuggestions">Saran Medis/Nutrisi (Tinggi)</label>
-                            <textarea id="upperLimitSuggestions" rows="1" placeholder="Rekomendasi tindakan jika di atas batas..."></textarea>
-                        </div>
-                    </div>
-
-                    <div class="grid">
-                        <div class="form-group">
-                            <label for="gender">Target Jenis Kelamin</label>
-                            <select id="gender">
-                                <option value="Umum">Umum (Semua)</option>
-                                <option value="Laki-laki">Laki-laki</option>
-                                <option value="Perempuan">Perempuan</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="ageGroup">Target Usia</label>
-                            <select id="ageGroup">
-                                <option value="Dewasa">Dewasa (>18th)</option>
-                                <option value="Anak-anak">Anak-anak</option>
-                                <option value="Bayi">Bayi/Balita</option>
-                                <option value="Lansia">Lansia (>60th)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="btn-container">
-                        <button type="button" class="btn btn-outline" id="clearBtn">
-                            <i data-lucide="rotate-ccw"></i> Reset
-                        </button>
-                        <button type="submit" class="btn btn-primary" id="submitBtn">
-                            <i data-lucide="save"></i> <span id="btnText">Simpan Parameter</span>
-                        </button>
-                    </div>
-                </form>
+            <!-- SECTION: TESTS -->
+            <div id="section-tests" class="repo-section active">
+                <div class="repo-header">
+                    <h2 class="section-title" style="margin:0;"><i data-lucide="beaker"></i> Parameter Tes</h2>
+                    <button class="btn btn-primary" onclick="openModal('modalTests')"><i data-lucide="plus"></i> Tambah</button>
+                </div>
+                <div id="testList" class="data-grid"></div>
             </div>
 
-            <div class="results-section">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-                    <div class="section-title" style="margin-bottom: 0;">
-                        <i data-lucide="database"></i> Repository Referensi
-                    </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn btn-outline" onclick="exportData()" title="Ekspor ke JSON">
-                            <i data-lucide="download"></i> Ekspor
-                        </button>
-                        <button class="btn btn-outline" onclick="document.getElementById('importFile').click()" title="Impor dari JSON">
-                            <i data-lucide="upload"></i> Impor
-                        </button>
-                        <input type="file" id="importFile" style="display: none;" onchange="importData(this)">
-                        <div style="width: 1px; background: var(--border); margin: 0 0.5rem;"></div>
-                        <button class="btn btn-outline" id="viewToggle" onclick="toggleView()">
-                            <i data-lucide="layout-grid" id="viewIcon"></i> <span id="viewText">Tampilan Tabel</span>
-                        </button>
-                    </div>
+            <!-- SECTION: MEDS -->
+            <div id="section-meds" class="repo-section">
+                <div class="repo-header">
+                    <h2 class="section-title" style="margin:0;"><i data-lucide="pill"></i> Koleksi Obat</h2>
+                    <button class="btn btn-primary" onclick="openModal('modalMeds')"><i data-lucide="plus"></i> Tambah</button>
                 </div>
+                <div id="medList" class="data-grid"></div>
+            </div>
 
-                <div id="listView" class="card-list">
-                    <!-- Cards injection -->
+            <!-- SECTION: DOCTORS -->
+            <div id="section-docs" class="repo-section">
+                <div class="repo-header">
+                    <h2 class="section-title" style="margin:0;"><i data-lucide="user-cog"></i> Daftar Dokter</h2>
+                    <button class="btn btn-primary" onclick="openModal('modalDocs')"><i data-lucide="user-plus"></i> Tambah</button>
                 </div>
+                <div id="docList" class="data-grid"></div>
+            </div>
 
-                <div id="tableView" style="display: none; overflow-x: auto; background: white; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow);">
-                    <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
-                        <thead>
-                            <tr style="background: #f8fafc; border-bottom: 2px solid var(--border);">
-                                <th style="padding: 1rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Test Name</th>
-                                <th style="padding: 1rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Range</th>
-                                <th style="padding: 1rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Category</th>
-                                <th style="padding: 1rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Indicators</th>
-                                <th style="padding: 1rem; text-align: center; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            <!-- Rows injection -->
-                        </tbody>
-                    </table>
+            <!-- SECTION: CLINICS -->
+            <div id="section-clinics" class="repo-section">
+                <div class="repo-header">
+                    <h2 class="section-title" style="margin:0;"><i data-lucide="hospital"></i> Fasilitas Kesehatan</h2>
+                    <button class="btn btn-primary" onclick="openModal('modalClinics')"><i data-lucide="plus"></i> Tambah</button>
                 </div>
+                <div id="clinicList" class="data-grid"></div>
             </div>
         </main>
     </div>
 
+    <!-- MODAL: TESTS -->
+    <div id="modalTests" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h3 class="section-title" style="margin:0;">Tambah Parameter</h3>
+                <button onclick="closeModal('modalTests')" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i data-lucide="x"></i></button>
+            </div>
+            <form id="healthForm">
+                <div class="grid">
+                    <div class="form-group"><label>Nama Tes</label><input type="text" id="testName" required></div>
+                    <div class="form-group"><label>Satuan</label><input type="text" id="unit" required></div>
+                    <div class="form-group"><label>Kategori</label><input type="text" id="category" list="catList"></div>
+                </div>
+                <div class="limit-grid">
+                    <div class="limit-title">Batas Bawah</div>
+                    <div class="form-group"><label>Min</label><input type="number" step="any" id="lowerLimit" required></div>
+                    <div class="form-group"><label>Indikator</label><input type="text" id="lowerLimitIndicators"></div>
+                    <div class="form-group" style="grid-column: 1/-1;"><label>Saran</label><textarea id="lowerLimitSuggestions" rows="1"></textarea></div>
+                </div>
+                <div class="limit-grid" style="background:#fff7ed;">
+                    <div class="limit-title">Batas Atas</div>
+                    <div class="form-group"><label>Max</label><input type="number" step="any" id="upperLimit" required></div>
+                    <div class="form-group"><label>Indikator</label><input type="text" id="upperLimitIndicators"></div>
+                    <div class="form-group" style="grid-column:1/-1;"><label>Saran</label><textarea id="upperLimitSuggestions" rows="1"></textarea></div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i data-lucide="save"></i> Simpan Parameter</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: MEDS -->
+    <div id="modalMeds" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h3 class="section-title" style="margin:0;">Tambah Obat</h3>
+                <button onclick="closeModal('modalMeds')" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i data-lucide="x"></i></button>
+            </div>
+            <form id="medForm">
+                <div class="grid">
+                    <div class="form-group"><label>Nama Obat</label><input type="text" id="medName" required></div>
+                    <div class="form-group"><label>Bentuk</label><select id="medType"><option value="Tablet">Tablet/Kaplet</option><option value="Sirup">Sirup</option><option value="Kapsul">Kapsul</option><option value="Salep">Salep/Krim</option></select></div>
+                    <div class="form-group"><label>Dosis</label><input type="text" id="medDose" required></div>
+                </div>
+                <div class="form-group"><label>Indikasi</label><input type="text" id="medIndication" placeholder="Kapan obat ini diminum?"></div>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i data-lucide="plus"></i> Simpan Obat</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: DOCS -->
+    <div id="modalDocs" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h3 class="section-title" style="margin:0;">Tambah Dokter</h3>
+                <button onclick="closeModal('modalDocs')" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i data-lucide="x"></i></button>
+            </div>
+            <form id="docForm">
+                <div class="grid">
+                    <div class="form-group"><label>Nama Dokter</label><input type="text" id="docName" required></div>
+                    <div class="form-group"><label>Spesialisasi</label><input type="text" id="docSpec" required></div>
+                    <div class="form-group"><label>Klinik/RS</label><input type="text" id="docClinic" required></div>
+                </div>
+                <div class="grid">
+                    <div class="form-group"><label>Telepon</label><input type="tel" id="docPhone"></div>
+                    <div class="form-group"><label>Catatan/Jadwal</label><input type="text" id="docNotes"></div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i data-lucide="user-plus"></i> Simpan Dokter</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CLINICS -->
+    <div id="modalClinics" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h3 class="section-title" style="margin:0;">Tambah Faskes</h3>
+                <button onclick="closeModal('modalClinics')" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i data-lucide="x"></i></button>
+            </div>
+            <form id="clinicForm">
+                <div class="grid">
+                    <div class="form-group"><label>Nama Instansi</label><input type="text" id="clinicName" required></div>
+                    <div class="form-group"><label>Tipe</label><select id="clinicType"><option value="Rumah Sakit">Rumah Sakit</option><option value="Klinik">Klinik</option><option value="Puskesmas">Puskesmas</option><option value="Lab">Laboratorium</option></select></div>
+                </div>
+                <div class="form-group"><label>Alamat</label><input type="text" id="clinicAddress" required></div>
+                <div class="grid">
+                    <div class="form-group"><label>Telepon</label><input type="tel" id="clinicPhone"></div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i data-lucide="plus"></i> Simpan Faskes</button>
+            </form>
+        </div>
+    </div>
+
     <nav class="sidebar-nav">
-        <a href="health-log.html" class="nav-link">
-            <i data-lucide="clipboard-list"></i>
-            Log Tes
-        </a>
-        <a href="health-analytics.html" class="nav-link">
-            <i data-lucide="bar-chart-3"></i>
-            Analisis
-        </a>
-        <a href="health-reference.html" class="nav-link active">
-            <i data-lucide="settings"></i>
-            Referensi
-        </a>
+        <a href="health-log.html" class="nav-link"><i data-lucide="clipboard-list"></i> Log</a>
+        <a href="health-analytics.html" class="nav-link"><i data-lucide="bar-chart-3"></i> Analisis</a>
+        <a href="health-reference.html" class="nav-link active"><i data-lucide="settings"></i> Referensi</a>
     </nav>
 
-    <div id="toast">
-        <i data-lucide="check-circle" id="toastIcon"></i>
-        <span id="toastMsg">Data berhasil disimpan!</span>
-    </div>
+    <div id="toast">Data Berhasil Disimpan!</div>
 
     <script>
         lucide.createIcons();
 
-        const form = document.getElementById('healthForm');
-        const listView = document.getElementById('listView');
-        const tableView = document.getElementById('tableView');
-        const tableBody = document.getElementById('tableBody');
-        const toast = document.getElementById('toast');
-        const toastMsg = document.getElementById('toastMsg');
-        const toastIcon = document.getElementById('toastIcon');
-        
-        let savedData = JSON.parse(localStorage.getItem('health_reference_data') || '[]');
-        let currentView = 'grid';
+        // Data Management
+        let testData = JSON.parse(localStorage.getItem('health_reference_data') || '[]');
+        let medsData = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
+        let docsData = JSON.parse(localStorage.getItem('health_docs_data') || '[]');
+        let clinicsData = JSON.parse(localStorage.getItem('health_clinics_data') || '[]');
 
-        // Seed data if empty
-        if (savedData.length === 0) {
-            savedData = [
-                {
-                    testName: "Kolesterol Total",
-                    unit: "mg/dL",
-                    category: "Profil Lipid",
-                    lowerLimit: 0,
-                    lowerLimitIndicators: "Sangat Rendah",
-                    lowerLimitSuggestions: "Perlu pemeriksaan lanjutan fungsi hati.",
-                    upperLimit: 200,
-                    upperLimitIndicators: "Tinggi (Hiperkolesterolemia)",
-                    upperLimitSuggestions: "Kurangi lemak jenuh, perbanyak serat.",
-                    gender: "Umum",
-                    ageGroup: "Dewasa"
-                },
-                {
-                    testName: "Hemoglobin (Hb)",
-                    unit: "g/dL",
-                    category: "Hematologi",
-                    lowerLimit: 12,
-                    lowerLimitIndicators: "Anemia",
-                    lowerLimitSuggestions: "Konsumsi makanan kaya zat besi.",
-                    upperLimit: 16,
-                    upperLimitIndicators: "Polisitemia",
-                    upperLimitSuggestions: "Konsultasikan dengan dokter spesialis darah.",
-                    gender: "Perempuan",
-                    ageGroup: "Dewasa"
-                }
-            ];
-            localStorage.setItem('health_reference_data', JSON.stringify(savedData));
+        function saveAll() {
+            localStorage.setItem('health_reference_data', JSON.stringify(testData));
+            localStorage.setItem('health_meds_data', JSON.stringify(medsData));
+            localStorage.setItem('health_docs_data', JSON.stringify(docsData));
+            localStorage.setItem('health_clinics_data', JSON.stringify(clinicsData));
         }
 
-        function renderAll() {
-            renderList();
-            renderTable();
-        }
+        window.switchTab = (tabId) => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.repo-section').forEach(s => s.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(`section-${tabId}`).classList.add('active');
+            lucide.createIcons();
+        };
 
-        function renderList() {
-            listView.innerHTML = '';
-            if (savedData.length === 0) {
-                listView.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted);"><i data-lucide="folder-open" style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.3;"></i><p>Belum ada data nilai normal.</p></div>`;
-                lucide.createIcons();
+        // Modal Logic
+        window.openModal = (id) => {
+            document.getElementById(id).classList.add('active');
+        };
+
+        window.closeModal = (id) => {
+            document.getElementById(id).classList.remove('active');
+        };
+
+        // --- RENDERERS ---
+        function renderTests() {
+            const list = document.getElementById('testList');
+            if (testData.length === 0) {
+                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Belum ada parameter tes. Klik Tambah untuk memulai.</div>';
                 return;
             }
-
-            savedData.forEach((item, index) => {
-                const card = document.createElement('div');
-                card.className = 'result-card';
-                card.innerHTML = `
-                    <div class="result-header">
-                        <div>
-                            <div class="result-category">${item.category}</div>
-                            <div class="result-title">${item.testName}</div>
-                        </div>
-                        <div style="display:flex; gap: 0.5rem">
-                            <button onclick="editItem(${index})" style="background:none; border:none; cursor:pointer; color: var(--primary);"><i data-lucide="edit-2" style="width:16px;"></i></button>
-                            <button onclick="deleteItem(${index})" style="background:none; border:none; cursor:pointer; color: var(--danger);"><i data-lucide="trash" style="width:16px;"></i></button>
-                        </div>
+            list.innerHTML = testData.map((t, idx) => `
+                <div class="data-card">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span class="card-tag" style="background:var(--primary-light); color:var(--primary);">${t.category || 'Umum'}</span>
+                        <button onclick="deleteItem('testData', ${idx}, renderTests)" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
                     </div>
-                    <div class="result-range">
-                        <i data-lucide="activity" style="width:16px;"></i>
-                        Normal: <strong>${item.lowerLimit} - ${item.upperLimit}</strong> ${item.unit}
-                    </div>
-                    <div class="result-details">
-                        <div class="detail-row"><span class="detail-label">Target:</span> ${item.gender} | ${item.ageGroup}</div>
-                        <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                            <div style="background: #fdf2f2; padding: 0.6rem; border-radius: 8px; border-left: 3px solid var(--danger);">
-                                <span style="font-size: 0.7rem; font-weight: 700; color: var(--danger); text-transform: uppercase;">Rendah (&lt;${item.lowerLimit})</span>
-                                <p style="font-weight:600; margin: 2px 0;">${item.lowerLimitIndicators || '-'}</p>
-                                <p style="font-size: 0.75rem; color: var(--text-muted);">${item.lowerLimitSuggestions || ''}</p>
-                            </div>
-                            <div style="background: #fffbeb; padding: 0.6rem; border-radius: 8px; border-left: 3px solid var(--warning);">
-                                <span style="font-size: 0.7rem; font-weight: 700; color: var(--warning); text-transform: uppercase;">Tinggi (&gt;${item.upperLimit})</span>
-                                <p style="font-weight:600; margin: 2px 0;">${item.upperLimitIndicators || '-'}</p>
-                                <p style="font-size: 0.75rem; color: var(--text-muted);">${item.upperLimitSuggestions || ''}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                listView.appendChild(card);
-            });
+                    <div style="font-weight:800; font-size:1.1rem; margin-top:0.5rem;">${t.testName}</div>
+                    <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;">Normal: ${t.lowerLimit}-${t.upperLimit} ${t.unit}</div>
+                </div>
+            `).join('');
             lucide.createIcons();
         }
 
-        function renderTable() {
-            tableBody.innerHTML = '';
-            savedData.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.style.borderBottom = "1px solid var(--border)";
-                tr.innerHTML = `
-                    <td style="padding: 1rem;">
-                        <div style="font-weight: 700;">${item.testName}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">${item.unit}</div>
-                    </td>
-                    <td style="padding: 1rem;">
-                        <span style="font-weight: 600;">${item.lowerLimit} - ${item.upperLimit}</span>
-                    </td>
-                    <td style="padding: 1rem;">
-                        <span class="result-category">${item.category}</span>
-                    </td>
-                    <td style="padding: 1rem; font-size: 0.85rem;">
-                        <div><span style="color: var(--danger); font-weight:600;">L:</span> ${item.lowerLimitIndicators}</div>
-                        <div><span style="color: var(--warning); font-weight:600;">H:</span> ${item.upperLimitIndicators}</div>
-                    </td>
-                    <td style="padding: 1rem; text-align: center;">
-                         <button onclick="editItem(${index})" style="padding: 0.4rem; background:none; border:none; cursor:pointer; color: var(--primary);"><i data-lucide="edit-2" style="width:16px;"></i></button>
-                         <button onclick="deleteItem(${index})" style="padding: 0.4rem; background:none; border:none; cursor:pointer; color: var(--danger);"><i data-lucide="trash" style="width:16px;"></i></button>
-                    </td>
-                `;
-                tableBody.appendChild(tr);
-            });
-            lucide.createIcons();
-        }
-
-        function toggleView() {
-            const vt = document.getElementById('viewText');
-            const vi = document.getElementById('viewIcon');
-            if (currentView === 'grid') {
-                listView.style.display = 'none';
-                tableView.style.display = 'block';
-                vt.innerText = 'Tampilan Kartu';
-                vi.setAttribute('data-lucide', 'layout-list');
-                currentView = 'table';
-            } else {
-                listView.style.display = 'grid';
-                tableView.style.display = 'none';
-                vt.innerText = 'Tampilan Tabel';
-                vi.setAttribute('data-lucide', 'layout-grid');
-                currentView = 'grid';
+        function renderMeds() {
+            const list = document.getElementById('medList');
+            if (medsData.length === 0) {
+                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Koleksi obat masih kosong.</div>';
+                return;
             }
+            list.innerHTML = medsData.map((m, idx) => `
+                <div class="data-card">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span class="card-tag" style="background:#f0fdf4; color:#166534;">${m.type}</span>
+                        <button onclick="deleteItem('medsData', ${idx}, renderMeds)" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
+                    </div>
+                    <div style="font-weight:800; font-size:1.1rem; margin-top:0.5rem;">${m.name}</div>
+                    <div style="color:var(--primary); font-weight:700; margin-bottom:0.5rem; font-size:0.9rem;">${m.dose}</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.4;">${m.indication}</div>
+                </div>
+            `).join('');
             lucide.createIcons();
         }
 
-        form.addEventListener('submit', (e) => {
+        function renderDocs() {
+            const list = document.getElementById('docList');
+            if (docsData.length === 0) {
+                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Daftar dokter belum ada.</div>';
+                return;
+            }
+            list.innerHTML = docsData.map((d, idx) => `
+                <div class="data-card">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span class="card-tag" style="background:#eff6ff; color:#1e40af;">${d.spec}</span>
+                        <button onclick="deleteItem('docsData', ${idx}, renderDocs)" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
+                    </div>
+                    <div style="font-weight:800; font-size:1.1rem; margin-top:0.5rem;">${d.name}</div>
+                    <div style="font-size:0.85rem; margin:0.5rem 0; color:var(--text-muted);"><i data-lucide="building-2" style="width:12px;"></i> ${d.clinic}</div>
+                    <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+                        <a href="tel:${d.phone}" class="btn btn-outline" style="padding:0.4rem 0.8rem; font-size:0.75rem; flex:1; border-radius:8px;"><i data-lucide="phone" style="width:14px;"></i> Hubungi</a>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderClinics() {
+            const list = document.getElementById('clinicList');
+            if (clinicsData.length === 0) {
+                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Pusat faskes belum terisi.</div>';
+                return;
+            }
+            list.innerHTML = clinicsData.map((c, idx) => `
+                <div class="data-card">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span class="card-tag" style="background:#fff7ed; color:#9a3412;">${c.type}</span>
+                        <button onclick="deleteItem('clinicsData', ${idx}, renderClinics)" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
+                    </div>
+                    <div style="font-weight:800; font-size:1.1rem; margin-top:0.5rem;">${c.name}</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin:0.5rem 0; line-height:1.4;">${c.address}</div>
+                    <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+                        <a href="tel:${c.phone}" class="btn btn-outline" style="padding:0.4rem 0.8rem; font-size:0.75rem; flex:1; border-radius:8px;"><i data-lucide="phone-forwarded" style="width:14px;"></i> Emergency</a>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // --- ACTIONS ---
+        window.deleteItem = (dataVar, idx, renderFn) => {
+            if(confirm('Hapus item ini?')) {
+                if(dataVar === 'testData') testData.splice(idx, 1);
+                if(dataVar === 'medsData') medsData.splice(idx, 1);
+                if(dataVar === 'docsData') docsData.splice(idx, 1);
+                if(dataVar === 'clinicsData') clinicsData.splice(idx, 1);
+                saveAll(); renderFn();
+            }
+        };
+
+        // --- SUBMITS ---
+        document.getElementById('healthForm').onsubmit = (e) => {
             e.preventDefault();
-            const formData = {
+            testData.unshift({
                 testName: document.getElementById('testName').value,
                 unit: document.getElementById('unit').value,
                 category: document.getElementById('category').value,
-                lowerLimit: parseFloat(document.getElementById('lowerLimit').value),
+                lowerLimit: document.getElementById('lowerLimit').value,
                 lowerLimitIndicators: document.getElementById('lowerLimitIndicators').value,
                 lowerLimitSuggestions: document.getElementById('lowerLimitSuggestions').value,
-                upperLimit: parseFloat(document.getElementById('upperLimit').value),
+                upperLimit: document.getElementById('upperLimit').value,
                 upperLimitIndicators: document.getElementById('upperLimitIndicators').value,
                 upperLimitSuggestions: document.getElementById('upperLimitSuggestions').value,
-                gender: document.getElementById('gender').value,
-                ageGroup: document.getElementById('ageGroup').value
-            };
-
-            const editIndex = form.dataset.editIndex;
-            if (editIndex !== undefined) {
-                savedData[editIndex] = formData;
-                delete form.dataset.editIndex;
-                document.getElementById('btnText').innerText = 'Simpan Parameter';
-                showToast('Parameter diperbarui!');
-            } else {
-                savedData.unshift(formData);
-                showToast('Data berhasil disimpan!');
-            }
-
-            localStorage.setItem('health_reference_data', JSON.stringify(savedData));
-            form.reset();
-            renderAll();
-        });
-
-        window.deleteItem = (index) => {
-            if (confirm('Hapus data referensi ini?')) {
-                savedData.splice(index, 1);
-                localStorage.setItem('health_reference_data', JSON.stringify(savedData));
-                renderAll();
-                showToast('Data dihapus.', 'danger');
-            }
+            });
+            saveAll(); renderTests(); document.getElementById('healthForm').reset(); 
+            closeModal('modalTests'); showToast('Parameter Tes');
         };
 
-        window.editItem = (index) => {
-            const item = savedData[index];
-            document.getElementById('testName').value = item.testName;
-            document.getElementById('unit').value = item.unit;
-            document.getElementById('category').value = item.category;
-            document.getElementById('lowerLimit').value = item.lowerLimit;
-            document.getElementById('lowerLimitIndicators').value = item.lowerLimitIndicators;
-            document.getElementById('lowerLimitSuggestions').value = item.lowerLimitSuggestions;
-            document.getElementById('upperLimit').value = item.upperLimit;
-            document.getElementById('upperLimitIndicators').value = item.upperLimitIndicators;
-            document.getElementById('upperLimitSuggestions').value = item.upperLimitSuggestions;
-            document.getElementById('gender').value = item.gender;
-            document.getElementById('ageGroup').value = item.ageGroup;
-            
-            form.dataset.editIndex = index;
-            document.getElementById('btnText').innerText = 'Perbarui Parameter';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('medForm').onsubmit = (e) => {
+            e.preventDefault();
+            medsData.unshift({
+                name: document.getElementById('medName').value,
+                type: document.getElementById('medType').value,
+                dose: document.getElementById('medDose').value,
+                indication: document.getElementById('medIndication').value,
+            });
+            saveAll(); renderMeds(); document.getElementById('medForm').reset(); 
+            closeModal('modalMeds'); showToast('Obat');
         };
 
-        document.getElementById('clearBtn').addEventListener('click', () => {
-            form.reset();
-            delete form.dataset.editIndex;
-            document.getElementById('btnText').innerText = 'Simpan Parameter';
-        });
+        document.getElementById('docForm').onsubmit = (e) => {
+            e.preventDefault();
+            docsData.unshift({
+                name: document.getElementById('docName').value,
+                spec: document.getElementById('docSpec').value,
+                clinic: document.getElementById('docClinic').value,
+                phone: document.getElementById('docPhone').value,
+                notes: document.getElementById('docNotes').value,
+            });
+            saveAll(); renderDocs(); document.getElementById('docForm').reset(); 
+            closeModal('modalDocs'); showToast('Dokter');
+        };
 
-        function showToast(msg, type = 'success') {
-            toastMsg.innerText = msg;
-            toast.style.background = type === 'danger' ? 'var(--danger)' : '#10b981';
-            toastIcon.setAttribute('data-lucide', type === 'danger' ? 'alert-circle' : 'check-circle');
-            lucide.createIcons();
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+        document.getElementById('clinicForm').onsubmit = (e) => {
+            e.preventDefault();
+            clinicsData.unshift({
+                name: document.getElementById('clinicName').value,
+                type: document.getElementById('clinicType').value,
+                address: document.getElementById('clinicAddress').value,
+                phone: document.getElementById('clinicPhone').value,
+            });
+            saveAll(); renderClinics(); document.getElementById('clinicForm').reset(); 
+            closeModal('modalClinics'); showToast('Faskes');
+        };
+
+        function showToast(type) {
+            const t = document.getElementById('toast');
+            t.innerText = `${type} Berhasil Disimpan!`;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        window.exportData = () => {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(savedData, null, 2));
-            const dlAnchorElem = document.createElement('a');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", "familyhealth-reference.json");
-            dlAnchorElem.click();
-        };
-
-        window.importData = (input) => {
-            const file = input.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if (Array.isArray(imported)) {
-                        if (confirm(`Impor ${imported.length} data? Data baru akan ditambahkan ke daftar.`)) {
-                            savedData = [...imported, ...savedData];
-                            localStorage.setItem('health_reference_data', JSON.stringify(savedData));
-                            renderAll();
-                            showToast('Impor berhasil!');
-                        }
-                    }
-                } catch (err) {
-                    alert('Gagal mengimpor data. Format file tidak valid.');
-                }
-            };
-            reader.readAsText(file);
-            input.value = '';
-        };
-
-        renderAll();
+        renderTests(); renderMeds(); renderDocs(); renderClinics();
     </script>
-</body>
-</html>
 </body>
 </html>

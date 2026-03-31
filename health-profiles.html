@@ -86,129 +86,149 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" style="padding-bottom: 8rem;">
         <header>
             <button class="back-btn" onclick="history.back()"><i data-lucide="arrow-left"></i></button>
             <div>
-                <h1 style="font-size: 1.5rem; font-weight: 800;">Manajemen Profil Anggota Keluarga</h1>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">Lengkapi data diri untuk analisis kesehatan yang lebih akurat.</p>
+                <h1 style="font-size: 1.5rem; font-weight: 800;">Keluarga & Kontak Darurat</h1>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Kelola profil anggota dan informasi kontak penting.</p>
             </div>
         </header>
 
-        <section class="form-card">
-            <h2 style="font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
-                <i data-lucide="user-plus"></i> <span id="formTitle">Tambah Profil Baru</span>
-            </h2>
-            <form id="profileForm">
-                <input type="hidden" id="editIndex" value="-1">
-                <div class="form-group">
-                    <label>Nama Lengkap</label>
-                    <input type="text" id="name" placeholder="Contoh: Rafieiy" required>
-                </div>
-                <div class="form-grid-3">
-                    <div class="form-group">
-                        <label>Jenis Kelamin</label>
-                        <select id="gender" required>
-                            <option value="">Pilih...</option>
-                            <option value="Male">Laki-laki</option>
-                            <option value="Female">Perempuan</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Golongan Darah & Rh</label>
-                        <select id="bloodType">
-                            <option value="-">-</option>
-                            <option value="A+">A+</option><option value="A-">A-</option>
-                            <option value="B+">B+</option><option value="B-">B-</option>
-                            <option value="AB+">AB+</option><option value="AB-">AB-</option>
-                            <option value="O+">O+</option><option value="O-">O-</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Tanggal Lahir</label>
-                        <input type="date" id="dob" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Tempat Lahir</label>
-                    <input type="text" id="pob" placeholder="Contoh: Jakarta">
-                </div>
-                <!-- Dynamic Insurance Section -->
-                <div style="border-top: 1px solid var(--border); padding-top: 1.5rem; margin-top: 1rem; margin-bottom: 2rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-                        <h3 style="font-size: 0.8rem; color: var(--text-muted); font-weight: 800; letter-spacing: 0.05em;">DAFTAR ASURANSI / BPJS</h3>
-                        <button type="button" class="btn btn-secondary" onclick="addInsuranceRow()" style="height: 32px; font-size: 0.75rem; padding: 0 1rem;">
-                            <i data-lucide="plus" style="width:14px;"></i> Tambah
-                        </button>
-                    </div>
-                    <div id="insuranceContainer">
-                        <!-- Dynamic rows here -->
-                    </div>
-                </div>
-
-                <!-- Dynamic Medical Record Section -->
-                <div style="border-top: 1px solid var(--border); padding-top: 1.5rem; margin-bottom: 2rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-                        <h3 style="font-size: 0.8rem; color: var(--text-muted); font-weight: 800; letter-spacing: 0.05em;">NOMOR REKAM MEDIS (RM)</h3>
-                        <button type="button" class="btn btn-secondary" onclick="addMedRecRow()" style="height: 32px; font-size: 0.75rem; padding: 0 1rem;">
-                            <i data-lucide="plus" style="width:14px;"></i> Tambah
-                        </button>
-                    </div>
-                    <div id="medRecContainer">
-                        <!-- Dynamic rows here -->
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Catatan Medis Khusus (Alergi, dsb)</label>
-                    <textarea id="notes" rows="3" placeholder="Opsional..."></textarea>
-                </div>
-                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                    <button type="submit" class="btn btn-primary" id="saveBtn" style="flex: 1;"><i data-lucide="save"></i> Simpan Profil</button>
-                    <button type="button" class="btn btn-outline" onclick="resetForm()" id="cancelBtn" style="display:none; flex: 1;">Batal</button>
-                </div>
-            </form>
-        </section>
-
-        <section>
-            <h2 style="font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem;">
-               <i data-lucide="users" style="color: var(--primary);"></i> Profil Tersimpan
-            </h2>
-            <div class="profile-list" id="profileList" style="margin-bottom: 4rem;">
+        <!-- Profiles Section -->
+        <section style="margin-bottom: 3rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.1rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem;">
+                   <i data-lucide="users" style="color: var(--primary);"></i> Profil Tersimpan
+                </h2>
+                <button class="btn btn-primary" onclick="openProfileModal()"><i data-lucide="user-plus"></i> Tambah</button>
+            </div>
+            <div class="profile-list" id="profileList">
                 <!-- Profiles populated here -->
             </div>
+        </section>
 
-            <div style="border-top: 2px dashed var(--border); padding-top: 3rem; margin-bottom: 2rem;">
-                <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem;">
+        <!-- Emergency Contacts Section -->
+        <section style="border-top: 2px dashed var(--border); padding-top: 3rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; gap: 0.75rem;">
                     <i data-lucide="phone-forwarded" style="color: var(--warning);"></i> Kontak Darurat Global
                 </h2>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Daftar kontak penting yang dapat dihubungi oleh seluruh anggota keluarga.</p>
-                
-                <div class="form-card" style="border-color: var(--warning); background: #fffbeb;">
-                    <form id="emergencyForm">
-                        <div class="form-grid-3">
-                            <div class="form-group">
-                                <label>Nama Kontak</label>
-                                <input type="text" id="eName" placeholder="Nama..." required>
-                            </div>
-                            <div class="form-group">
-                                <label>Hubungan / Peran</label>
-                                <input type="text" id="eRelation" placeholder="Misal: Dokter Keluarga" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Nomor Telepon</label>
-                                <input type="tel" id="ePhone" placeholder="08..." required>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="background: var(--warning); width: 100%;"><i data-lucide="phone-call"></i> Tambah Kontak Darurat</button>
-                    </form>
-                </div>
-
-                <div class="emergency-list" id="emergencyList">
-                    <!-- Emergency contacts populated here -->
-                </div>
+                <button class="btn btn-outline" style="color: var(--warning); border-color: var(--warning);" onclick="openEmergencyModal()">
+                    <i data-lucide="plus"></i> Tambah
+                </button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Kontak penting yang dapat dihubungi oleh seluruh anggota keluarga.</p>
+            
+            <div class="emergency-list" id="emergencyList">
+                <!-- Emergency contacts populated here -->
             </div>
         </section>
+    </div>
+
+    <!-- MODAL: PROFILE FORM -->
+    <div id="profileModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="font-size: 1.1rem; color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="user-plus"></i> <span id="formTitle">Tambah Profil Baru</span>
+                </h2>
+                <button onclick="closeProfileModal()" class="btn-outline" style="width:32px; height:32px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="x" style="width:16px;"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="profileForm">
+                    <input type="hidden" id="editIndex" value="-1">
+                    <div class="form-group">
+                        <label>Nama Lengkap</label>
+                        <input type="text" id="name" placeholder="Contoh: Rafieiy" required>
+                    </div>
+                    <div class="form-grid-3">
+                        <div class="form-group">
+                            <label>Jenis Kelamin</label>
+                            <select id="gender" required>
+                                <option value="">Pilih...</option>
+                                <option value="Male">Laki-laki</option>
+                                <option value="Female">Perempuan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Golongan Darah</label>
+                            <select id="bloodType">
+                                <option value="-">-</option>
+                                <option value="A+">A+</option><option value="A-">A-</option>
+                                <option value="B+">B+</option><option value="B-">B-</option>
+                                <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                                <option value="O+">O+</option><option value="O-">O-</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tgl Lahir</label>
+                            <input type="date" id="dob" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Tempat Lahir</label>
+                        <input type="text" id="pob" placeholder="Contoh: Jakarta">
+                    </div>
+                    
+                    <div style="border-top: 1px solid var(--border); padding-top: 1.5rem; margin: 1rem 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800;">ASURANSI / BPJS</h3>
+                            <button type="button" class="btn btn-secondary" onclick="addInsuranceRow()" style="height: 28px; font-size: 0.7rem; padding: 0 0.75rem;">+ Tambah</button>
+                        </div>
+                        <div id="insuranceContainer"></div>
+                    </div>
+
+                    <div style="border-top: 1px solid var(--border); padding-top: 1.5rem; margin-bottom: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800;">NOMOR REKAM MEDIS</h3>
+                            <button type="button" class="btn btn-secondary" onclick="addMedRecRow()" style="height: 28px; font-size: 0.7rem; padding: 0 0.75rem;">+ Tambah</button>
+                        </div>
+                        <div id="medRecContainer"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Catatan Medis (Alergi, dsb)</label>
+                        <textarea id="notes" rows="2" placeholder="Opsional..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="saveBtn" style="width: 100%;"><i data-lucide="save"></i> Simpan Profil</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EMERGENCY FORM -->
+    <div id="emergencyModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="font-size: 1.1rem; color: var(--warning); display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="phone-call"></i> Tambah Kontak Darurat
+                </h3>
+                <button onclick="closeEmergencyModal()" class="btn-outline" style="width:32px; height:32px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="x" style="width:16px;"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="emergencyForm">
+                    <div class="form-group">
+                        <label>Nama Kontak</label>
+                        <input type="text" id="eName" placeholder="Nama..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hubungan / Peran</label>
+                        <input type="text" id="eRelation" placeholder="Misal: Dokter Keluarga" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nomor Telepon</label>
+                        <input type="tel" id="ePhone" placeholder="08..." required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="background: var(--warning); width: 100%;"><i data-lucide="phone-call"></i> Simpan Kontak</button>
+                </form>
+            </div>
+        </div>
+    </div>
     </div>
 
     <!-- Profile Detail Modal -->
@@ -321,6 +341,25 @@
             lucide.createIcons();
         };
 
+        // Modal Control Logic
+        window.openProfileModal = () => {
+            resetForm();
+            document.getElementById('profileModal').classList.add('active');
+        };
+
+        window.closeProfileModal = () => {
+            document.getElementById('profileModal').classList.remove('active');
+        };
+
+        window.openEmergencyModal = () => {
+            emergencyForm.reset();
+            document.getElementById('emergencyModal').classList.add('active');
+        };
+
+        window.closeEmergencyModal = () => {
+            document.getElementById('emergencyModal').classList.remove('active');
+        };
+
         profileForm.onsubmit = (e) => {
             e.preventDefault();
             const editIndex = parseInt(document.getElementById('editIndex').value);
@@ -359,7 +398,7 @@
             }
 
             saveProfiles();
-            resetForm();
+            closeProfileModal();
             renderProfiles();
         };
 
@@ -373,12 +412,16 @@
             };
             emergencyContacts.push(data);
             saveEmergency();
-            emergencyForm.reset();
+            closeEmergencyModal();
             renderEmergencyContacts();
         };
 
         function renderProfiles() {
             profileList.innerHTML = '';
+            if (profiles.length === 0) {
+                profileList.innerHTML = '<div style="text-align:center; padding:3rem; color:var(--text-muted); border:2px dashed var(--border); border-radius:16px;">Belum ada profil keluarga.</div>';
+                return;
+            }
             profiles.forEach((p, idx) => {
                 const div = document.createElement('div');
                 div.className = 'profile-card';
@@ -390,9 +433,9 @@
                         <div class="profile-details">
                             <h3>${p.name}</h3>
                             <p>${p.gender === 'Male' ? 'Laki-laki' : 'Perempuan'} • Goldar: ${p.bloodType}</p>
-                            <p style="font-size: 0.7rem; color: var(--primary); font-weight: 600;">
+                            <p style="font-size: 0.7rem; color: var(--primary); font-weight: 600; margin-top: 4px;">
                                 <i data-lucide="shield" style="width:10px; vertical-align:middle;"></i> ${p.insurances?.length || 0} Asuransi • 
-                                <i data-lucide="hospital" style="width:10px; vertical-align:middle;"></i> ${p.medicalRecords?.length || 0} No. Rekam Medis
+                                <i data-lucide="hospital" style="width:10px; vertical-align:middle;"></i> ${p.medicalRecords?.length || 0} Rekam Medis
                             </p>
                         </div>
                     </div>
@@ -409,6 +452,10 @@
 
         function renderEmergencyContacts() {
             emergencyListList.innerHTML = '';
+            if (emergencyContacts.length === 0) {
+                emergencyListList.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-muted); font-size:0.85rem;">Belum ada kontak darurat.</div>';
+                return;
+            }
             emergencyContacts.forEach((c, idx) => {
                 const div = document.createElement('div');
                 div.className = 'emergency-card';
@@ -457,9 +504,9 @@
             document.getElementById('editIndex').value = idx;
             document.getElementById('formTitle').innerText = 'Edit Profil: ' + p.name;
             document.getElementById('saveBtn').innerHTML = '<i data-lucide="check"></i> Simpan Perubahan';
-            document.getElementById('cancelBtn').style.display = 'flex';
+            
+            document.getElementById('profileModal').classList.add('active');
             lucide.createIcons();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
         window.viewProfileDetail = (idx) => {
@@ -504,9 +551,20 @@
             document.getElementById('editIndex').value = -1;
             document.getElementById('formTitle').innerText = 'Tambah Profil Baru';
             document.getElementById('saveBtn').innerHTML = '<i data-lucide="save"></i> Simpan Profil';
-            document.getElementById('cancelBtn').style.display = 'none';
             lucide.createIcons();
         };
+
+        window.deleteProfile = (idx) => {
+            if (confirm('Hapus profil ' + profiles[idx].name + '?')) {
+                profiles.splice(idx, 1);
+                saveProfiles();
+                renderProfiles();
+            }
+        };
+
+        renderProfiles();
+        renderEmergencyContacts();
+    </script>
 
         window.deleteProfile = (idx) => {
             if (confirm('Hapus profil ' + profiles[idx].name + '?')) {
