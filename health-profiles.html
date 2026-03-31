@@ -70,6 +70,19 @@
 
         .delete-btn { color: var(--danger); background: #fef2f2; border: none; padding: 0.5rem; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         .delete-btn:hover { background: var(--danger); color: white; }
+
+        /* Modal Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 1.5rem; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: white; border-radius: var(--radius-lg); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); position: relative; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 10; }
+        .modal-body { padding: 1.5rem; }
+        .detail-item { margin-bottom: 1.25rem; }
+        .detail-label { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.25rem; }
+        .detail-value { font-size: 1rem; font-weight: 600; color: var(--text-main); }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .data-card { background: var(--bg); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 0.75rem; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
@@ -196,6 +209,46 @@
                 </div>
             </div>
         </section>
+    </div>
+
+    <!-- Profile Detail Modal -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:1rem;">
+                    <div class="profile-avatar" id="mAvatar" style="width:40px; height:40px; font-size:1rem;">U</div>
+                    <h2 id="mName" style="font-size:1.25rem;">Detail Profil</h2>
+                </div>
+                <button onclick="closeModal()" class="btn-outline" style="width:32px; height:32px; border-radius:50%; padding:0; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="x" style="width:16px;"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="mBody">
+                <div class="detail-grid">
+                    <div class="detail-item"><div class="detail-label">Jenis Kelamin</div><div class="detail-value" id="mGender"></div></div>
+                    <div class="detail-item"><div class="detail-label">Gol. Darah & Rh</div><div class="detail-value" id="mBlood"></div></div>
+                </div>
+                <div class="detail-grid">
+                    <div class="detail-item"><div class="detail-label">Tanggal Lahir</div><div class="detail-value" id="mDob"></div></div>
+                    <div class="detail-item"><div class="detail-label">Tempat Lahir</div><div class="detail-value" id="mPob"></div></div>
+                </div>
+                
+                <div style="margin: 1.5rem 0; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                    <div class="detail-label" style="margin-bottom:1rem;">Asuransi Terdaftar</div>
+                    <div id="mInsurances"></div>
+                </div>
+
+                <div style="margin: 1.5rem 0; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                    <div class="detail-label" style="margin-bottom:1rem;">Nomor Rekam Medis</div>
+                    <div id="mMedRec"></div>
+                </div>
+
+                <div style="margin-top: 1.5rem; padding:1rem; background: var(--primary-light); border-radius:var(--radius-md);">
+                    <div class="detail-label" style="color:var(--primary);">Catatan Medis</div>
+                    <div id="mNotes" style="font-size:0.9rem; line-height:1.6;"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <nav class="sidebar-nav">
@@ -344,6 +397,7 @@
                         </div>
                     </div>
                     <div style="display: flex; gap: 0.5rem;">
+                        <button onclick="viewProfileDetail(${idx})" class="btn" style="padding: 0.5rem; background: #f8fafc; color: var(--text-muted); border-radius: 8px;"><i data-lucide="eye" style="width:16px;"></i></button>
                         <button onclick="editProfile(${idx})" class="btn" style="padding: 0.5rem; background: var(--primary-light); color: var(--primary); border-radius: 8px;"><i data-lucide="edit-2" style="width:16px;"></i></button>
                         <button onclick="deleteProfile(${idx})" class="delete-btn"><i data-lucide="trash-2" style="width:16px;"></i></button>
                     </div>
@@ -408,6 +462,41 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
+        window.viewProfileDetail = (idx) => {
+            const p = profiles[idx];
+            document.getElementById('mAvatar').innerText = p.name.charAt(0);
+            document.getElementById('mAvatar').style.background = p.gender === 'Female' ? '#fdf2f8' : '#eef2ff';
+            document.getElementById('mAvatar').style.color = p.gender === 'Female' ? '#db2777' : '#6366f1';
+            document.getElementById('mName').innerText = p.name;
+            document.getElementById('mGender').innerText = p.gender === 'Male' ? 'Laki-laki' : 'Perempuan';
+            document.getElementById('mBlood').innerText = p.bloodType || '-';
+            document.getElementById('mDob').innerText = p.dob || '-';
+            document.getElementById('mPob').innerText = p.pob || '-';
+            document.getElementById('mNotes').innerText = p.notes || 'Tidak ada catatan khusus.';
+
+            const insCont = document.getElementById('mInsurances');
+            insCont.innerHTML = (p.insurances && p.insurances.length) ? p.insurances.map(i => `
+                <div class="data-card">
+                    <div style="font-weight:700; color:var(--primary); font-size:0.9rem;">${i.provider}</div>
+                    <div style="font-family:monospace; margin:4px 0;">${i.number}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">${i.type}</div>
+                </div>
+            `).join('') : '<p style="font-size:0.85rem; color:var(--text-muted);">Belum ada asuransi.</p>';
+
+            const mrCont = document.getElementById('mMedRec');
+            mrCont.innerHTML = (p.medicalRecords && p.medicalRecords.length) ? p.medicalRecords.map(m => `
+                <div class="data-card">
+                    <div style="font-weight:700; font-size:0.9rem;">${m.hospital}</div>
+                    <div style="font-family:monospace; color:var(--primary); font-weight:700;">${m.number}</div>
+                </div>
+            `).join('') : '<p style="font-size:0.85rem; color:var(--text-muted);">Belum ada nomor rekam medis.</p>';
+
+            document.getElementById('detailModal').classList.add('active');
+            lucide.createIcons();
+        };
+
+        window.closeModal = () => document.getElementById('detailModal').classList.remove('active');
+
         window.resetForm = () => {
             profileForm.reset();
             insuranceContainer.innerHTML = '';
@@ -427,16 +516,8 @@
             }
         };
 
-        window.resetForm = () => {
-            profileForm.reset();
-            document.getElementById('editIndex').value = -1;
-            document.getElementById('formTitle').innerText = 'Tambah Profil Baru';
-            document.getElementById('saveBtn').innerHTML = '<i data-lucide="save"></i> Simpan Profil';
-            document.getElementById('cancelBtn').style.display = 'none';
-            lucide.createIcons();
-        };
-
         renderProfiles();
+        renderEmergencyContacts();
     </script>
 </body>
 </html>
