@@ -168,6 +168,40 @@
         </div>
     </div>
 
+    <datalist id="medSuggestList">
+        <option value="Panadol">
+        <option value="Sanmol">
+        <option value="Biogesic">
+        <option value="Proris (Ibuprofen)">
+        <option value="Bodrex">
+        <option value="Mylanta">
+        <option value="Promag">
+        <option value="Amoxsan (Amoxicillin)">
+        <option value="Kalpanax">
+        <option value="Betadine">
+        <option value="Alpara">
+        <option value="Diapet">
+        <option value="Entrostop">
+        <option value="Neurobion">
+        <option value="Sangobion">
+        <option value="Vicks Formula 44">
+    </datalist>
+
+    <datalist id="manufacturerSuggestList">
+        <option value="Kimia Farma">
+        <option value="Kalbe Farma">
+        <option value="Sanbe Farma">
+        <option value="Pharos">
+        <option value="Dexa Medica">
+        <option value="Bio Farma">
+        <option value="Bayer">
+        <option value="Pfizer">
+        <option value="Novartis">
+        <option value="GSK (GlaxoSmithKline)">
+        <option value="Johnson & Johnson">
+        <option value="AstraZeneca">
+    </datalist>
+
     <datalist id="catList"></datalist>
     <datalist id="compSuggestList">
         <option value="Paracetamol">
@@ -197,7 +231,11 @@
             </div>
             <form id="medForm">
                 <div class="grid">
-                    <div class="form-group"><label>Nama Obat</label><input type="text" id="medName" required></div>
+                    <div class="form-group">
+                        <label>Nama Obat</label>
+                        <input type="text" id="medName" list="medSuggestList" required oninput="checkSimilarity(this, 'medSuggestList', 'medNameHint')">
+                        <div id="medNameHint" style="font-size:0.7rem; color:var(--primary); margin-top:2px;"></div>
+                    </div>
                     <div class="form-group"><label>Bentuk</label>
                         <select id="medType">
                             <option value="Tablet">Tablet/Kaplet</option>
@@ -271,7 +309,11 @@
                 </div>
 
                 <div class="grid">
-                    <div class="form-group"><label>Produsen</label><input type="text" id="medManufacturer"></div>
+                    <div class="form-group">
+                        <label>Produsen</label>
+                        <input type="text" id="medManufacturer" list="manufacturerSuggestList" oninput="checkSimilarity(this, 'manufacturerSuggestList', 'medManufacturerHint')">
+                        <div id="medManufacturerHint" style="font-size:0.7rem; color:var(--primary); margin-top:2px;"></div>
+                    </div>
                     <div class="form-group"><label>Lokasi Simpan</label><input type="text" id="medLocation" placeholder="Misal: Kotak Obat Dapur"></div>
                 </div>
 
@@ -368,9 +410,26 @@
             document.getElementById(id).classList.add('active');
         };
 
-        window.closeModal = (id) => {
-            document.getElementById(id).classList.remove('active');
-            if(id === 'modalMeds') currentComposition = []; updateCompListUI();
+        // --- SIMILARITY CHECK LOGIC ---
+        window.checkSimilarity = (input, listId, hintId) => {
+            const val = input.value.toLowerCase().trim();
+            const hint = document.getElementById(hintId);
+            if(val.length < 3) { hint.innerText = ''; return; }
+
+            const options = Array.from(document.getElementById(listId).options).map(o => o.value);
+            const exact = options.find(o => o.toLowerCase() === val);
+            if(exact) { hint.innerText = ''; return; }
+
+            const match = options.find(o => o.toLowerCase().includes(val) || val.includes(o.toLowerCase()));
+            if(match) {
+                hint.innerHTML = `Maksud Anda <strong><span style="text-decoration:underline; cursor:pointer;" onclick="applyHint('${input.id}', '${match}', '${hintId}')">${match}</span></strong>?`;
+            } else {
+                hint.innerText = '';
+            }
+        };
+        window.applyHint = (inputId, val, hintId) => {
+            document.getElementById(inputId).value = val;
+            document.getElementById(hintId).innerText = '';
         };
 
         // --- COMPOSITION BUILDER LOGIC ---
