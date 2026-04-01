@@ -385,8 +385,14 @@
                 </div>
                 <div class="grid">
                     <div class="form-group"><label>Telepon/WhatsApp</label><input type="tel" id="docPhone" placeholder="08xxxx"></div>
-                    <div class="form-group"><label>URL Foto Profil (Opsional)</label><input type="url" id="docPhoto" placeholder="https://..."></div>
+                    <div class="form-group"><label>Jenis Kelamin</label>
+                        <select id="docGender">
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
                 </div>
+                <div class="form-group"><label>URL Foto Profil (Opsional)</label><input type="url" id="docPhoto" placeholder="https://..."></div>
 
                 <div class="form-group"><label>Biografi / Latar Belakang</label><textarea id="docBio" rows="2" placeholder="Lulusan Universitas X, Pengalaman Y tahun..."></textarea></div>
                 <div class="form-group"><label>Ulasan / Catatan Pribadi</label><textarea id="docReview" rows="2" placeholder="Dokternya enak diajak bicara, sabar, harganya oke..."></textarea></div>
@@ -703,7 +709,10 @@
                             <img src="${d.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(d.name)}&background=4f46e5&color=fff`}" style="width:100%; height:100%; object-fit:cover;">
                         </div>
                         <div style="flex:1;">
-                            <span class="card-tag" style="background:white; color:var(--primary); box-shadow:0 1px 3px rgba(0,0,0,0.05);">${d.spec}</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <span class="card-tag" style="background:white; color:var(--primary); box-shadow:0 1px 3px rgba(0,0,0,0.05);">${d.spec}</span>
+                                <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">${d.gender === 'Laki-laki' ? '♂' : '♀'}</span>
+                            </div>
                             <div style="font-weight:800; font-size:1.1rem; color:var(--text-main); margin-top:2px;">${d.name}</div>
                         </div>
                         <button onclick="deleteItem('docsData', ${idx}, renderDocs)" style="background:none; border:none; color:var(--danger); cursor:pointer; align-self:flex-start;"><i data-lucide="trash-2" style="width:16px;"></i></button>
@@ -821,6 +830,7 @@
                 name: document.getElementById('docName').value,
                 spec: document.getElementById('docSpec').value,
                 phone: document.getElementById('docPhone').value,
+                gender: document.getElementById('docGender').value,
                 photo: document.getElementById('docPhoto').value,
                 bio: document.getElementById('docBio').value,
                 review: document.getElementById('docReview').value,
