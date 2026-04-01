@@ -308,8 +308,13 @@
             const info = document.getElementById('stockInfo');
             const unit = document.getElementById('logMedUnit');
             if(found) {
-                info.innerHTML = `<span style="color:${found.stock > 0 ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">Stok: ${found.stock} ${found.stockUnit}</span> • Exp: ${found.expiry || '-'}`;
-                unit.value = found.stockUnit;
+                const totalStock = (found.batches || []).reduce((acc, b) => acc + b.qty, 0);
+                const soonestExp = found.batches && found.batches.length > 0 
+                    ? found.batches.sort((a,b) => new Date(a.expiry) - new Date(b.expiry))[0].expiry 
+                    : '-';
+                
+                info.innerHTML = `<span style="color:${totalStock > 0 ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">Total Stok: ${totalStock} ${found.batches[0]?.unit || ''}</span> • Exp Terdekat: ${soonestExp}`;
+                unit.value = found.batches[0]?.unit || '';
             } else {
                 info.innerText = '';
                 unit.value = '';
@@ -429,14 +434,31 @@
             e.preventDefault();
             const meds = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
             const medName = document.getElementById('logMedName').value;
-            const qty = parseFloat(document.getElementById('logMedQty').value);
+            let qtyToReduce = parseFloat(document.getElementById('logMedQty').value);
             const medIdx = meds.findIndex(m => m.name.toLowerCase() === medName.toLowerCase());
             
             if(medIdx === -1) { alert("Obat tidak ditemukan di koleksi referensi."); return; }
-            if(meds[medIdx].stock < qty) { if(!confirm("Stok tidak mencukupi. Tetap catat?")) return; }
+            
+            const totalStock = (meds[medIdx].batches || []).reduce((acc, b) => acc + b.qty, 0);
+            if(totalStock < qtyToReduce) { if(!confirm("Stok total tidak mencukupi. Tetap catat?")) return; }
 
-            // Decrement Stock
-            meds[medIdx].stock = Math.max(0, meds[medIdx].stock - qty);
+            // FEFO Logic (First Expired First Out)
+            if(meds[medIdx].batches) {
+                meds[medIdx].batches.sort((a, b) => new Date(a.expiry) - new Date(b.expiry));
+                for(let b of meds[medIdx].batches) {
+                    if(qtyToReduce <= 0) break;
+                    if(b.qty >= qtyToReduce) {
+                        b.qty -= qtyToReduce;
+                        qtyToReduce = 0;
+                    } else {
+                        qtyToReduce -= b.qty;
+                        b.qty = 0;
+                    }
+                }
+                // Clean up empty batches
+                meds[medIdx].batches = meds[medIdx].batches.filter(b => b.qty > 0);
+            }
+
             localStorage.setItem('health_meds_data', JSON.stringify(meds));
 
             const newEntry = {
@@ -445,15 +467,15 @@
                 author: activeProfile,
                 timestamp: document.getElementById('medTimestamp').value,
                 medName: meds[medIdx].name,
-                qty: qty,
-                unit: meds[medIdx].stockUnit,
+                qty: parseFloat(document.getElementById('logMedQty').value),
+                unit: document.getElementById('logMedUnit').value,
                 notes: document.getElementById('logMedNotes').value,
-                location: meds[medIdx].location
+                location: 'Inventori Terpusat'
             };
 
             logs = [newEntry, ...logs];
             localStorage.setItem('health_logs', JSON.stringify(logs));
-            showToast(`Berhasil mencatat konsumsi ${qty} ${meds[medIdx].stockUnit} ${meds[medIdx].name}`);
+            showToast(`Berhasil mencatat konsumsi obat.`);
             location.reload();
         };
 

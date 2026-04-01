@@ -314,19 +314,41 @@
                         <input type="text" id="medManufacturer" list="manufacturerSuggestList" oninput="checkSimilarity(this, 'manufacturerSuggestList', 'medManufacturerHint')">
                         <div id="medManufacturerHint" style="font-size:0.7rem; color:var(--primary); margin-top:2px;"></div>
                     </div>
-                    <div class="form-group"><label>Lokasi Simpan</label><input type="text" id="medLocation" placeholder="Misal: Kotak Obat Dapur"></div>
                 </div>
 
-                <div class="limit-grid" style="background:#f0fdf4;">
-                    <div class="limit-title">Manajemen Stok</div>
-                    <div class="form-group"><label>Stok Sekarang</label><input type="number" id="medStock" value="0"></div>
-                    <div class="form-group"><label>Satuan Stok</label><input type="text" id="medStockUnit" placeholder="Butir/Botol/Sachet"></div>
-                    <div class="form-group"><label>Kadaluarsa</label><input type="date" id="medExpiry"></div>
-                    <div class="form-group" style="grid-column: 1/-1;"><label>Sumber/Asal</label><input type="text" id="medSource" placeholder="Misal: Klinik Kimia Farma, Dr. Budi"></div>
-                </div>
-
-                <button type="submit" class="btn btn-primary" style="width:100%"><i data-lucide="save"></i> Simpan Obat</button>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i data-lucide="save"></i> Simpan Definisi Obat</button>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL: MANAGE STOCK -->
+    <div id="modalStock" class="modal-overlay">
+        <div class="modal-content" style="max-width: 700px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <div>
+                    <h3 class="section-title" style="margin:0;">Kelola Stok & Inventori</h3>
+                    <p id="stockMedName" style="font-size:0.85rem; color:var(--text-muted);"></p>
+                </div>
+                <button onclick="closeModal('modalStock')" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i data-lucide="x"></i></button>
+            </div>
+            
+            <form id="stockForm" style="background:#f8fafc; padding:1.25rem; border-radius:var(--radius-md); border:1px solid var(--border); margin-bottom:2rem;">
+                <div class="limit-title" style="margin-bottom:1rem;">Tambah Batch Baru</div>
+                <div class="grid">
+                    <div class="form-group"><label>Jumlah Masuk</label><input type="number" id="batchQty" step="any" required></div>
+                    <div class="form-group"><label>Satuan</label><input type="text" id="batchUnit" placeholder="Butir/Botol" required></div>
+                    <div class="form-group"><label>Kadaluarsa</label><input type="date" id="batchExpiry" required></div>
+                </div>
+                <div class="grid">
+                    <div class="form-group"><label>Lokasi Simpan</label><input type="text" id="batchLocation" placeholder="Misal: Kotak Obat Dapur" required></div>
+                    <div class="form-group"><label>Sumber/Asal</label><input type="text" id="batchSource" placeholder="Misal: Klinik X, Dr. Y"></div>
+                </div>
+                <div class="form-group"><label>Catatan Batch</label><input type="text" id="batchNotes" placeholder="Misal: Sisa obat sakit bulan lalu"></div>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i data-lucide="plus"></i> Tambah ke Inventori</button>
+            </form>
+
+            <div class="limit-title" style="margin-bottom:1rem;">Daftar Batch Aktif</div>
+            <div id="batchList" style="display:flex; flex-direction:column; gap:0.75rem;"></div>
         </div>
     </div>
 
@@ -408,6 +430,68 @@
         // Modal Logic
         window.openModal = (id) => {
             document.getElementById(id).classList.add('active');
+        };
+
+        window.closeModal = (id) => {
+            document.getElementById(id).classList.remove('active');
+            if(id === 'modalMeds') { currentComposition = []; updateCompListUI(); }
+            if(id === 'modalStock') currentMedIndex = null;
+        };
+
+        // --- STOCK MANAGEMENT LOGIC ---
+        let currentMedIndex = null;
+        window.openStockManager = (idx) => {
+            currentMedIndex = idx;
+            const m = medsData[idx];
+            document.getElementById('stockMedName').innerText = `${m.name} (${m.dose})`;
+            renderBatches();
+            openModal('modalStock');
+        };
+
+        function renderBatches() {
+            const m = medsData[currentMedIndex];
+            const cont = document.getElementById('batchList');
+            if(!m.batches || m.batches.length === 0) {
+                cont.innerHTML = '<div style="text-align:center; padding:1rem; color:var(--text-muted); font-size:0.8rem;">Belum ada stok masuk untuk obat ini.</div>';
+                return;
+            }
+            cont.innerHTML = m.batches.map((b, i) => `
+                <div style="background:white; padding:1rem; border-radius:10px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-size:0.8rem;">
+                        <div style="font-weight:700; color:var(--primary);">${b.qty} ${b.unit} <span style="font-weight:400; color:var(--text-muted);">@ ${b.location}</span></div>
+                        <div style="color:var(--danger); font-weight:700;">Exp: ${new Date(b.expiry).toLocaleDateString()}</div>
+                        <div style="color:var(--text-muted); font-size:0.75rem;">Source: ${b.source || '-'} ${b.notes ? `• ${b.notes}` : ''}</div>
+                    </div>
+                    <button onclick="removeBatch(${i})" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        document.getElementById('stockForm').onsubmit = (e) => {
+            e.preventDefault();
+            if(currentMedIndex === null) return;
+            if(!medsData[currentMedIndex].batches) medsData[currentMedIndex].batches = [];
+            
+            medsData[currentMedIndex].batches.push({
+                qty: parseFloat(document.getElementById('batchQty').value),
+                unit: document.getElementById('batchUnit').value,
+                expiry: document.getElementById('batchExpiry').value,
+                location: document.getElementById('batchLocation').value,
+                source: document.getElementById('batchSource').value,
+                notes: document.getElementById('batchNotes').value,
+            });
+            
+            saveAll(); renderBatches(); renderMeds();
+            document.getElementById('stockForm').reset();
+            showToast('Batch Stok');
+        };
+
+        window.removeBatch = (batchIdx) => {
+            if(confirm('Hapus batch stok ini?')) {
+                medsData[currentMedIndex].batches.splice(batchIdx, 1);
+                saveAll(); renderBatches(); renderMeds();
+            }
         };
 
         // --- SIMILARITY CHECK LOGIC ---
@@ -492,12 +576,15 @@
                 list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Koleksi obat masih kosong.</div>';
                 return;
             }
-            list.innerHTML = medsData.map((m, idx) => `
-                <div class="data-card" style="border-top: 5px solid ${m.stock > 0 ? 'var(--secondary)' : 'var(--danger)'};">
+            list.innerHTML = medsData.map((m, idx) => {
+                const totalStock = (m.batches || []).reduce((acc, b) => acc + b.qty, 0);
+                const unit = m.batches && m.batches.length > 0 ? m.batches[0].unit : '';
+                return `
+                <div class="data-card" style="border-top: 5px solid ${totalStock > 0 ? 'var(--secondary)' : 'var(--danger)'};">
                     <div style="display:flex; justify-content:space-between;">
                         <span class="card-tag" style="background:#f0fdf4; color:#166534;">${m.type}</span>
                         <div style="display:flex; gap:0.5rem;">
-                            <span class="card-tag" style="background:${m.stock > 0 ? 'var(--primary-light)' : '#fef2f2'}; color:${m.stock > 0 ? 'var(--primary)' : 'var(--danger)'};">Stok: ${m.stock || 0} ${m.stockUnit || ''}</span>
+                            <span class="card-tag" style="background:${totalStock > 0 ? 'var(--primary-light)' : '#fef2f2'}; color:${totalStock > 0 ? 'var(--primary)' : 'var(--danger)'};">Total Stok: ${totalStock} ${unit}</span>
                             <button onclick="deleteItem('medsData', ${idx}, renderMeds)" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
                         </div>
                     </div>
@@ -505,24 +592,23 @@
                     <div style="color:var(--primary); font-weight:700; margin-bottom:0.1rem; font-size:0.9rem;">${m.dose} - ${m.purpose || 'Umum'}</div>
                     <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin-bottom:0.5rem;">${m.indication}</div>
                     
+                    <button onclick="openStockManager(${idx})" class="btn btn-outline" style="width:100%; margin-bottom:0.75rem; border-style:dashed; background:var(--primary-light); color:var(--primary); border-color:var(--primary);"><i data-lucide="plus-circle"></i> Kelola Inventori</button>
+
                     <div style="font-size:0.75rem; border-top:1px dashed var(--border); padding-top:0.5rem; margin-top:0.5rem;">
                         <div style="margin-bottom:2px;"><strong style="color:var(--text-muted);">Komposisi:</strong> 
                             ${m.composition && m.composition.length > 0 
                                 ? m.composition.map(c => `<span style="background:#f1f5f9; padding:1px 4px; border-radius:4px; font-weight:600;">${c.name} ${c.val}${c.unit}</span>`).join(' ') 
                                 : '-'}
                         </div>
-                        <div style="margin-bottom:2px;"><strong style="color:var(--text-muted);">Exp:</strong> ${m.expiry ? new Date(m.expiry).toLocaleDateString() : '-'}</div>
-                        <div style="margin-bottom:2px;"><strong style="color:var(--text-muted);">Lokasi:</strong> ${m.location || '-'}</div>
                         ${m.manufacturer ? `<div style="margin-bottom:2px;"><strong style="color:var(--text-muted);">Produsen:</strong> ${m.manufacturer}</div>` : ''}
                     </div>
                     
                     <details style="margin-top:0.75rem; font-size:0.75rem; color:var(--text-muted); border-top:1px solid #eee;">
-                        <summary style="cursor:pointer; padding:0.4rem 0; font-weight:600; color:var(--primary);">Detail Medis & Stok</summary>
+                        <summary style="cursor:pointer; padding:0.4rem 0; font-weight:600; color:var(--primary);">Detail Medis</summary>
                         <div style="padding:0.5rem; background:#f8fafc; border-radius:8px; margin-top:0.4rem; white-space: pre-wrap;">
 <strong style="color:var(--text-main);">Reg No:</strong> ${m.regNo || '-'}
 <strong style="color:var(--text-main);">Usia:</strong> ${m.ageLimit || '-'}
 <strong style="color:var(--text-main);">Penyimpanan:</strong> ${m.storage || '-'}
-<strong style="color:var(--text-main);">Sumber:</strong> ${m.source || '-'}
 <hr style="margin:4px 0; border:none; height:1px; background:#e2e8f0;">
 <strong style="color:var(--danger);">Kontraindikasi:</strong> ${m.contraindication || '-'}
 <strong style="color:var(--warning);">Peringatan:</strong> ${m.warning || '-'}
@@ -530,7 +616,7 @@
                         </div>
                     </details>
                 </div>
-            `).join('');
+            `;}).join('');
             lucide.createIcons();
         }
 
@@ -624,11 +710,7 @@
                 sideEffects: document.getElementById('medSideEffects').value,
                 storage: document.getElementById('medStorage').value,
                 manufacturer: document.getElementById('medManufacturer').value,
-                location: document.getElementById('medLocation').value,
-                stock: parseFloat(document.getElementById('medStock').value) || 0,
-                stockUnit: document.getElementById('medStockUnit').value,
-                expiry: document.getElementById('medExpiry').value,
-                source: document.getElementById('medSource').value,
+                batches: [],
             });
             saveAll(); renderMeds(); document.getElementById('medForm').reset(); 
             closeModal('modalMeds'); showToast('Obat');
