@@ -92,25 +92,40 @@
         </header>
 
         <div class="selector-grid">
+            <div class="tool-card" onclick="startScreening('PHQ9')">
+                <i data-lucide="cloud-lightning" style="width:24px;"></i>
+                <h3>PHQ-9</h3>
+                <p>Kesehatan Pasien</p>
+            </div>
             <div class="tool-card" onclick="startScreening('GAD7')">
                 <i data-lucide="frown" style="width:24px;"></i>
                 <h3>GAD-7</h3>
                 <p>Kecemasan Umum</p>
             </div>
-            <div class="tool-card" onclick="startScreening('PSS10')">
-                <i data-lucide="wind" style="width:24px;"></i>
-                <h3>PSS-10</h3>
-                <p>Tingkat Stres</p>
+            <div class="tool-card" onclick="startScreening('DASS21')">
+                <i data-lucide="layers" style="width:24px;"></i>
+                <h3>DASS-21</h3>
+                <p>Depresi, Cemas, Stres</p>
             </div>
-            <div class="tool-card" onclick="startScreening('BDI')">
-                <i data-lucide="cloud-rain" style="width:24px;"></i>
-                <h3>BDI</h3>
-                <p>Tingkat Depresi</p>
+            <div class="tool-card" onclick="startScreening('SRQ29')">
+                <i data-lucide="clipboard-list" style="width:24px;"></i>
+                <h3>SRQ-29</h3>
+                <p>Gangguan Mental</p>
             </div>
             <div class="tool-card" onclick="startScreening('SDQ')">
                 <i data-lucide="baby" style="width:24px;"></i>
                 <h3>SDQ</h3>
                 <p>Anak & Remaja</p>
+            </div>
+            <div class="tool-card" onclick="startScreening('MBTI')">
+                <i data-lucide="user-cog" style="width:24px;"></i>
+                <h3>MBTI</h3>
+                <p>Tipe Kepribadian</p>
+            </div>
+            <div class="tool-card" onclick="startScreening('PSS10')">
+                <i data-lucide="wind" style="width:24px;"></i>
+                <h3>PSS-10</h3>
+                <p>Tingkat Stres</p>
             </div>
         </div>
 
@@ -162,6 +177,158 @@
         document.getElementById('activeAvatar').innerText = activeProfile.charAt(0);
 
         const TOOLS = {
+            PHQ9: {
+                title: "PHQ-9 (Patient Health Questionnaire-9)",
+                desc: "Skrining standar untuk tingkat keparahan depresi.",
+                questions: [
+                    "Kurang minat atau kesenangan dalam melakukan sesuatu",
+                    "Merasa sedih, depresi, atau putus asa",
+                    "Sulit tidur atau tetap tertidur, atau terlalu banyak tidur",
+                    "Merasa lelah atau tidak bertenaga",
+                    "Nafsu makan buruk atau makan terlalu banyak",
+                    "Merasa buruk tentang diri sendiri — atau bahwa Anda adalah seorang yang gagal",
+                    "Sulit berkonsentrasi pada hal-hal, seperti membaca koran atau menonton TV",
+                    "Bergerak/berbicara lambat atau sangat gelisah sehingga Anda bergerak lebih banyak",
+                    "Pikiran bahwa Anda lebih baik mati, atau menyakiti diri sendiri"
+                ],
+                options: [
+                    { label: "Tidak pernah", val: 0 },
+                    { label: "Beberapa hari", val: 1 },
+                    { label: "Lebih dari separuh waktu", val: 2 },
+                    { label: "Hampir setiap hari", val: 3 }
+                ],
+                interpret: (s) => {
+                    if (s <= 4) return { title: "Normal/Minimal", text: "Suasana hati Anda dalam rentang normal." };
+                    if (s <= 9) return { title: "Depresi Ringan", text: "Ada gejala depresi ringan. Pertimbangkan konseling." };
+                    if (s <= 14) return { title: "Depresi Sedang", text: "Gejala depresi tingkat sedang. Disarankan konsultasi medis." };
+                    if (s <= 19) return { title: "Depresi Cukup Berat", text: "Gejala depresi cukup berat. Perlu bantuan profesional." };
+                    return { title: "Depresi Berat", text: "Gejala depresi sangat berat. Segera cari bantuan darurat." };
+                }
+            },
+            DASS21: {
+                title: "DASS-21 (Depression, Anxiety, Stress Scales)",
+                desc: "Mengukur depresi, kecemasan, dan stres sekaligus.",
+                questions: [
+                    "Saya merasa sulit untuk tenang",
+                    "Saya menyadari mulut saya terasa kering",
+                    "Saya sepertinya tidak dapat mengalami perasaan positif sama sekali",
+                    "Saya mengalami kesulitan bernapas",
+                    "Saya merasa sulit untuk mengambil inisiatif dalam melakukan sesuatu",
+                    "Saya cenderung bereaksi berlebihan terhadap situasi",
+                    "Saya mengalami tremor (misal: di tangan)",
+                    "Saya merasa telah menghabiskan banyak energi karena panik",
+                    "Saya merasa khawatir dengan situasi di mana saya mungkin menjadi panik",
+                    "Saya merasa tidak ada hal baik yang dapat diharapkan di masa depan",
+                    "Saya merasa diri saya menjadi gelisah",
+                    "Saya merasa sulit untuk bersantai",
+                    "Saya merasa sedih dan tertekan",
+                    "Saya merasa tidak toleran terhadap hal-hal yang menghalangi saya",
+                    "Saya merasa hampir panik",
+                    "Saya merasa tidak mampu menjadi antusias tentang apa pun",
+                    "Saya merasa diri saya tidak berharga sebagai pribadi",
+                    "Saya merasa saya cukup mudah tersinggung",
+                    "Saya merasa jantung saya berdebar kencang tanpa alasan fisik",
+                    "Saya merasa takut tanpa alasan yang jelas",
+                    "Saya merasa hidup ini tidak berarti"
+                ],
+                options: [
+                    { label: "Tidak pernah", val: 0 },
+                    { label: "Kadang-kadang", val: 1 },
+                    { label: "Sering", val: 2 },
+                    { label: "Hampir selalu", val: 3 }
+                ],
+                interpret: (s) => {
+                    // DASS scoring is scale-based. Simple version:
+                    if (s <= 10) return { title: "Normal", text: "Hasil menunjukkan tingkat kesejahteraan mental yang baik." };
+                    if (s <= 20) return { title: "Ringan/Sedang", text: "Ada indikasi stres atau kecemasan tingkat menengah." };
+                    return { title: "Tinggi", text: "Tingkat stres/depresi/kecemasan tinggi. Disarankan evaluasi mendalam." };
+                }
+            },
+            SRQ29: {
+                title: "SRQ-29 (Self-Reporting Questionnaire)",
+                desc: "Alat WHO untuk mendeteksi gangguan mental umum.",
+                questions: [
+                    "Apakah Anda sering merasa sakit kepala?", "Apakah Anda tidak nafsu makan?", "Apakah Anda sulit tidur?",
+                    "Apakah Anda mudah merasa takut?", "Apakah Anda merasa tegang, cemas atau khawatir?", "Apakah tangan Anda gemetar?",
+                    "Apakah pencernaan Anda terganggu?", "Apakah Anda sulit untuk berpikir jernih?", "Apakah Anda merasa tidak bahagia?",
+                    "Apakah Anda menangis lebih sering?", "Apakah Anda merasa sulit untuk menikmati aktivitas sehari-hari?", "Apakah Anda sulit mengambil keputusan?",
+                    "Apakah pekerjaan Anda sehari-hari terganggu?", "Apakah Anda tidak mampu melakukan hal-hal yang bermanfaat dalam hidup?", "Apakah Anda kehilangan minat pada berbagai hal?",
+                    "Apakah Anda merasa tidak berharga?", "Apakah Anda mempunyai pikiran untuk mengakhiri hidup?", "Apakah Anda merasa lelah sepanjang waktu?",
+                    "Apakah Anda merasa tidak nyaman di perut?", "Apakah Anda mudah lelah?", "Apakah Anda minum alkohol lebih banyak dari biasanya?",
+                    "Apakah Anda yakin bahwa seseorang mencoba mencelakai Anda?", "Apakah ada yang aneh dengan pikiran Anda?", "Apakah Anda mendengar suara yang tidak didengar orang lain?",
+                    "Apakah Anda mimpi buruk?", "Apakah Anda merasa hidup Anda hampa?", "Apakah Anda merasa bersalah?", "Apakah Anda merasa sendirian?", "Apakah Anda merasa tidak punya masa depan?"
+                ],
+                options: [
+                    { label: "TIDAK", val: 0 },
+                    { label: "YA", val: 1 }
+                ],
+                interpret: (s) => {
+                    if (s >= 6) return { title: "Indikasi Masalah", text: "Skor Anda menunjukkan adanya indikasi gangguan mental emosional. Disarankan berkonsultasi ke Puskesmas/Psikolog." };
+                    return { title: "Normal", text: "Tidak ada indikasi gangguan mental emosional yang signifikan." };
+                }
+            },
+            SDQ: {
+                title: "SDQ (Strengths and Difficulties Questionnaire)",
+                desc: "Skrining kesehatan mental untuk usia 4-17 tahun.",
+                questions: [
+                    "Berusaha bersikap baik kepada orang lain", "Gelisah, terlalu aktif, tidak dapat diam lama",
+                    "Sering sakit kepala, sakit perut atau mual", "Kalau mempunyai mainan, sering berbagi",
+                    "Sering marah dan tidak dapat mengendalikan kemarahan", "Cenderung menyendiri, lebih suka main sendiri",
+                    "Patuh, biasanya melakukan apa yang diminta", "Banyak kekhawatiran", "Suka menolong",
+                    "Mudah sekali merasa terganggu jika anak lain mengusik", "Mempunyai satu teman baik", "Sering berkelahi",
+                    "Sering merasa tidak bahagia, menangis", "Orang lain menyukai saya", "Mudah teralih perhatiannya",
+                    "Gugup atau sulit berpisah dengan orang tua", "Manis terhadap anak yang lebih muda", "Sering berbohong atau mencurangi",
+                    "Diganggu atau dipermainkan oleh anak lain", "Sering menawarkan diri untuk membantu", "Berpikir sebelum bertindak",
+                    "Mencuri dari rumah, sekolah atau tempat lain", "Lebih mudah berteman dengan orang dewasa", "Banyak ketakutan",
+                    "Mempunyai perhatian yang baik terhadap tugas"
+                ],
+                options: [
+                    { label: "Tidak benar", val: 0 },
+                    { label: "Agak benar", val: 1 },
+                    { label: "Selalu benar", val: 2 }
+                ],
+                interpret: (s) => {
+                    if (s <= 13) return { title: "Normal", text: "Gejala emosional dan perilaku anak dalam batas normal." };
+                    if (s <= 16) return { title: "Ambang (Borderline)", text: "Anak menunjukkan beberapa kesulitan. Perlu perhatian lebih." };
+                    return { title: "Indikasi Masalah", text: "Anak menunjukkan kesulitan yang signifikan. Disarankan konsultasi tumbuh kembang anak." };
+                }
+            },
+            MBTI: {
+                title: "MBTI (Personality Type Indicator)",
+                desc: "Mengenali tipe kepribadian Anda (E/I, S/N, T/F, J/P).",
+                questions: [
+                    "Lebih suka menghabiskan waktu luang dengan banyak orang (E vs I)",
+                    "Fokus pada detail dan kenyataan saat ini (S vs N)",
+                    "Mengambil keputusan berdasarkan logika objektif (T vs F)",
+                    "Menilai dan menyukai keteraturan (J vs P)",
+                    "Tertutup dan butuh waktu sendiri untuk isi energi (I vs E)",
+                    "Sering menggunakan imajinasi dan melihat kemungkinan (N vs S)",
+                    "Mengutamakan perasaan dan harmoni orang lain (F vs T)",
+                    "Lebih suka fleksibel dan spontan (P vs J)"
+                ],
+                options: [
+                    { label: "Sangat Tidak Setuju", val: -2 },
+                    { label: "Tidak Setuju", val: -1 },
+                    { label: "Netral", val: 0 },
+                    { label: "Setuju", val: 1 },
+                    { label: "Sangat Setuju", val: 2 }
+                ],
+                interpret: (responses) => {
+                    // Logic for 4 letters
+                    const E_I = responses[0] - responses[4];
+                    const S_N = responses[1] - responses[5];
+                    const T_F = responses[2] - responses[6];
+                    const J_P = responses[3] - responses[7];
+                    const type = (E_I >= 0 ? "E" : "I") + (S_N >= 0 ? "S" : "N") + (T_F >= 0 ? "T" : "F") + (J_P >= 0 ? "J" : "P");
+                    const desc = {
+                        "ISTJ": "Praktis, faktual, dan sangat terorganisir.", "ISFJ": "Pendiam, ramah, dan sangat bertanggung jawab.", "INFJ": "Visioner, idealis, dan mencari makna mendalam.", "INTJ": "Berpikir strategis dan perfeksionis.",
+                        "ISTP": "Toleran, fleksibel, dan pengamat yang baik.", "ISFP": "Sensitif, baik hati, dan menikmati momen saat ini.", "INFP": "Pengamat yang setia pada nilai-nilai pribadi.", "INTP": "Teoretis, logis, dan lebih suka ide daripada interaksi sosial.",
+                        "ESTP": "Energik, berorientasi pada tindakan, dan suka tantangan.", "ESFP": "Ramah, bersemangat, dan menyukai kebersamaan.", "ENFP": "Antusias, kreatif, dan penuh imajinasi.", "ENTP": "Cepat, waspada, dan berani dalam argumen.",
+                        "ESTJ": "Praktis, realistis, dan suka memimpin.", "ESFJ": "Suka bekerja sama, hangat, dan sangat populer.", "ENFJ": "Empati tinggi, bertanggung jawab, dan menginspirasi.", "ENTJ": "Pemimpin natural, jujur, dan berorientasi pada hasil."
+                    };
+                    return { title: type, text: desc[type] || "Kepribadian yang unik dan dinamis." };
+                }
+            },
             GAD7: {
                 title: "GAD-7 (Generalized Anxiety Disorder)",
                 desc: "Mengukur tingkat kecemasan dalam 2 minggu terakhir.",
@@ -304,32 +471,46 @@
 
         function finishScreening() {
             let total = 0;
-            responses.forEach((v, i) => {
-                if (currentTool.reverse && currentTool.reverse.includes(i)) {
-                    total += (currentTool.options.length - 1) - v;
-                } else {
-                    total += v;
-                }
-            });
+            let interpretation;
+            
+            if (currentTool.title.includes("MBTI")) {
+                interpretation = currentTool.interpret(responses);
+                total = interpretation.title; // Show type as "score" for MBTI
+            } else {
+                responses.forEach((v, i) => {
+                    if (currentTool.reverse && currentTool.reverse.includes(i)) {
+                        total += (currentTool.options.length - 1) - v;
+                    } else {
+                        total += v;
+                    }
+                });
+                interpretation = currentTool.interpret(total);
+            }
 
-            const interpretation = currentTool.interpret(total);
             document.getElementById('questionArea').style.display = 'none';
             document.getElementById('resultArea').style.display = 'block';
             document.getElementById('finalScore').innerText = total;
             document.getElementById('interTitle').innerText = interpretation.title;
             document.getElementById('interText').innerText = interpretation.text;
             
-            // Visual color based on severity
+            // Visual color based on severity (if numeric)
             const circle = document.querySelector('.score-circle');
-            if (total > (currentTool.questions.length * 2)) {
-                circle.style.borderColor = 'var(--danger)';
-                document.getElementById('finalScore').style.color = 'var(--danger)';
-            } else if (total > currentTool.questions.length) {
-                circle.style.borderColor = 'var(--warning)';
-                document.getElementById('finalScore').style.color = 'var(--warning)';
+            if (typeof total === 'number') {
+                if (total > (currentTool.questions.length * 2)) {
+                    circle.style.borderColor = 'var(--danger)';
+                    document.getElementById('finalScore').style.color = 'var(--danger)';
+                } else if (total > currentTool.questions.length) {
+                    circle.style.borderColor = 'var(--warning)';
+                    document.getElementById('finalScore').style.color = 'var(--warning)';
+                } else {
+                    circle.style.borderColor = 'var(--success)';
+                    document.getElementById('finalScore').style.color = 'var(--success)';
+                }
             } else {
-                circle.style.borderColor = 'var(--success)';
-                document.getElementById('finalScore').style.color = 'var(--success)';
+                circle.style.borderColor = 'var(--primary)';
+                document.getElementById('finalScore').style.color = 'var(--primary)';
+                document.getElementById('finalScore').style.fontSize = '1.5rem';
+                document.querySelector('.score-label').innerText = 'Tipe';
             }
         }
 
