@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Sinkronisasi | FamilyHealth v1.3.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius-xl: 20px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); line-height: 1.5; padding: 2rem 1rem; min-height: 100vh; display: flex; align-items: center; justify-content: center; animation: fadeInBody 0.6s ease-out; }
+        @keyframes fadeInBody { from { opacity: 0; } to { opacity: 1; } }
+
+        .onboarding-card { background: var(--card-bg); width: 100%; max-width: 500px; border-radius: var(--radius-xl); padding: 2.5rem; box-shadow: var(--shadow); border: 1px solid var(--border); text-align: center; position: relative; overflow: hidden; }
+        
+        .brand-icon { background: linear-gradient(135deg, #4f46e5, #ec4899); color: white; width: 64px; height: 64px; border-radius: 18px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3); transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+        .onboarding-card:hover .brand-icon { transform: rotate(10deg) scale(1.1); }
+        
+        .title { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem; color: var(--text-main); }
+        .subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 2rem; line-height: 1.6; }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.8rem 1.5rem; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: none; gap: 0.5rem; font-size: 0.95rem; text-decoration: none; width: 100%; position: relative; overflow: hidden; margin-bottom: 1rem; }
+        .btn:hover { transform: translateY(-3px); filter: brightness(1.05); }
+        .btn:active { transform: translateY(0); }
+        
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .btn-secondary { background: var(--primary-light); color: var(--primary); }
+        .btn-success { background: var(--secondary); color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        
+        .scanner-container { background: #000; border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1.5rem; display: none; margin-top: 1rem; min-height: 250px; position: relative; }
+        #reader { width: 100%; }
+        
+        .manual-input-group { text-align: left; margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+        label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted); text-transform: uppercase; }
+        input { width: 100%; padding: 0.8rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border); background: #f8fafc; font-size: 0.95rem; outline: none; transition: all 0.3s ease; margin-bottom: 1rem; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); background: white; transform: translateY(-2px); }
+
+        .status-badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.8rem; border-radius: 30px; font-size: 0.75rem; font-weight: 700; background: var(--danger-light); color: var(--danger); margin-bottom: 1.5rem; transition: all 0.3s ease; }
+        .status-badge.connected { background: #ecfdf5; color: var(--secondary); }
+
+        #toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(150%); padding: 1rem 1.5rem; background: var(--secondary); color: white; border-radius: var(--radius-md); font-weight: 700; box-shadow: var(--shadow); transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); z-index: 1000; text-align: center; }
+        #toast.active { transform: translateX(-50%) translateY(0); }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="onboarding-card">
+        <div class="brand-icon"><i data-lucide="activity" style="width: 32px; height: 32px;"></i></div>
+        <h1 class="title">FamilyHealth PWA</h1>
+        
+        <div id="statusBadge" class="status-badge">
+            <i data-lucide="cloud-off" style="width:14px; height:14px;"></i> Belum Terhubung Cloud
+        </div>
+        
+        <p class="subtitle" id="onboardDesc">Pindai QR Code infrastruktur Google Apps Script Anda untuk memulai sinkronisasi *real-time* ke server cloud pribadi.</p>
+
+        <div id="actionArea">
+            <button class="btn btn-primary" onclick="startScanner()" id="btnScan"><i data-lucide="qr-code"></i> Pindai QR Code Cloud Sync</button>
+            <div class="scanner-container" id="scannerWrapper">
+                <div id="reader"></div>
+                <button class="btn btn-secondary" onclick="stopScanner()" style="margin: 1rem; width: calc(100% - 2rem);"><i data-lucide="x-circle"></i> Batal Pindai</button>
+            </div>
+
+            <div class="manual-input-group">
+                <label>Input URL Manual</label>
+                <input type="url" id="appScriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+                <button class="btn btn-secondary" onclick="saveManualUrl()"><i data-lucide="upload-cloud"></i> Simpan Koneksi Cloud</button>
+            </div>
+        </div>
+
+        <div id="dashboardArea" class="hidden" style="margin-top: 2rem;">
+            <button class="btn btn-success" onclick="goToDashboard()"><i data-lucide="arrow-right-circle"></i> Buka Log Kesehatan</button>
+        </div>
+    </div>
+
+    <div id="toast">Berhasil terhubung ke konfigurasi Cloud!</div>
+
+    <script>
+        lucide.createIcons();
+
+        let html5QrcodeScanner = null;
+        const savedUrl = localStorage.getItem('familyhealth_appscript_url');
+
+        function checkConnection() {
+            if (savedUrl) {
+                document.getElementById('statusBadge').classList.remove('status-badge');
+                document.getElementById('statusBadge').classList.add('status-badge', 'connected');
+                document.getElementById('statusBadge').innerHTML = '<i data-lucide="cloud-check" style="width:14px; height:14px;"></i> Terhubung ke Cloud';
+                document.getElementById('actionArea').classList.add('hidden');
+                document.getElementById('dashboardArea').classList.remove('hidden');
+                document.getElementById('onboardDesc').innerHTML = "Koneksi Google Apps Script Spreadsheet Anda telah aktif.<br>Aplikasi siap mensinkronkan data otomatis.";
+                document.getElementById('appScriptUrl').value = savedUrl;
+                lucide.createIcons();
+
+                // Auto redirect after checking connection
+                setTimeout(() => {
+                    goToDashboard();
+                }, 1000);
+            }
+        }
+
+        checkConnection();
+
+        function showToast(msg) {
+            document.getElementById('toast').innerText = msg;
+            document.getElementById('toast').classList.add('active');
+            setTimeout(() => document.getElementById('toast').classList.remove('active'), 3000);
+        }
+
+        function saveUrlAndContinue(url) {
+            if (!url.includes('script.google.com')) {
+                alert('Tautan tidak lazim. Harap gunakan URL Web App Google Apps Script Anda.');
+                return;
+            }
+            localStorage.setItem('familyhealth_appscript_url', url);
+            showToast("Konfigurasi Cloud Berhasil Disimpan!");
+            setTimeout(() => {
+                goToDashboard();
+            }, 1500);
+        }
+
+        function saveManualUrl() {
+            const url = document.getElementById('appScriptUrl').value.trim();
+            if (!url) {
+                alert('Masukkan URL Apps Script.');
+                return;
+            }
+            saveUrlAndContinue(url);
+        }
+
+        function goToDashboard() {
+            window.location.href = 'health-log.html';
+        }
+
+        function startScanner() {
+            document.getElementById('scannerWrapper').style.display = 'block';
+            document.getElementById('btnScan').style.display = 'none';
+
+            html5QrcodeScanner = new Html5Qrcode("reader");
+            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                config,
+                (decodedText) => {
+                    stopScanner();
+                    saveUrlAndContinue(decodedText);
+                },
+                (errorMessage) => {
+                    // ignore scan errors
+                }
+            ).catch(err => {
+                alert(`Gagal mengakses kamera: ${err}`);
+                stopScanner();
+            });
+        }
+
+        function stopScanner() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    html5QrcodeScanner.clear();
+                    document.getElementById('scannerWrapper').style.display = 'none';
+                    document.getElementById('btnScan').style.display = 'inline-flex';
+                }).catch(err => console.log(err));
+            } else {
+                document.getElementById('scannerWrapper').style.display = 'none';
+                document.getElementById('btnScan').style.display = 'inline-flex';
+            }
+        }
+    </script>
+</body>
+</html>
