@@ -202,6 +202,24 @@
         <option value="AstraZeneca">
     </datalist>
 
+    <datalist id="specList">
+        <option value="Dokter Umum">
+        <option value="Spesialis Penyakit Dalam (Internis)">
+        <option value="Spesialis Anak (Pediatri)">
+        <option value="Spesialis Kebidanan & Kandungan (Obgyn)">
+        <option value="Spesialis Bedah">
+        <option value="Spesialis Jantung & Pembuluh Darah">
+        <option value="Spesialis Paru">
+        <option value="Spesialis Saraf (Neurologi)">
+        <option value="Spesialis Kulit & Kelamin (Dermatovenerologi)">
+        <option value="Spesialis Mata">
+        <option value="Spesialis THT-KL">
+        <option value="Spesialis Kedokteran Jiwa (Psikiatri)">
+        <option value="Spesialis Gigi">
+        <option value="Spesialis Rehabilitasi Medik">
+        <option value="Spesialis Gizi Klinik">
+    </datalist>
+
     <datalist id="catList"></datalist>
     <datalist id="compSuggestList">
         <option value="Paracetamol">
@@ -361,15 +379,28 @@
             </div>
             <form id="docForm">
                 <div class="grid">
-                    <div class="form-group"><label>Nama Dokter</label><input type="text" id="docName" required></div>
-                    <div class="form-group"><label>Spesialisasi</label><input type="text" id="docSpec" required></div>
-                    <div class="form-group"><label>Klinik/RS</label><input type="text" id="docClinic" required></div>
+                    <div class="form-group"><label>Nama Dokter</label><input type="text" id="docName" placeholder="dr. Nama Lengkap, Sp.X" required></div>
+                    <div class="form-group"><label>Spesialisasi</label><input type="text" id="docSpec" list="specList" required></div>
                 </div>
                 <div class="grid">
-                    <div class="form-group"><label>Telepon</label><input type="tel" id="docPhone"></div>
-                    <div class="form-group"><label>Catatan/Jadwal</label><input type="text" id="docNotes"></div>
+                    <div class="form-group"><label>Telepon/WhatsApp</label><input type="tel" id="docPhone" placeholder="08xxxx"></div>
+                    <div class="form-group"><label>URL Foto Profil (Opsional)</label><input type="url" id="docPhoto" placeholder="https://..."></div>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%"><i data-lucide="user-plus"></i> Simpan Dokter</button>
+
+                <!-- PRACTICE LOCATIONS BUILDER -->
+                <div class="form-group" style="margin-top: 1rem; background: #f8fafc; padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                    <label style="color:var(--primary); font-weight:800; display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;">
+                        <i data-lucide="hospital" style="width:14px;"></i> Daftar Tempat Praktik & Jadwal
+                    </label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 40px; gap: 0.5rem; margin-bottom: 0.75rem;">
+                        <input type="text" id="locClinic" placeholder="Klinik/RS">
+                        <input type="text" id="locSchedule" placeholder="Jadwal (Senen-Jumat 17:00)">
+                        <button type="button" onclick="addPracticeLocation()" class="btn btn-primary" style="padding:0;"><i data-lucide="plus" style="width:16px;"></i></button>
+                    </div>
+                    <div id="practiceLocList" style="display: flex; flex-direction: column; gap: 0.5rem; margin-top:1rem;"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%"><i data-lucide="user-plus"></i> Simpan Data Dokter</button>
             </form>
         </div>
     </div>
@@ -435,8 +466,35 @@
         window.closeModal = (id) => {
             document.getElementById(id).classList.remove('active');
             if(id === 'modalMeds') { currentComposition = []; updateCompListUI(); }
+            if(id === 'modalDocs') { currentPracticeLocations = []; updatePracticeListUI(); }
             if(id === 'modalStock') currentMedIndex = null;
         };
+
+        // --- DOCTOR LOCATIONS LOGIC ---
+        let currentPracticeLocations = [];
+        window.addPracticeLocation = () => {
+            const clinic = document.getElementById('locClinic').value.trim();
+            const sched = document.getElementById('locSchedule').value.trim();
+            if(!clinic || !sched) return;
+            currentPracticeLocations.push({ clinic, sched });
+            document.getElementById('locClinic').value = '';
+            document.getElementById('locSchedule').value = '';
+            updatePracticeListUI();
+        };
+        window.removePractice = (idx) => {
+            currentPracticeLocations.splice(idx, 1);
+            updatePracticeListUI();
+        };
+        function updatePracticeListUI() {
+            const cont = document.getElementById('practiceLocList');
+            cont.innerHTML = currentPracticeLocations.map((l, i) => `
+                <div style="background:white; padding:0.6rem 1rem; border-radius:8px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; font-size:0.8rem;">
+                    <div><i data-lucide="building-2" style="width:12px; color:var(--primary);"></i> <strong>${l.clinic}</strong>: ${l.sched}</div>
+                    <i data-lucide="trash-2" style="width:14px; color:var(--danger); cursor:pointer;" onclick="removePractice(${i})"></i>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
 
         // --- STOCK MANAGEMENT LOGIC ---
         let currentMedIndex = null;
@@ -627,15 +685,30 @@
                 return;
             }
             list.innerHTML = docsData.map((d, idx) => `
-                <div class="data-card">
-                    <div style="display:flex; justify-content:space-between;">
-                        <span class="card-tag" style="background:#eff6ff; color:#1e40af;">${d.spec}</span>
-                        <button onclick="deleteItem('docsData', ${idx}, renderDocs)" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
+                <div class="data-card" style="padding:0; overflow:hidden;">
+                    <div style="background: linear-gradient(135deg, var(--primary-light), white); padding:1.5rem; display:flex; gap:1rem; align-items:center;">
+                        <div style="width:64px; height:64px; border-radius:50%; overflow:hidden; background:var(--primary); border:3px solid white; box-shadow:var(--shadow-sm); flex-shrink:0;">
+                            <img src="${d.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(d.name)}&background=4f46e5&color=fff`}" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                        <div style="flex:1;">
+                            <span class="card-tag" style="background:white; color:var(--primary); box-shadow:0 1px 3px rgba(0,0,0,0.05);">${d.spec}</span>
+                            <div style="font-weight:800; font-size:1.1rem; color:var(--text-main); margin-top:2px;">${d.name}</div>
+                        </div>
+                        <button onclick="deleteItem('docsData', ${idx}, renderDocs)" style="background:none; border:none; color:var(--danger); cursor:pointer; align-self:flex-start;"><i data-lucide="trash-2" style="width:16px;"></i></button>
                     </div>
-                    <div style="font-weight:800; font-size:1.1rem; margin-top:0.5rem;">${d.name}</div>
-                    <div style="font-size:0.85rem; margin:0.5rem 0; color:var(--text-muted);"><i data-lucide="building-2" style="width:12px;"></i> ${d.clinic}</div>
-                    <div style="display:flex; gap:0.5rem; margin-top:1rem;">
-                        <a href="tel:${d.phone}" class="btn btn-outline" style="padding:0.4rem 0.8rem; font-size:0.75rem; flex:1; border-radius:8px;"><i data-lucide="phone" style="width:14px;"></i> Hubungi</a>
+                    
+                    <div style="padding:1.5rem;">
+                        <div style="margin-bottom:1rem;">
+                            <div style="font-size:0.7rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.5rem;">Tempat Praktik & Jadwal</div>
+                            ${(d.locations || []).length > 0 ? d.locations.map(l => `
+                                <div style="font-size:0.85rem; margin-bottom:0.4rem; color:var(--text-main); background:#f8fafc; padding:0.5rem 0.75rem; border-radius:8px; border:1px solid #f1f5f9;">
+                                    <div style="font-weight:700;"><i data-lucide="map-pin" style="width:12px; color:var(--primary);"></i> ${l.clinic}</div>
+                                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;"><i data-lucide="clock" style="width:12px;"></i> ${l.sched}</div>
+                                </div>
+                            `).join('') : '<div style="font-size:0.8rem; color:var(--text-muted);">Lokasi belum terdaftar.</div>'}
+                        </div>
+                        
+                        <a href="tel:${d.phone}" class="btn btn-primary" style="width:100%; border-radius:12px;"><i data-lucide="phone"></i> Hubungi Dokter</a>
                     </div>
                 </div>
             `).join('');
@@ -721,11 +794,12 @@
             docsData.unshift({
                 name: document.getElementById('docName').value,
                 spec: document.getElementById('docSpec').value,
-                clinic: document.getElementById('docClinic').value,
                 phone: document.getElementById('docPhone').value,
-                notes: document.getElementById('docNotes').value,
+                photo: document.getElementById('docPhoto').value,
+                locations: [...currentPracticeLocations],
             });
             saveAll(); renderDocs(); document.getElementById('docForm').reset(); 
+            currentPracticeLocations = []; updatePracticeListUI();
             closeModal('modalDocs'); showToast('Dokter');
         };
 
