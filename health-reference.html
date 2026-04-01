@@ -221,6 +221,7 @@
     </datalist>
 
     <datalist id="catList"></datalist>
+    <datalist id="clinicSuggestList"></datalist>
     <datalist id="compSuggestList">
         <option value="Paracetamol">
         <option value="Ibuprofen">
@@ -396,7 +397,7 @@
                         <i data-lucide="hospital" style="width:14px;"></i> Daftar Tempat Praktik & Jadwal
                     </label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr 40px; gap: 0.5rem; margin-bottom: 0.75rem;">
-                        <input type="text" id="locClinic" placeholder="Klinik/RS">
+                        <input type="text" id="locClinic" placeholder="Klinik/RS" list="clinicSuggestList">
                         <input type="text" id="locSchedule" placeholder="Jadwal (Senen-Jumat 17:00)">
                         <button type="button" onclick="addPracticeLocation()" class="btn btn-primary" style="padding:0;"><i data-lucide="plus" style="width:16px;"></i></button>
                     </div>
@@ -613,6 +614,12 @@
             dl.innerHTML = categories.map(c => `<option value="${c}">`).join('');
         }
 
+        function updateClinicDatalist() {
+            const dl = document.getElementById('clinicSuggestList');
+            if (!dl) return;
+            dl.innerHTML = clinicsData.map(c => `<option value="${c.name}">`).join('');
+        }
+
         // --- RENDERERS ---
         function renderTests() {
             const list = document.getElementById('testList');
@@ -762,7 +769,7 @@
                 if(dataVar === 'testData') testData.splice(idx, 1);
                 if(dataVar === 'medsData') medsData.splice(idx, 1);
                 if(dataVar === 'docsData') docsData.splice(idx, 1);
-                if(dataVar === 'clinicsData') clinicsData.splice(idx, 1);
+                if(dataVar === 'clinicsData') { clinicsData.splice(idx, 1); updateClinicDatalist(); }
                 saveAll(); renderFn();
                 if(dataVar === 'testData') updateCategoryDatalist();
             }
@@ -834,7 +841,7 @@
                 mapsUrl: document.getElementById('clinicMaps').value,
                 notes: document.getElementById('clinicNotes').value,
             });
-            saveAll(); renderClinics(); document.getElementById('clinicForm').reset(); 
+            saveAll(); renderClinics(); updateClinicDatalist(); document.getElementById('clinicForm').reset(); 
             closeModal('modalClinics'); showToast('Faskes');
         };
 
@@ -845,7 +852,7 @@
             setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        renderTests(); renderMeds(); renderDocs(); renderClinics(); updateCategoryDatalist();
+        renderTests(); renderMeds(); renderDocs(); renderClinics(); updateCategoryDatalist(); updateClinicDatalist();
     </script>
 </body>
 </html>
