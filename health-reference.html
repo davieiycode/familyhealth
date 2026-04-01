@@ -180,11 +180,62 @@
             <form id="medForm">
                 <div class="grid">
                     <div class="form-group"><label>Nama Obat</label><input type="text" id="medName" required></div>
-                    <div class="form-group"><label>Bentuk</label><select id="medType"><option value="Tablet">Tablet/Kaplet</option><option value="Sirup">Sirup</option><option value="Kapsul">Kapsul</option><option value="Salep">Salep/Krim</option></select></div>
+                    <div class="form-group"><label>Bentuk</label>
+                        <select id="medType">
+                            <option value="Tablet">Tablet/Kaplet</option>
+                            <option value="Sirup">Sirup</option>
+                            <option value="Kapsul">Kapsul</option>
+                            <option value="Salep">Salep/Krim</option>
+                            <option value="Injeksi">Injeksi (Suntik)</option>
+                            <option value="Rektal">Rektal (Anus)</option>
+                            <option value="Drop">Drop (Tetes)</option>
+                            <option value="Inhaler">Inhaler</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
                     <div class="form-group"><label>Dosis</label><input type="text" id="medDose" required></div>
                 </div>
-                <div class="form-group"><label>Indikasi</label><input type="text" id="medIndication" placeholder="Kapan obat ini diminum?"></div>
-                <button type="submit" class="btn btn-primary" style="width:100%"><i data-lucide="plus"></i> Simpan Obat</button>
+
+                <div class="grid">
+                    <div class="form-group"><label>Tujuan</label>
+                        <select id="medPurpose">
+                            <option value="Mengobati">Mengobati</option>
+                            <option value="Mencegah">Mencegah</option>
+                            <option value="Suplemen">Suplemen/Vitamin</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Usia Dibolehkan</label><input type="text" id="medAgeLimit" placeholder="Misal: Dewasa, Anak > 2th"></div>
+                    <div class="form-group"><label>Nomor BPOM/Reg</label><input type="text" id="medRegNo"></div>
+                </div>
+
+                <div class="form-group"><label>Indikasi (Kegunaan)</label><input type="text" id="medIndication" placeholder="Kapan obat ini diminum? Misal: Demam, Flu"></div>
+                <div class="form-group"><label>Kandungan (Komposisi)</label><textarea id="medComposition" rows="2"></textarea></div>
+                
+                <div class="grid">
+                    <div class="form-group"><label>Kontraindikasi</label><textarea id="medContraindication" rows="1"></textarea></div>
+                    <div class="form-group"><label>Peringatan & Perhatian</label><textarea id="medWarning" rows="1"></textarea></div>
+                </div>
+
+                <div class="grid">
+                    <div class="form-group"><label>Efek Samping</label><textarea id="medSideEffects" rows="1"></textarea></div>
+                    <div class="form-group"><label>Cara Penyimpanan</label><input type="text" id="medStorage"></div>
+                </div>
+
+                <div class="grid">
+                    <div class="form-group"><label>Produsen</label><input type="text" id="medManufacturer"></div>
+                    <div class="form-group"><label>Lokasi Simpan</label><input type="text" id="medLocation" placeholder="Misal: Kotak Obat Dapur"></div>
+                </div>
+
+                <div class="limit-grid" style="background:#f0fdf4;">
+                    <div class="limit-title">Manajemen Stok</div>
+                    <div class="form-group"><label>Stok Sekarang</label><input type="number" id="medStock" value="0"></div>
+                    <div class="form-group"><label>Satuan Stok</label><input type="text" id="medStockUnit" placeholder="Butir/Botol/Sachet"></div>
+                    <div class="form-group"><label>Kadaluarsa</label><input type="date" id="medExpiry"></div>
+                    <div class="form-group" style="grid-column: 1/-1;"><label>Sumber/Asal</label><input type="text" id="medSource" placeholder="Misal: Klinik Kimia Farma, Dr. Budi"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%"><i data-lucide="save"></i> Simpan Obat</button>
             </form>
         </div>
     </div>
@@ -307,14 +358,38 @@
                 return;
             }
             list.innerHTML = medsData.map((m, idx) => `
-                <div class="data-card">
+                <div class="data-card" style="border-top: 5px solid ${m.stock > 0 ? 'var(--secondary)' : 'var(--danger)'};">
                     <div style="display:flex; justify-content:space-between;">
                         <span class="card-tag" style="background:#f0fdf4; color:#166534;">${m.type}</span>
-                        <button onclick="deleteItem('medsData', ${idx}, renderMeds)" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
+                        <div style="display:flex; gap:0.5rem;">
+                            <span class="card-tag" style="background:${m.stock > 0 ? 'var(--primary-light)' : '#fef2f2'}; color:${m.stock > 0 ? 'var(--primary)' : 'var(--danger)'};">Stok: ${m.stock || 0} ${m.stockUnit || ''}</span>
+                            <button onclick="deleteItem('medsData', ${idx}, renderMeds)" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
+                        </div>
                     </div>
                     <div style="font-weight:800; font-size:1.1rem; margin-top:0.5rem;">${m.name}</div>
-                    <div style="color:var(--primary); font-weight:700; margin-bottom:0.5rem; font-size:0.9rem;">${m.dose}</div>
-                    <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.4;">${m.indication}</div>
+                    <div style="color:var(--primary); font-weight:700; margin-bottom:0.1rem; font-size:0.9rem;">${m.dose} - ${m.purpose || 'Umum'}</div>
+                    <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin-bottom:0.5rem;">${m.indication}</div>
+                    
+                    <div style="font-size:0.75rem; border-top:1px dashed var(--border); padding-top:0.5rem; margin-top:0.5rem;">
+                        <div style="margin-bottom:2px;"><strong style="color:var(--text-muted);">Kandungan:</strong> ${m.composition || '-'}</div>
+                        <div style="margin-bottom:2px;"><strong style="color:var(--text-muted);">Exp:</strong> ${m.expiry ? new Date(m.expiry).toLocaleDateString() : '-'}</div>
+                        <div style="margin-bottom:2px;"><strong style="color:var(--text-muted);">Lokasi:</strong> ${m.location || '-'}</div>
+                        ${m.manufacturer ? `<div style="margin-bottom:2px;"><strong style="color:var(--text-muted);">Produsen:</strong> ${m.manufacturer}</div>` : ''}
+                    </div>
+                    
+                    <details style="margin-top:0.75rem; font-size:0.75rem; color:var(--text-muted); border-top:1px solid #eee;">
+                        <summary style="cursor:pointer; padding:0.4rem 0; font-weight:600; color:var(--primary);">Detail Medis & Stok</summary>
+                        <div style="padding:0.5rem; background:#f8fafc; border-radius:8px; margin-top:0.4rem; white-space: pre-wrap;">
+<strong style="color:var(--text-main);">Reg No:</strong> ${m.regNo || '-'}
+<strong style="color:var(--text-main);">Usia:</strong> ${m.ageLimit || '-'}
+<strong style="color:var(--text-main);">Penyimpanan:</strong> ${m.storage || '-'}
+<strong style="color:var(--text-main);">Sumber:</strong> ${m.source || '-'}
+<hr style="margin:4px 0; border:none; height:1px; background:#e2e8f0;">
+<strong style="color:var(--danger);">Kontraindikasi:</strong> ${m.contraindication || '-'}
+<strong style="color:var(--warning);">Peringatan:</strong> ${m.warning || '-'}
+<strong style="color:var(--danger);">Efek Samping:</strong> ${m.sideEffects || '-'}
+                        </div>
+                    </details>
                 </div>
             `).join('');
             lucide.createIcons();
@@ -400,7 +475,21 @@
                 name: document.getElementById('medName').value,
                 type: document.getElementById('medType').value,
                 dose: document.getElementById('medDose').value,
+                purpose: document.getElementById('medPurpose').value,
+                ageLimit: document.getElementById('medAgeLimit').value,
+                regNo: document.getElementById('medRegNo').value,
                 indication: document.getElementById('medIndication').value,
+                composition: document.getElementById('medComposition').value,
+                contraindication: document.getElementById('medContraindication').value,
+                warning: document.getElementById('medWarning').value,
+                sideEffects: document.getElementById('medSideEffects').value,
+                storage: document.getElementById('medStorage').value,
+                manufacturer: document.getElementById('medManufacturer').value,
+                location: document.getElementById('medLocation').value,
+                stock: parseFloat(document.getElementById('medStock').value) || 0,
+                stockUnit: document.getElementById('medStockUnit').value,
+                expiry: document.getElementById('medExpiry').value,
+                source: document.getElementById('medSource').value,
             });
             saveAll(); renderMeds(); document.getElementById('medForm').reset(); 
             closeModal('modalMeds'); showToast('Obat');

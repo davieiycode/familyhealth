@@ -113,8 +113,15 @@
             </div>
         </header>
 
+        <div class="tab-container" style="display:flex; gap:0.5rem; margin-bottom:2rem; background:#f1f5f9; padding:0.4rem; border-radius:14px;">
+            <button class="tab-btn active" id="tabTests" onclick="switchTab('tests')" style="flex:1; padding:0.75rem; border-radius:10px; border:none; background:white; font-weight:700; cursor:pointer;"><i data-lucide="clipboard-list"></i> Tes Kesehatan</button>
+            <button class="tab-btn" id="tabMeds" onclick="switchTab('meds')" style="flex:1; padding:0.75rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted);"><i data-lucide="pill"></i> Minum Obat</button>
+        </div>
+
         <main>
-            <div class="card">
+            <!-- SECTION: TEST LOGS -->
+            <div id="sectionTests" class="log-section">
+                <div class="card">
                 <div class="section-header">
                     <i data-lucide="file-plus" style="width:20px;"></i>
                     Entri Laporan <span id="activePatientLabel" style="color:var(--primary); margin-left: 0.5rem;"></span>
@@ -165,26 +172,67 @@
                              <i data-lucide="plus"></i> Tambah Tes
                         </button>
                         <button type="submit" class="btn btn-primary">
-                             <i data-lucide="save"></i> Simpan
+                             <i data-lucide="save"></i> Simpan Laporan
                         </button>
                     </div>
                 </form>
             </div>
+            </div>
+
+            <!-- SECTION: MEDICINE LOGS -->
+            <div id="sectionMeds" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header">
+                        <i data-lucide="pill" style="width:20px;"></i>
+                        Log Konsumsi Obat <span class="activePatientLabel" style="color:var(--primary); margin-left: 0.5rem;"></span>
+                    </div>
+                    <form id="medLogForm">
+                        <div class="report-meta">
+                            <div style="grid-column: 1 / -1;">
+                                <label>Pilih Obat</label>
+                                <input type="text" list="medRefList" id="logMedName" placeholder="Cari obat di koleksi..." required>
+                                <div id="stockInfo" style="font-size:0.75rem; margin-top:0.4rem; color:var(--text-muted);"></div>
+                            </div>
+                            <div>
+                                <label>Jumlah Minum</label>
+                                <input type="number" id="logMedQty" step="any" value="1" required>
+                            </div>
+                            <div>
+                                <label>Satuan</label>
+                                <input type="text" id="logMedUnit" readonly style="background:#f1f5f9;">
+                            </div>
+                            <div>
+                                <label>Waktu</label>
+                                <input type="datetime-local" id="medTimestamp" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Catatan (Kondisi/Keluhan)</label>
+                            <input type="text" id="logMedNotes" placeholder="Misal: Diminum sesudah makan, kepala masih pusing">
+                        </div>
+                        <div style="display:flex; justify-content: flex-end; margin-top: 1.5rem;">
+                            <button type="submit" class="btn btn-primary">
+                                 <i data-lucide="check-circle"></i> Catat & Kurangi Stok
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
             <div class="log-section">
                 <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem;">
-                    <h2>Riwayat Pemeriksaan</h2>
-                    <button class="btn btn-outline" onclick="exportLogs()"><i data-lucide="download"></i> CSV</button>
+                    <h2>Riwayat Aktivitas</h2>
+                    <button class="btn btn-outline" onclick="exportLogs()"><i data-lucide="download"></i> Excel/CSV</button>
                 </div>
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
                                 <th>Tanggal & Pasien</th>
-                                <th>Laporan</th>
-                                <th>Tes & Kategori</th>
-                                <th>Hasil</th>
-                                <th>Indikasi & Saran</th>
+                                <th>Aktivitas / Laporan</th>
+                                <th>Detail (Tes/Obat)</th>
+                                <th>Hasil / Jumlah</th>
+                                <th>Indikasi / Catatan</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -206,6 +254,7 @@
     </div>
 
     <datalist id="testRefList"></datalist>
+    <datalist id="medRefList"></datalist>
 
     <script>
         lucide.createIcons();
@@ -216,19 +265,56 @@
 
         function init() {
             document.getElementById('timestamp').value = new Date().toISOString().slice(0, 16);
-            populateDatalist();
+            document.getElementById('medTimestamp').value = new Date().toISOString().slice(0, 16);
+            populateDatalists();
             setupProfiles();
             renderLogs();
         }
 
-        function populateDatalist() {
-            const dl = document.getElementById('testRefList');
+        function populateDatalists() {
+            const tl = document.getElementById('testRefList');
+            tl.innerHTML = '';
             refData.forEach(r => {
                 const opt = document.createElement('option');
                 opt.value = r.testName;
-                dl.appendChild(opt);
+                tl.appendChild(opt);
+            });
+
+            const ml = document.getElementById('medRefList');
+            ml.innerHTML = '';
+            const meds = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
+            meds.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.name;
+                ml.appendChild(opt);
             });
         }
+
+        window.switchTab = (type) => {
+            document.getElementById('sectionTests').style.display = type === 'tests' ? 'block' : 'none';
+            document.getElementById('sectionMeds').style.display = type === 'meds' ? 'block' : 'none';
+            
+            document.getElementById('tabTests').style.background = type === 'tests' ? 'white' : 'transparent';
+            document.getElementById('tabTests').style.color = type === 'tests' ? 'var(--text-main)' : 'var(--text-muted)';
+            
+            document.getElementById('tabMeds').style.background = type === 'meds' ? 'white' : 'transparent';
+            document.getElementById('tabMeds').style.color = type === 'meds' ? 'var(--text-main)' : 'var(--text-muted)';
+            lucide.createIcons();
+        };
+
+        document.getElementById('logMedName').addEventListener('input', (e) => {
+            const meds = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
+            const found = meds.find(m => m.name.toLowerCase() === e.target.value.toLowerCase());
+            const info = document.getElementById('stockInfo');
+            const unit = document.getElementById('logMedUnit');
+            if(found) {
+                info.innerHTML = `<span style="color:${found.stock > 0 ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">Stok: ${found.stock} ${found.stockUnit}</span> • Exp: ${found.expiry || '-'}`;
+                unit.value = found.stockUnit;
+            } else {
+                info.innerText = '';
+                unit.value = '';
+            }
+        });
 
         function shortenName(name) {
             if (!name) return '';
@@ -248,7 +334,7 @@
             });
             document.getElementById('activeProfileName').innerText = shortenName(activeProfile);
             document.getElementById('activeAvatar').innerText = activeProfile.charAt(0);
-            document.getElementById('activePatientLabel').innerText = `(${shortenName(activeProfile)})`;
+            document.querySelectorAll('.activePatientLabel').forEach(el => el.innerText = `(${shortenName(activeProfile)})`);
             document.getElementById('author').value = activeProfile;
             lucide.createIcons();
         }
@@ -339,21 +425,64 @@
             location.reload(); 
         };
 
+        document.getElementById('medLogForm').onsubmit = (e) => {
+            e.preventDefault();
+            const meds = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
+            const medName = document.getElementById('logMedName').value;
+            const qty = parseFloat(document.getElementById('logMedQty').value);
+            const medIdx = meds.findIndex(m => m.name.toLowerCase() === medName.toLowerCase());
+            
+            if(medIdx === -1) { alert("Obat tidak ditemukan di koleksi referensi."); return; }
+            if(meds[medIdx].stock < qty) { if(!confirm("Stok tidak mencukupi. Tetap catat?")) return; }
+
+            // Decrement Stock
+            meds[medIdx].stock = Math.max(0, meds[medIdx].stock - qty);
+            localStorage.setItem('health_meds_data', JSON.stringify(meds));
+
+            const newEntry = {
+                logId: 'MED-' + Date.now(),
+                type: 'MEDICINE',
+                author: activeProfile,
+                timestamp: document.getElementById('medTimestamp').value,
+                medName: meds[medIdx].name,
+                qty: qty,
+                unit: meds[medIdx].stockUnit,
+                notes: document.getElementById('logMedNotes').value,
+                location: meds[medIdx].location
+            };
+
+            logs = [newEntry, ...logs];
+            localStorage.setItem('health_logs', JSON.stringify(logs));
+            showToast(`Berhasil mencatat konsumsi ${qty} ${meds[medIdx].stockUnit} ${meds[medIdx].name}`);
+            location.reload();
+        };
+
         function renderLogs() {
             const body = document.getElementById('logTableBody');
             body.innerHTML = '';
             const filtered = logs.filter(l => l.author === activeProfile).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
             filtered.forEach(log => {
                 const tr = document.createElement('tr');
-                const tag = `tag-${log.indication.toLowerCase().replace(/ /g, '-')}`;
-                tr.innerHTML = `
-                    <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.7rem">${new Date(log.timestamp).toLocaleDateString()}</div></td>
-                    <td>${log.reportName}</td>
-                    <td><div style="font-weight:600; color:var(--primary);">${log.testName}</div><div style="font-size:0.7rem; color:var(--text-muted);">${log.category}</div></td>
-                    <td>${log.value} ${log.unit}</td>
-                    <td><span class="tag ${tag}">${log.indication}</span><div style="font-size:0.7rem; margin-top:4px;">${log.suggestions}</div></td>
-                    <td><button class="btn-outline" onclick="deleteLog('${log.logId}')" style="padding:4px;"><i data-lucide="trash-2" style="width:14px; color:var(--danger);"></i></button></td>
-                `;
+                if(log.type === 'MEDICINE') {
+                    tr.innerHTML = `
+                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.7rem">${new Date(log.timestamp).toLocaleDateString()}</div></td>
+                        <td style="color:var(--success); font-weight:700;"><i data-lucide="pill" style="width:12px;"></i> Minum Obat</td>
+                        <td><div style="font-weight:600; color:var(--primary);">${log.medName}</div><div style="font-size:0.7rem; color:var(--text-muted);">Di ${log.location || '-'}</div></td>
+                        <td>${log.qty} ${log.unit}</td>
+                        <td><div style="font-size:0.8rem;">${log.notes || 'Tanpa catatan.'}</div></td>
+                        <td><button class="btn-outline" onclick="deleteLog('${log.logId}')" style="padding:4px;"><i data-lucide="trash-2" style="width:14px; color:var(--danger);"></i></button></td>
+                    `;
+                } else {
+                    const tag = `tag-${(log.indication || '').toLowerCase().replace(/ /g, '-')}`;
+                    tr.innerHTML = `
+                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.7rem">${new Date(log.timestamp).toLocaleDateString()}</div></td>
+                        <td>${log.reportName}</td>
+                        <td><div style="font-weight:600; color:var(--primary);">${log.testName}</div><div style="font-size:0.7rem; color:var(--text-muted);">${log.category}</div></td>
+                        <td>${log.value} ${log.unit}</td>
+                        <td><span class="tag ${tag}">${log.indication}</span><div style="font-size:0.7rem; margin-top:4px;">${log.suggestions}</div></td>
+                        <td><button class="btn-outline" onclick="deleteLog('${log.logId}')" style="padding:4px;"><i data-lucide="trash-2" style="width:14px; color:var(--danger);"></i></button></td>
+                    `;
+                }
                 body.appendChild(tr);
             });
             lucide.createIcons();
