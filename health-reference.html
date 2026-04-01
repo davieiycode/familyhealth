@@ -422,8 +422,10 @@
                 </div>
                 <div class="form-group"><label>Alamat</label><input type="text" id="clinicAddress" required></div>
                 <div class="grid">
+                    <div class="form-group"><label>Google Maps URL</label><input type="url" id="clinicMaps" placeholder="https://goo.gl/maps/..."></div>
                     <div class="form-group"><label>Telepon</label><input type="tel" id="clinicPhone"></div>
                 </div>
+                <div class="form-group"><label>Catatan Fasilitas</label><textarea id="clinicNotes" rows="2" placeholder="Misal: Buka 24 jam, IGD cepat, parkir luas..."></textarea></div>
                 <button type="submit" class="btn btn-primary" style="width:100%"><i data-lucide="plus"></i> Simpan Faskes</button>
             </form>
         </div>
@@ -741,9 +743,13 @@
                         <button onclick="deleteItem('clinicsData', ${idx}, renderClinics)" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
                     </div>
                     <div style="font-weight:800; font-size:1.1rem; margin-top:0.5rem;">${c.name}</div>
-                    <div style="font-size:0.8rem; color:var(--text-muted); margin:0.5rem 0; line-height:1.4;">${c.address}</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin:0.5rem 0; line-height:1.4;"><i data-lucide="map-pin" style="width:12px;"></i> ${c.address}</div>
+                    
+                    ${c.notes ? `<div style="font-size:0.75rem; background:#fefce8; padding:0.6rem; border-radius:8px; border:1px solid #fef08a; color:#854d0e; margin:0.75rem 0;">${c.notes}</div>` : ''}
+
                     <div style="display:flex; gap:0.5rem; margin-top:1rem;">
                         <a href="tel:${c.phone}" class="btn btn-outline" style="padding:0.4rem 0.8rem; font-size:0.75rem; flex:1; border-radius:8px;"><i data-lucide="phone-forwarded" style="width:14px;"></i> Emergency</a>
+                        ${c.mapsUrl ? `<a href="${c.mapsUrl}" target="_blank" class="btn btn-outline" style="padding:0.4rem 0.8rem; font-size:0.75rem; flex:1; border-radius:8px; background:var(--primary-light); color:var(--primary); border:none;"><i data-lucide="map" style="width:14px;"></i> Buka Maps</a>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -825,6 +831,8 @@
                 type: document.getElementById('clinicType').value,
                 address: document.getElementById('clinicAddress').value,
                 phone: document.getElementById('clinicPhone').value,
+                mapsUrl: document.getElementById('clinicMaps').value,
+                notes: document.getElementById('clinicNotes').value,
             });
             saveAll(); renderClinics(); document.getElementById('clinicForm').reset(); 
             closeModal('modalClinics'); showToast('Faskes');
