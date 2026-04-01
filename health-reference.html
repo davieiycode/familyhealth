@@ -387,6 +387,9 @@
                     <div class="form-group"><label>URL Foto Profil (Opsional)</label><input type="url" id="docPhoto" placeholder="https://..."></div>
                 </div>
 
+                <div class="form-group"><label>Biografi / Latar Belakang</label><textarea id="docBio" rows="2" placeholder="Lulusan Universitas X, Pengalaman Y tahun..."></textarea></div>
+                <div class="form-group"><label>Ulasan / Catatan Pribadi</label><textarea id="docReview" rows="2" placeholder="Dokternya enak diajak bicara, sabar, harganya oke..."></textarea></div>
+
                 <!-- PRACTICE LOCATIONS BUILDER -->
                 <div class="form-group" style="margin-top: 1rem; background: #f8fafc; padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
                     <label style="color:var(--primary); font-weight:800; display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;">
@@ -707,6 +710,16 @@
                                 </div>
                             `).join('') : '<div style="font-size:0.8rem; color:var(--text-muted);">Lokasi belum terdaftar.</div>'}
                         </div>
+
+                        <details style="margin-bottom:1.5rem; font-size:0.8rem; border:1px solid #f1f5f9; border-radius:10px; overflow:hidden;">
+                            <summary style="cursor:pointer; padding:0.6rem 1rem; background:#f8fafc; font-weight:700; color:var(--primary); list-style:none; display:flex; justify-content:space-between; align-items:center;">
+                                Info Detail & Review <i data-lucide="chevron-down" style="width:14px;"></i>
+                            </summary>
+                            <div style="padding:1rem; background:white; line-height:1.5; white-space:pre-wrap;">
+                                <div style="margin-bottom:0.75rem;"><strong style="color:var(--text-muted); display:block; font-size:0.7rem; text-transform:uppercase;">Biografi</strong>${d.bio || 'Belum ada data biografi.'}</div>
+                                <div><strong style="color:var(--text-muted); display:block; font-size:0.7rem; text-transform:uppercase;">Review Pribadi</strong>${d.review || 'Belum ada ulasan.'}</div>
+                            </div>
+                        </details>
                         
                         <a href="tel:${d.phone}" class="btn btn-primary" style="width:100%; border-radius:12px;"><i data-lucide="phone"></i> Hubungi Dokter</a>
                     </div>
@@ -796,6 +809,8 @@
                 spec: document.getElementById('docSpec').value,
                 phone: document.getElementById('docPhone').value,
                 photo: document.getElementById('docPhoto').value,
+                bio: document.getElementById('docBio').value,
+                review: document.getElementById('docReview').value,
                 locations: [...currentPracticeLocations],
             });
             saveAll(); renderDocs(); document.getElementById('docForm').reset(); 
