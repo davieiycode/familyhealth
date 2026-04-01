@@ -155,6 +155,13 @@
             <button class="tab-btn" id="tabRepro" onclick="switchTab('repro')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="heart"></i> Reproduksi/Haid</button>
             <button class="tab-btn" id="tabClinical" onclick="switchTab('clinical')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="hospital"></i> Klinik/RS</button>
             <button class="tab-btn" id="tabImm" onclick="switchTab('imm')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="shield-check"></i> Imunisasi</button>
+            <button class="tab-btn" id="tabNutrition" onclick="switchTab('nutrition')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="coffee"></i> Nutrisi/Makan</button>
+            <button class="tab-btn" id="tabLactation" onclick="switchTab('lactation')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="baby"></i> Menyusui</button>
+            <button class="tab-btn" id="tabFasting" onclick="switchTab('fasting')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="moon"></i> Puasa</button>
+            <button class="tab-btn" id="tabSleep" onclick="switchTab('sleep')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="bed-double"></i> Tidur</button>
+            <button class="tab-btn" id="tabFitness" onclick="switchTab('fitness')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="dumbbell"></i> Aktivitas Fisik</button>
+            <button class="tab-btn" id="tabSteps" onclick="switchTab('steps')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="footprints"></i> Langkah</button>
+            <button class="tab-btn" id="tabKMS" onclick="switchTab('kms')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="line-chart"></i> KMS Anak</button>
         </div>
 
         <main>
@@ -467,6 +474,165 @@
                 </div>
             </div>
 
+            <!-- SECTION: NUTRITION LOG -->
+            <div id="sectionNutrition" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="coffee"></i> Log Nutrisi & Makan/Minum <span class="activePatientLabel"></span></div>
+                    <form onsubmit="handleGenericLogSubmit(event, 'Nutrisi', 'nutTime', 'nutFood', 'nutVal', 'nutUnit', 'nutNotes')">
+                        <div class="grid">
+                            <div class="form-group"><label>Waktu</label><input type="datetime-local" id="nutTime" required></div>
+                            <div class="form-group"><label>Menu/Jenis</label><input type="text" id="nutFood" placeholder="Makan Siang / Nasi Goreng..." required></div>
+                            <div class="form-group"><label>Jumlah/Kalori</label><input type="number" step="any" id="nutVal" placeholder="Kalori/Porsi" required></div>
+                            <div class="form-group"><label>Satuan</label><input type="text" id="nutUnit" list="nutUnitList" placeholder="kkal, gram, porsi" required></div>
+                        </div>
+                        <div class="form-group" style="margin-top:1rem;"><label>Catatan</label><input type="text" id="nutNotes" placeholder="Minum manis, sayur berlebih, dll"></div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;"><button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Catat Nutrisi</button></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SECTION: LACTATION LOG -->
+            <div id="sectionLactation" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="baby"></i> Log Menyusui/Pumping <span class="activePatientLabel"></span></div>
+                    <form onsubmit="handleGenericLogSubmit(event, 'Menyusui', 'lacTime', 'lacType', 'lacVal', 'lacUnit', 'lacNotes')">
+                        <div class="grid">
+                            <div class="form-group"><label>Waktu</label><input type="datetime-local" id="lacTime" required></div>
+                            <div class="form-group">
+                                <label>Mode/Sisi</label>
+                                <select id="lacType" required>
+                                    <option value="Direct (Kiri)">Kiri Kanan (DBF Kiri)</option>
+                                    <option value="Direct (Kanan)">Kiri Kanan (DBF Kanan)</option>
+                                    <option value="Pumping">Pumping/Perah</option>
+                                    <option value="Botol/ASIP">Botol/Susu Formula</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Durasi/Volume</label><input type="number" step="any" id="lacVal" placeholder="Menit / ml" required></div>
+                            <div class="form-group">
+                                <label>Satuan</label>
+                                <select id="lacUnit" required>
+                                    <option value="Menit">Menit</option>
+                                    <option value="ml">ml (Mililiter)</option>
+                                    <option value="oz">oz</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top:1rem;"><label>Catatan Tambahan</label><input type="text" id="lacNotes" placeholder="Rewel, gumoh, dll"></div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;"><button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Catat Menyusui</button></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SECTION: FASTING LOG -->
+            <div id="sectionFasting" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="moon"></i> Log Puasa <span class="activePatientLabel"></span></div>
+                    <form onsubmit="handleGenericLogSubmit(event, 'Puasa', 'fasTime', 'fasType', 'fasVal', 'fasUnit', 'fasNotes')">
+                        <div class="grid">
+                            <div class="form-group"><label>Berbuka / Akhir Puasa</label><input type="datetime-local" id="fasTime" required></div>
+                            <div class="form-group">
+                                <label>Jenis Puasa</label>
+                                <input type="text" id="fasType" placeholder="Puasa Intermittent (16:8), Ramadhan, Wajib..." required>
+                            </div>
+                            <div class="form-group"><label>Durasi Total</label><input type="number" step="any" id="fasVal" placeholder="Jam" required></div>
+                            <div class="form-group"><label>Satuan</label><input type="text" id="fasUnit" value="Jam" readonly></div>
+                        </div>
+                        <div class="form-group" style="margin-top:1rem;"><label>Catatan Puasa</label><input type="text" id="fasNotes" placeholder="Asam lambung aman, lancar, dll"></div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;"><button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Rekam Puasa</button></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SECTION: SLEEP LOG -->
+            <div id="sectionSleep" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="bed-double"></i> Log Tidur & Fase <span class="activePatientLabel"></span></div>
+                    <form onsubmit="handleGenericLogSubmit(event, 'Tidur', 'slpTime', 'slpType', 'slpVal', 'slpUnit', 'slpNotes')">
+                        <div class="grid">
+                            <div class="form-group"><label>Waktu Bangun</label><input type="datetime-local" id="slpTime" required></div>
+                            <div class="form-group">
+                                <label>Fase / Kategori</label>
+                                <select id="slpType" required>
+                                    <option value="Durasi Tidur Total">Tidur Total</option>
+                                    <option value="Deep Sleep">Deep Sleep (Mendalam)</option>
+                                    <option value="Light Sleep">Light Sleep (Ringan)</option>
+                                    <option value="REM Sleep">REM Sleep (Bermimpi)</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Durasi Tidur</label><input type="number" step="any" id="slpVal" placeholder="Total Jam" required></div>
+                            <div class="form-group"><label>Satuan</label><input type="text" id="slpUnit" value="Jam" readonly></div>
+                        </div>
+                        <div class="form-group" style="margin-top:1rem;"><label>Catatan Kualitas</label><input type="text" id="slpNotes" placeholder="Sering terbangun, dengkur keras, segar bertenaga..."></div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;"><button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Simpan Waktu Tidur</button></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SECTION: FITNESS LOG -->
+            <div id="sectionFitness" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="dumbbell"></i> Log Aktivitas Fisik <span class="activePatientLabel"></span></div>
+                    <form onsubmit="handleGenericLogSubmit(event, 'Aktivitas Fisik', 'fitTime', 'fitType', 'fitVal', 'fitUnit', 'fitNotes')">
+                        <div class="grid">
+                            <div class="form-group"><label>Waktu Olahraga</label><input type="datetime-local" id="fitTime" required></div>
+                            <div class="form-group">
+                                <label>Jenis & Nama Latihan</label>
+                                <input type="text" list="fitList" id="fitType" placeholder="Lari, Senam, Push Up..." required>
+                            </div>
+                            <div class="form-group"><label>Target/Metrik</label><input type="number" step="any" id="fitVal" placeholder="Nilai/Durasi" required></div>
+                            <div class="form-group"><label>Satuan</label><input type="text" id="fitUnit" placeholder="Repetisi, Menit, Km..." required></div>
+                        </div>
+                        <div class="form-group" style="margin-top:1rem;"><label>Catatan Performa</label><input type="text" id="fitNotes" placeholder="Bpm maksimal 150, keringat sangat banyak..."></div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;"><button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Catat Olahraga</button></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SECTION: STEPS LOG -->
+            <div id="sectionSteps" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="footprints"></i> Rekam Langkah (Pedometer) <span class="activePatientLabel"></span></div>
+                    <form onsubmit="handleGenericLogSubmit(event, 'Jalan Santai', 'stpTime', 'stpType', 'stpVal', 'stpUnit', 'stpNotes')">
+                        <div class="grid">
+                            <div class="form-group"><label>Waktu Cek</label><input type="datetime-local" id="stpTime" required></div>
+                            <div class="form-group">
+                                <label>Target Tercatat</label>
+                                <input type="text" id="stpType" value="Total Langkah Harian" readonly>
+                            </div>
+                            <div class="form-group"><label>Jumlah (Estimasi)</label><input type="number" id="stpVal" placeholder="10000" required></div>
+                            <div class="form-group"><label>Satuan</label><input type="text" id="stpUnit" value="Langkah" readonly></div>
+                        </div>
+                        <div class="form-group" style="margin-top:1rem;"><label>Catatan Aktivitas</label><input type="text" id="stpNotes" placeholder="Cukup capai target, banyak duduk, dsb..."></div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;"><button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Simpan Langkah</button></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SECTION: KMS LOG -->
+            <div id="sectionKms" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="line-chart"></i> Kartu KMS & Tumbuh Kembang Bayi/Anak <span class="activePatientLabel"></span></div>
+                    <form onsubmit="handleGenericLogSubmit(event, 'KMS Anak', 'kmsTime', 'kmsType', 'kmsVal', 'kmsUnit', 'kmsNotes')">
+                        <div class="grid">
+                            <div class="form-group"><label>Tanggal Periksa</label><input type="datetime-local" id="kmsTime" required></div>
+                            <div class="form-group">
+                                <label>Indikator Berkala KMS</label>
+                                <select id="kmsType" required>
+                                    <option value="Berat Badan (BB)">Berat Badan (BB)</option>
+                                    <option value="Tinggi Badan (TB)">Tinggi Badan (TB)</option>
+                                    <option value="Lingkar Kepala">Lingkar Kepala</option>
+                                    <option value="Tonggak Milestones">Tonggak Perkembangan (Milestones)</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Usia Bulan / Nilai</label><input type="number" step="any" id="kmsVal" placeholder="Mis. 12" required></div>
+                            <div class="form-group"><label>Satuan Ukur</label><input type="text" list="kmsUnitList" id="kmsUnit" placeholder="kg, cm" required></div>
+                        </div>
+                        <div class="form-group" style="margin-top:1rem;"><label>Catatan Tumbuh & Motorik</label><input type="text" id="kmsNotes" placeholder="Status gizi baik (garis hijau), sudah bisa duduk..."></div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;"><button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Rekam Tumbuh Kembang KMS</button></div>
+                    </form>
+                </div>
+            </div>
+
             <div class="log-section">
                 <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem; flex-wrap:wrap; gap:1rem;">
                     <h2>Riwayat Aktivitas</h2>
@@ -519,6 +685,9 @@
     <datalist id="docRefList"></datalist>
     <datalist id="clinicSuggestList"></datalist>
     <datalist id="immRefList"></datalist>
+    <datalist id="nutUnitList"><option value="kkal"><option value="Gram"><option value="Porsi"><option value="Liter"><option value="Scoop"><option value="Biji/Buah"></datalist>
+    <datalist id="fitList"><option value="Lari/Jogging"><option value="Jalan Santai"><option value="Push Up"><option value="Sit Up"><option value="Senam/HIIT"><option value="Sepeda"><option value="Berenang"><option value="Yoga/Pilates"></datalist>
+    <datalist id="kmsUnitList"><option value="kg"><option value="cm"><option value="Bulan (Usia)"></datalist>
 
     <script>
         lucide.createIcons();
@@ -531,7 +700,7 @@
 
         function init() {
             const now = new Date().toISOString().slice(0, 16);
-            ["timestamp", "medTimestamp", "consultTime", "symStart", "reproTime", "clinicalStart", "immLogTime"].forEach(id => {
+            ["timestamp", "medTimestamp", "consultTime", "symStart", "reproTime", "clinicalStart", "immLogTime", "nutTime", "lacTime", "fasTime", "slpTime", "fitTime", "stpTime", "kmsTime"].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) el.value = now;
             });
@@ -1014,6 +1183,34 @@
             a.download = 'logs.csv';
             a.click();
         };
+
+        function handleGenericLogSubmit(e, reportName, timeId, typeId, valId, unitId, notesId) {
+            e.preventDefault();
+            const ts = document.getElementById(timeId).value;
+            const tType = document.getElementById(typeId).value;
+            const tVal = document.getElementById(valId).value;
+            const tUnit = document.getElementById(unitId).value;
+            const tNotes = document.getElementById(notesId).value;
+            
+            logs.unshift({
+                id: Date.now().toString(),
+                timestamp: ts,
+                author: activeProfile,
+                reportName: reportName,
+                testName: tType,
+                value: tVal,
+                unit: tUnit,
+                indication: 'Tercatat',
+                category: reportName,
+                suggestions: tNotes
+            });
+            localStorage.setItem('health_logs', JSON.stringify(logs));
+            renderLogs();
+            document.getElementById(typeId).parentNode.parentNode.parentNode.reset();
+            const now = new Date().toISOString().slice(0, 16);
+            document.getElementById(timeId).value = now;
+            showToast(reportName + " Berhasil Disimpan!");
+        }
 
         init();
     </script>
