@@ -169,6 +169,24 @@
     </div>
 
     <datalist id="catList"></datalist>
+    <datalist id="compSuggestList">
+        <option value="Paracetamol">
+        <option value="Ibuprofen">
+        <option value="Amoxicillin">
+        <option value="Loratadine">
+        <option value="Cetirizine">
+        <option value="Metformin">
+        <option value="Amlodipine">
+        <option value="Simvastatin">
+        <option value="Ascorbic Acid (Vitamin C)">
+        <option value="Cholecalciferol (Vitamin D3)">
+        <option value="Zinc Sulfate">
+        <option value="Salbutamol">
+        <option value="Dexamethasone">
+        <option value="Omeprazole">
+        <option value="Ranitidine">
+        <option value="Ciprofloxacin">
+    </datalist>
 
     <!-- MODAL: MEDS -->
     <div id="modalMeds" class="modal-overlay">
@@ -210,7 +228,37 @@
                 </div>
 
                 <div class="form-group"><label>Indikasi (Kegunaan)</label><input type="text" id="medIndication" placeholder="Kapan obat ini diminum? Misal: Demam, Flu"></div>
-                <div class="form-group"><label>Kandungan (Komposisi)</label><textarea id="medComposition" rows="2"></textarea></div>
+                
+                <!-- COMPOSITION BUILDER -->
+                <div class="form-group" style="margin-top: 1.5rem; background: #f8fafc; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                    <label style="color:var(--primary); font-weight:800; display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;">
+                        <i data-lucide="microscope" style="width:14px;"></i> Komposisi Zat Aktif
+                    </label>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 40px; gap: 0.5rem; margin-bottom: 0.75rem;">
+                        <input type="text" id="compName" placeholder="Zat Aktif" list="compSuggestList">
+                        <input type="number" id="compValue" step="any" placeholder="Nilai">
+                        <select id="compUnit" title="Pilih Satuan">
+                            <option value="mg">mg (Miligram)</option>
+                            <option value="mcg">mcg (Mikrogram)</option>
+                            <option value="g">g (Gram)</option>
+                            <option value="IU">IU (Int. Unit)</option>
+                            <option value="mmol">mmol (Milimol)</option>
+                            <option value="mEq">mEq (Milliequivalent)</option>
+                            <option value="v/v">% v/v (Vol %)</option>
+                            <option value="w/v">% w/v (Wgt %)</option>
+                            <option value="%">% (Persen)</option>
+                        </select>
+                        <button type="button" onclick="addComposition()" class="btn btn-primary" style="padding:0;"><i data-lucide="plus" style="width:16px;"></i></button>
+                    </div>
+                    <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.3;">
+                        <strong>Tip Satuan:</strong> 
+                        <span title="Dosis tablet umum">mg (Miligram: 1/1000g)</span> • 
+                        <span title="Dosis sangat kecil">mcg (1/1.000.000g)</span> • 
+                        <span title="Satuan biologis (Vit D/E)">IU (Aktivitas Biologis)</span> • 
+                        <span title="Konsentrasi cairan/salep">% (Persen bagian)</span>
+                    </div>
+                    <div id="compList" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
+                </div>
                 
                 <div class="grid">
                     <div class="form-group"><label>Kontraindikasi</label><textarea id="medContraindication" rows="1"></textarea></div>
@@ -322,7 +370,35 @@
 
         window.closeModal = (id) => {
             document.getElementById(id).classList.remove('active');
+            if(id === 'modalMeds') currentComposition = []; updateCompListUI();
         };
+
+        // --- COMPOSITION BUILDER LOGIC ---
+        let currentComposition = [];
+        window.addComposition = () => {
+            const name = document.getElementById('compName').value.trim();
+            const val = document.getElementById('compValue').value;
+            const unit = document.getElementById('compUnit').value;
+            if(!name || !val) return;
+            currentComposition.push({ name, val, unit });
+            document.getElementById('compName').value = '';
+            document.getElementById('compValue').value = '';
+            updateCompListUI();
+        };
+        window.removeComp = (idx) => {
+            currentComposition.splice(idx, 1);
+            updateCompListUI();
+        };
+        function updateCompListUI() {
+            const cont = document.getElementById('compList');
+            cont.innerHTML = currentComposition.map((c, i) => `
+                <div class="card-tag" style="background:var(--primary-light); color:var(--primary); display:flex; align-items:center; gap:0.4rem; padding:0.4rem 0.6rem; border-radius:8px;">
+                    ${c.name} ${c.val}${c.unit}
+                    <i data-lucide="x" style="width:12px; cursor:pointer;" onclick="removeComp(${i})"></i>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
 
         function updateCategoryDatalist() {
             const dl = document.getElementById('catList');
@@ -371,7 +447,11 @@
                     <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin-bottom:0.5rem;">${m.indication}</div>
                     
                     <div style="font-size:0.75rem; border-top:1px dashed var(--border); padding-top:0.5rem; margin-top:0.5rem;">
-                        <div style="margin-bottom:2px;"><strong style="color:var(--text-muted);">Kandungan:</strong> ${m.composition || '-'}</div>
+                        <div style="margin-bottom:2px;"><strong style="color:var(--text-muted);">Komposisi:</strong> 
+                            ${m.composition && m.composition.length > 0 
+                                ? m.composition.map(c => `<span style="background:#f1f5f9; padding:1px 4px; border-radius:4px; font-weight:600;">${c.name} ${c.val}${c.unit}</span>`).join(' ') 
+                                : '-'}
+                        </div>
                         <div style="margin-bottom:2px;"><strong style="color:var(--text-muted);">Exp:</strong> ${m.expiry ? new Date(m.expiry).toLocaleDateString() : '-'}</div>
                         <div style="margin-bottom:2px;"><strong style="color:var(--text-muted);">Lokasi:</strong> ${m.location || '-'}</div>
                         ${m.manufacturer ? `<div style="margin-bottom:2px;"><strong style="color:var(--text-muted);">Produsen:</strong> ${m.manufacturer}</div>` : ''}
@@ -479,7 +559,7 @@
                 ageLimit: document.getElementById('medAgeLimit').value,
                 regNo: document.getElementById('medRegNo').value,
                 indication: document.getElementById('medIndication').value,
-                composition: document.getElementById('medComposition').value,
+                composition: [...currentComposition],
                 contraindication: document.getElementById('medContraindication').value,
                 warning: document.getElementById('medWarning').value,
                 sideEffects: document.getElementById('medSideEffects').value,
