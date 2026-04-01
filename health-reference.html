@@ -168,6 +168,8 @@
         </div>
     </div>
 
+    <datalist id="catList"></datalist>
+
     <!-- MODAL: MEDS -->
     <div id="modalMeds" class="modal-overlay">
         <div class="modal-content">
@@ -271,6 +273,13 @@
             document.getElementById(id).classList.remove('active');
         };
 
+        function updateCategoryDatalist() {
+            const dl = document.getElementById('catList');
+            if (!dl) return;
+            const categories = [...new Set(testData.map(t => t.category).filter(c => c))];
+            dl.innerHTML = categories.map(c => `<option value="${c}">`).join('');
+        }
+
         // --- RENDERERS ---
         function renderTests() {
             const list = document.getElementById('testList');
@@ -363,6 +372,7 @@
                 if(dataVar === 'docsData') docsData.splice(idx, 1);
                 if(dataVar === 'clinicsData') clinicsData.splice(idx, 1);
                 saveAll(); renderFn();
+                if(dataVar === 'testData') updateCategoryDatalist();
             }
         };
 
@@ -380,7 +390,7 @@
                 upperLimitIndicators: document.getElementById('upperLimitIndicators').value,
                 upperLimitSuggestions: document.getElementById('upperLimitSuggestions').value,
             });
-            saveAll(); renderTests(); document.getElementById('healthForm').reset(); 
+            saveAll(); renderTests(); updateCategoryDatalist(); document.getElementById('healthForm').reset(); 
             closeModal('modalTests'); showToast('Parameter Tes');
         };
 
@@ -428,7 +438,7 @@
             setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        renderTests(); renderMeds(); renderDocs(); renderClinics();
+        renderTests(); renderMeds(); renderDocs(); renderClinics(); updateCategoryDatalist();
     </script>
 </body>
 </html>
