@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skrining Kesehatan Mental | FamilyHealth</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #eef2ff;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius-xl: 20px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-main); padding: 1.5rem; min-height: 100vh; }
+        .container { max-width: 800px; margin: 0 auto; padding-bottom: 8rem; }
+
+        header { margin-bottom: 2.5rem; text-align: center; }
+        .brand-icon { background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3); }
+        header h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 0.5rem; }
+        header p { color: var(--text-muted); font-size: 0.9rem; }
+
+        .selector-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 3rem; }
+        .tool-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; cursor: pointer; transition: 0.22s; text-align: center; position: relative; overflow: hidden; }
+        .tool-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow-md); }
+        .tool-card.active { border-color: var(--primary); background: var(--primary-light); }
+        .tool-card i { color: var(--primary); margin-bottom: 0.75rem; }
+        .tool-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .tool-card p { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+
+        .screening-container { background: white; border-radius: var(--radius-xl); border: 1px solid var(--border); padding: 2rem; box-shadow: var(--shadow-sm); display: none; }
+        .screening-container.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .progress-bar { height: 6px; background: #f1f5f9; border-radius: 3px; margin-bottom: 2rem; overflow: hidden; }
+        .progress-inner { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+
+        .question-box { margin-bottom: 2.5rem; }
+        .question-text { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.4; }
+        .options-list { display: flex; flex-direction: column; gap: 0.75rem; }
+        .option-item { padding: 1rem 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-md); cursor: pointer; transition: 0.2s; font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between; }
+        .option-item:hover { background: #f8fafc; border-color: var(--text-muted); }
+        .option-item.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 600; }
+
+        .result-screen { text-align: center; padding: 2rem 0; display: none; }
+        .score-circle { width: 120px; height: 120px; border-radius: 50%; border: 8px solid var(--primary-light); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 2rem; }
+        .score-val { font-size: 2.5rem; font-weight: 800; color: var(--primary); }
+        .score-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+
+        .interpretation { padding: 1.5rem; border-radius: var(--radius-md); background: #f8fafc; border: 1px solid var(--border); margin-bottom: 2rem; }
+        .inter-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .inter-text { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+
+        .sidebar-nav { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); padding: 0.75rem 2rem; border-radius: 40px; display: flex; gap: 2rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); z-index: 1000; }
+        .nav-link { color: rgba(255,255,255,0.6); text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; gap: 4px; transition: 0.2s; }
+        .nav-link:hover, .nav-link.active { color: white; }
+        .nav-link i { width: 20px; height: 20px; }
+
+        .btn { padding: 0.8rem 1.5rem; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; transition: 0.2s; border: none; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
+
+        .profile-switcher { display: flex; align-items: center; gap: 0.5rem; background: white; padding: 0.4rem 1rem; border-radius: 30px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; position: fixed; top: 1.5rem; right: 1.5rem; z-index: 1100; }
+        .profile-avatar { width: 32px; height: 32px; border-radius: 50%; background: #ec4899; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <div class="profile-switcher">
+        <div class="profile-avatar" id="activeAvatar">U</div>
+        <span id="activeProfileName" style="font-size:0.85rem; font-weight:600;">Utama</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="brand-icon"><i data-lucide="brain"></i></div>
+            <h1>Skrining Kesehatan Mental</h1>
+            <p>Pilih alat skrining yang sesuai dengan kebutuhan Anda saat ini.</p>
+        </header>
+
+        <div class="selector-grid">
+            <div class="tool-card" onclick="startScreening('GAD7')">
+                <i data-lucide="frown" style="width:24px;"></i>
+                <h3>GAD-7</h3>
+                <p>Kecemasan Umum</p>
+            </div>
+            <div class="tool-card" onclick="startScreening('PSS10')">
+                <i data-lucide="wind" style="width:24px;"></i>
+                <h3>PSS-10</h3>
+                <p>Tingkat Stres</p>
+            </div>
+            <div class="tool-card" onclick="startScreening('BDI')">
+                <i data-lucide="cloud-rain" style="width:24px;"></i>
+                <h3>BDI</h3>
+                <p>Tingkat Depresi</p>
+            </div>
+            <div class="tool-card" onclick="startScreening('SDQ')">
+                <i data-lucide="baby" style="width:24px;"></i>
+                <h3>SDQ</h3>
+                <p>Anak & Remaja</p>
+            </div>
+        </div>
+
+        <div id="screeningBox" class="screening-container">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <h2 id="toolTitle" style="font-size:1.25rem; font-weight:800;">GAD-7</h2>
+                <button onclick="quitScreening()" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i data-lucide="x"></i></button>
+            </div>
+            <div class="progress-bar"><div id="progressBar" class="progress-inner"></div></div>
+            
+            <div id="questionArea">
+                <div class="question-box">
+                    <div id="questionText" class="question-text">Pernyataan kuesioner akan muncul di sini...</div>
+                    <div id="optionsList" class="options-list"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <button class="btn btn-outline" onclick="prevQuestion()" id="prevBtn"><i data-lucide="arrow-left"></i> Kembali</button>
+                    <div id="qCounter" style="font-size:0.8rem; color:var(--text-muted); font-weight:600; padding:0.8rem;">1 dari 7</div>
+                </div>
+            </div>
+
+            <div id="resultArea" class="result-screen">
+                <div class="score-circle">
+                    <span class="score-val" id="finalScore">0</span>
+                    <span class="score-label">Skor</span>
+                </div>
+                <div class="interpretation">
+                    <div id="interTitle" class="inter-title">Interpretasi Hasil</div>
+                    <div id="interText" class="inter-text">Deskripsi hasil skrining Anda akan tampil di sini...</div>
+                </div>
+                <div style="display:flex; gap:1rem; justify-content:center;">
+                    <button class="btn btn-outline" onclick="quitScreening()">Selesai</button>
+                    <button class="btn btn-primary" onclick="saveToLog()"><i data-lucide="save"></i> Simpan ke Log Medis</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="health-log.html" class="nav-link"><i data-lucide="clipboard-list"></i> Log</a>
+        <a href="health-screening.html" class="nav-link active"><i data-lucide="brain"></i> Skrining</a>
+        <a href="health-reference.html" class="nav-link"><i data-lucide="settings"></i> Referensi</a>
+    </nav>
+
+    <script>
+        lucide.createIcons();
+        const activeProfile = localStorage.getItem('active_health_profile') || 'Utama';
+        document.getElementById('activeProfileName').innerText = activeProfile;
+        document.getElementById('activeAvatar').innerText = activeProfile.charAt(0);
+
+        const TOOLS = {
+            GAD7: {
+                title: "GAD-7 (Generalized Anxiety Disorder)",
+                desc: "Mengukur tingkat kecemasan dalam 2 minggu terakhir.",
+                questions: [
+                    "Merasa gugup, cemas, atau gelisah",
+                    "Tidak mampu menghentikan atau mengendalikan kekhawatiran",
+                    "Terlalu mengkhawatirkan berbagai hal yang berbeda",
+                    "Sulit untuk santai",
+                    "Sangat gelisah sehingga sulit untuk duduk diam",
+                    "Menjadi mudah kesal atau marah",
+                    "Merasa takut seolah-olah sesuatu yang buruk akan terjadi"
+                ],
+                options: [
+                    { label: "Tidak pernah", val: 0 },
+                    { label: "Beberapa hari", val: 1 },
+                    { label: "Lebih dari separuh waktu", val: 2 },
+                    { label: "Hampir setiap hari", val: 3 }
+                ],
+                interpret: (s) => {
+                    if (s <= 4) return { title: "Minimal", text: "Anda menunjukkan tingkat kecemasan yang minimal. Tetap jaga pola hidup sehat dan manajemen stres yang baik." };
+                    if (s <= 9) return { title: "Ringan", text: "Anda mengalami kecemasan ringan. Pertimbangkan untuk beristirahat lebih cukup atau melakukan teknik relaksasi." };
+                    if (s <= 14) return { title: "Sedang", text: "Anda mengalami kecemasan tingkat sedang. Jika hal ini mengganggu aktivitas harian, pertimbangkan untuk berkonsultasi dengan profesional." };
+                    return { title: "Berat", text: "Anda menunjukkan gejala kecemasan berat. Sangat disarankan untuk segera mencari bantuan dar profesional kesehatan mental." };
+                }
+            },
+            PSS10: {
+                title: "PSS-10 (Perceived Stress Scale)",
+                desc: "Mengukur persepsi stres dalam satu bulan terakhir.",
+                questions: [
+                    "Seberapa sering Anda merasa kesal karena sesuatu yang terjadi secara tidak terduga?",
+                    "Seberapa sering Anda merasa tidak mampu mengontrol hal-hal penting dalam hidup Anda?",
+                    "Seberapa sering Anda merasa gugup dan 'tertekan'?",
+                    "Seberapa sering Anda merasa yakin dengan kemampuan Anda menangani masalah pribadi?",
+                    "Seberapa sering Anda merasa bahwa segala sesuatunya berjalan sesuai keinginan Anda?",
+                    "Seberapa sering Anda merasa tidak dapat menangani semua hal yang harus Anda lakukan?",
+                    "Seberapa sering Anda mampu mengendalikan kejengkelan dalam hidup Anda?",
+                    "Seberapa sering Anda merasa bahwa Anda berada di atas segala hal?",
+                    "Seberapa sering Anda marah karena hal-hal yang terjadi di luar kendali Anda?",
+                    "Seberapa sering Anda merasa kesulitan yang menumpuk sangat tinggi sehingga Anda tidak dapat mengatasinya?"
+                ],
+                options: [
+                    { label: "Tidak Pernah", val: 0 },
+                    { label: "Hampir Tidak Pernah", val: 1 },
+                    { label: "Kadang-kadang", val: 2 },
+                    { label: "Cukup Sering", val: 3 },
+                    { label: "Sangat Sering", val: 4 }
+                ],
+                reverse: [3, 4, 6, 7], // Index of questions to reverse score (1-indexed for logic: 4, 5, 7, 8)
+                interpret: (s) => {
+                    if (s <= 13) return { title: "Rendah", text: "Tingkat stres Anda tergolong rendah. Anda memiliki koping yang baik terhadap tekanan hidup." };
+                    if (s <= 26) return { title: "Sedang", text: "Stres tingkat sedang. Hal ini normal dalam kehidupan produktif, namun pastikan Anda memiliki waktu pemulihan (self-care) yang cukup." };
+                    return { title: "Tinggi", text: "Tingkat stres Anda tinggi. Sangat penting bagi Anda untuk melakukan dekompresi dan mencari dukungan emosional atau bantuan ahli." };
+                }
+            },
+            BDI: {
+                title: "BDI (Beck Depression Inventory) - Simplified",
+                desc: "Menilai tingkat keparahan gejala depresi.",
+                questions: [
+                    "Kesedihan: Seberapa sedih perasaan Anda?",
+                    "Pesimisme: Bagaimana Anda melihat masa depan?",
+                    "Kegagalan: Apakah Anda merasa seperti orang gagal?",
+                    "Kehilangan Kepuasan: Apakah Anda masih menikmati hal-hal yang Anda sukai?",
+                    "Rasa Bersalah: Seberapa sering Anda merasa bersalah?",
+                    "Perasaan Dihukum: Apakah Anda merasa sedang dihukum?",
+                    "Kebencian Diri: Bagaimana perasaan Anda terhadap diri sendiri?",
+                    "Kritik Diri: Seberapa besar Anda menyalahkan diri sendiri?",
+                    "Pikiran Bunuh Diri: Apakah Anda memiliki pikiran menyakiti diri?",
+                    "Menangis: Seberapa sering Anda menangis?"
+                ],
+                options: [
+                    { label: "Sama sekali tidak", val: 0 },
+                    { label: "Sedikit/Ringan", val: 1 },
+                    { label: "Cukup Mengganggu", val: 2 },
+                    { label: "Sangat Berat/Parah", val: 3 }
+                ],
+                interpret: (s) => {
+                    if (s <= 10) return { title: "Normal", text: "Suasana hati Anda dalam rentang normal." };
+                    if (s <= 16) return { title: "Gangguan Mood Ringan", text: "Ada sedikit gangguan pada suasana hati Anda. Cobalah luangkan waktu untuk hobi dan orang terdekat." };
+                    if (s <= 20) return { title: "Depresi Ambang", text: "Anda berada di ambang depresi klinis. Pantau terus perasaan Anda." };
+                    if (s <= 30) return { title: "Depresi Sedang", text: "Tingkat depresi sedang. Disarankan untuk segera berkonsultasi dengan psikolog." };
+                    return { title: "Depresi Berat", text: "Gejala depresi yang Anda alami sangat berat. Tolong segera hubungi layanan kesehatan mental atau IGD terdekat." };
+                }
+            }
+        };
+
+        let currentTool = null;
+        let currentIndex = 0;
+        let responses = [];
+
+        window.startScreening = (key) => {
+            currentTool = TOOLS[key];
+            if (!currentTool) { alert("Alat skrining sedang dikembangkan."); return; }
+            currentIndex = 0;
+            responses = new Array(currentTool.questions.length).fill(null);
+            
+            document.querySelector('.selector-grid').style.display = 'none';
+            document.getElementById('screeningBox').classList.add('active');
+            document.getElementById('questionArea').style.display = 'block';
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('toolTitle').innerText = currentTool.title;
+            
+            showQuestion();
+        };
+
+        function showQuestion() {
+            const q = currentTool.questions[currentIndex];
+            document.getElementById('questionText').innerText = q;
+            document.getElementById('qCounter').innerText = `${currentIndex + 1} dari ${currentTool.questions.length}`;
+            document.getElementById('progressBar').style.width = `${((currentIndex + 1) / currentTool.questions.length) * 100}%`;
+            document.getElementById('prevBtn').style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
+
+            const optList = document.getElementById('optionsList');
+            optList.innerHTML = '';
+            currentTool.options.forEach(opt => {
+                const div = document.createElement('div');
+                div.className = `option-item ${responses[currentIndex] === opt.val ? 'selected' : ''}`;
+                div.innerHTML = `<span>${opt.label}</span> <i data-lucide="chevron-right" style="width:16px;"></i>`;
+                div.onclick = () => selectOption(opt.val);
+                optList.appendChild(div);
+            });
+            lucide.createIcons();
+        }
+
+        function selectOption(val) {
+            responses[currentIndex] = val;
+            if (currentIndex < currentTool.questions.length - 1) {
+                currentIndex++;
+                showQuestion();
+            } else {
+                finishScreening();
+            }
+        }
+
+        window.prevQuestion = () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                showQuestion();
+            }
+        };
+
+        function finishScreening() {
+            let total = 0;
+            responses.forEach((v, i) => {
+                if (currentTool.reverse && currentTool.reverse.includes(i)) {
+                    total += (currentTool.options.length - 1) - v;
+                } else {
+                    total += v;
+                }
+            });
+
+            const interpretation = currentTool.interpret(total);
+            document.getElementById('questionArea').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'block';
+            document.getElementById('finalScore').innerText = total;
+            document.getElementById('interTitle').innerText = interpretation.title;
+            document.getElementById('interText').innerText = interpretation.text;
+            
+            // Visual color based on severity
+            const circle = document.querySelector('.score-circle');
+            if (total > (currentTool.questions.length * 2)) {
+                circle.style.borderColor = 'var(--danger)';
+                document.getElementById('finalScore').style.color = 'var(--danger)';
+            } else if (total > currentTool.questions.length) {
+                circle.style.borderColor = 'var(--warning)';
+                document.getElementById('finalScore').style.color = 'var(--warning)';
+            } else {
+                circle.style.borderColor = 'var(--success)';
+                document.getElementById('finalScore').style.color = 'var(--success)';
+            }
+        }
+
+        window.saveToLog = () => {
+            const logs = JSON.parse(localStorage.getItem('health_logs') || '[]');
+            const logEntry = {
+                logId: 'MH-' + Date.now(),
+                type: 'MENTAL',
+                author: activeProfile,
+                timestamp: new Date().toISOString(),
+                tool: document.getElementById('toolTitle').innerText,
+                score: document.getElementById('finalScore').innerText,
+                result: document.getElementById('interTitle').innerText,
+                interpretation: document.getElementById('interText').innerText
+            };
+            logs.unshift(logEntry);
+            localStorage.setItem('health_logs', JSON.stringify(logs));
+            alert("Hasil skrining berhasil disimpan ke log kesehatan Anda.");
+            quitScreening();
+        };
+
+        window.quitScreening = () => {
+            document.querySelector('.selector-grid').style.display = 'grid';
+            document.getElementById('screeningBox').classList.remove('active');
+        };
+    </script>
+</body>
+</html>

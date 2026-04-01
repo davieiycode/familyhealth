@@ -97,43 +97,107 @@
             <button class="tab" onclick="switchTab('meds')"><i data-lucide="pill"></i> Obat-obatan</button>
             <button class="tab" onclick="switchTab('docs')"><i data-lucide="user-cog"></i> Daftar Dokter</button>
             <button class="tab" onclick="switchTab('clinics')"><i data-lucide="hospital"></i> Faskes</button>
+            <button class="tab" onclick="switchTab('imm')"><i data-lucide="shield-check"></i> Imunisasi</button>
         </div>
 
         <main>
             <!-- SECTION: TESTS -->
             <div id="section-tests" class="repo-section active">
-                <div class="repo-header">
-                    <h2 class="section-title" style="margin:0;"><i data-lucide="beaker"></i> Parameter Tes</h2>
-                    <button class="btn btn-primary" onclick="openModal('modalTests')"><i data-lucide="plus"></i> Tambah</button>
+                <div class="repo-header" style="flex-direction:column; align-items:stretch; gap:1rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h2 class="section-title" style="margin:0;"><i data-lucide="beaker"></i> Parameter Tes</h2>
+                        <button class="btn btn-primary" onclick="openModal('modalTests')"><i data-lucide="plus"></i> Tambah</button>
+                    </div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <input type="text" id="searchTests" placeholder="Cari nama tes atau kategori..." oninput="renderTests()" style="flex:1;">
+                        <select id="filterTestCat" onchange="renderTests()" style="max-width:150px;">
+                            <option value="">Semua Kategori</option>
+                        </select>
+                    </div>
                 </div>
                 <div id="testList" class="data-grid"></div>
             </div>
 
             <!-- SECTION: MEDS -->
             <div id="section-meds" class="repo-section">
-                <div class="repo-header">
-                    <h2 class="section-title" style="margin:0;"><i data-lucide="pill"></i> Koleksi Obat</h2>
-                    <button class="btn btn-primary" onclick="openModal('modalMeds')"><i data-lucide="plus"></i> Tambah</button>
+                <div class="repo-header" style="flex-direction:column; align-items:stretch; gap:1rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h2 class="section-title" style="margin:0;"><i data-lucide="pill"></i> Koleksi Obat</h2>
+                        <button class="btn btn-primary" onclick="openModal('modalMeds')"><i data-lucide="plus"></i> Tambah</button>
+                    </div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <input type="text" id="searchMeds" placeholder="Cari nama, tujuan, atau zat..." oninput="renderMeds()" style="flex:1;">
+                        <select id="filterMedType" onchange="renderMeds()" style="max-width:120px;">
+                            <option value="">Semua Bentuk</option>
+                            <option value="Tablet">Tablet</option>
+                            <option value="Sirup">Sirup</option>
+                            <option value="Kapsul">Kapsul</option>
+                            <option value="Salep">Salep</option>
+                        </select>
+                        <select id="sortMeds" onchange="renderMeds()" style="max-width:150px;">
+                            <option value="name">Urut: Nama (A-Z)</option>
+                            <option value="stock">Urut: Stok Terbanyak</option>
+                        </select>
+                    </div>
                 </div>
                 <div id="medList" class="data-grid"></div>
             </div>
 
             <!-- SECTION: DOCTORS -->
             <div id="section-docs" class="repo-section">
-                <div class="repo-header">
-                    <h2 class="section-title" style="margin:0;"><i data-lucide="user-cog"></i> Daftar Dokter</h2>
-                    <button class="btn btn-primary" onclick="openModal('modalDocs')"><i data-lucide="user-plus"></i> Tambah</button>
+                <div class="repo-header" style="flex-direction:column; align-items:stretch; gap:1rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h2 class="section-title" style="margin:0;"><i data-lucide="user-cog"></i> Daftar Dokter</h2>
+                        <button class="btn btn-primary" onclick="openModal('modalDocs')"><i data-lucide="user-plus"></i> Tambah</button>
+                    </div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <input type="text" id="searchDocs" placeholder="Cari dokter, spesialis, atau lokasi..." oninput="renderDocs()" style="flex:1;">
+                        <select id="filterDocSpec" onchange="renderDocs()" style="max-width:180px;">
+                            <option value="">Semua Spesialis</option>
+                        </select>
+                    </div>
                 </div>
                 <div id="docList" class="data-grid"></div>
             </div>
 
             <!-- SECTION: CLINICS -->
             <div id="section-clinics" class="repo-section">
-                <div class="repo-header">
-                    <h2 class="section-title" style="margin:0;"><i data-lucide="hospital"></i> Fasilitas Kesehatan</h2>
-                    <button class="btn btn-primary" onclick="openModal('modalClinics')"><i data-lucide="plus"></i> Tambah</button>
+                <div class="repo-header" style="flex-direction:column; align-items:stretch; gap:1rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h2 class="section-title" style="margin:0;"><i data-lucide="hospital"></i> Fasilitas Kesehatan</h2>
+                        <button class="btn btn-primary" onclick="openModal('modalClinics')"><i data-lucide="plus"></i> Tambah</button>
+                    </div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <input type="text" id="searchClinics" placeholder="Cari faskes, alamat, atau catatan..." oninput="renderClinics()" style="flex:1;">
+                        <select id="filterClinicType" onchange="renderClinics()" style="max-width:180px;">
+                            <option value="">Semua Tipe</option>
+                            <option value="Rumah Sakit">Rumah Sakit</option>
+                            <option value="Klinik">Klinik</option>
+                            <option value="Puskesmas">Puskesmas</option>
+                            <option value="Lab">Laboratorium</option>
+                        </select>
+                    </div>
                 </div>
                 <div id="clinicList" class="data-grid"></div>
+            </div>
+
+            <!-- SECTION: IMMUNIZATION -->
+            <div id="section-imm" class="repo-section">
+                <div class="repo-header" style="flex-direction:column; align-items:stretch; gap:1rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h2 class="section-title" style="margin:0;"><i data-lucide="shield-check"></i> Katalog Imunisasi</h2>
+                        <button class="btn btn-primary" onclick="openModal('modalImm')"><i data-lucide="plus"></i> Tambah</button>
+                    </div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <input type="text" id="searchImm" placeholder="Cari nama vaksin, jadwal, atau kegunaan..." oninput="renderImm()" style="flex:1;">
+                        <select id="filterImmCost" onchange="renderImm()" style="max-width:180px;">
+                            <option value="">Semua Biaya</option>
+                            <option value="Gratis">Gratis</option>
+                            <option value="Berbayar">Berbayar</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="immList" class="data-grid"></div>
             </div>
         </main>
     </div>
@@ -438,9 +502,34 @@
         </div>
     </div>
 
+    <!-- MODAL: IMMUNIZATION -->
+    <div id="modalImm" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h3 class="section-title" style="margin:0;">Tambah Definisi Vaksin</h3>
+                <button onclick="closeModal('modalImm')" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i data-lucide="x"></i></button>
+            </div>
+            <form id="immForm">
+                <div class="form-group"><label>Nama Vaksin / Imunisasi</label><input type="text" id="immName" placeholder="Misal: BCG, DPT-HB-HiB, PCV" required></div>
+                <div class="grid">
+                    <div class="form-group"><label>Jadwal / Usia Rekomendasi</label><input type="text" id="immSchedule" placeholder="Misal: 0-1 bln, 2 bln, 18 bln" required></div>
+                    <div class="form-group"><label>Biaya</label>
+                        <select id="immCostType" onchange="document.getElementById('immPriceBox').style.display = this.value === 'Berbayar' ? 'block' : 'none'">
+                            <option value="Gratis">Gratis (Program Pemerintah)</option>
+                            <option value="Berbayar">Mandiri / Berbayar</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="immPriceBox" class="form-group" style="display:none;"><label>Estimasi Harga (Rp)</label><input type="number" id="immPrice" placeholder="0"></div>
+                <div class="form-group"><label>Kegunaan / Untuk Pencegahan</label><textarea id="immPurpose" rows="2" placeholder="Sebutkan penyakit yang dicegah oleh vaksin ini..."></textarea></div>
+                <button type="submit" class="btn btn-primary" style="width:100%"><i data-lucide="shield-plus"></i> Simpan Definisi Vaksin</button>
+            </form>
+        </div>
+    </div>
+
     <nav class="sidebar-nav">
         <a href="health-log.html" class="nav-link"><i data-lucide="clipboard-list"></i> Log</a>
-        <a href="health-analytics.html" class="nav-link"><i data-lucide="bar-chart-3"></i> Analisis</a>
+        <a href="health-screening.html" class="nav-link"><i data-lucide="brain"></i> Skrining</a>
         <a href="health-reference.html" class="nav-link active"><i data-lucide="settings"></i> Referensi</a>
     </nav>
 
@@ -449,17 +538,22 @@
     <script>
         lucide.createIcons();
 
-        // Data Management
-        let testData = JSON.parse(localStorage.getItem('health_reference_data') || '[]');
-        let medsData = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
-        let docsData = JSON.parse(localStorage.getItem('health_docs_data') || '[]');
-        let clinicsData = JSON.parse(localStorage.getItem('health_clinics_data') || '[]');
+        // Global Data Storage
+        window.testData = JSON.parse(localStorage.getItem('health_reference_data') || '[]');
+        window.medsData = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
+        window.docsData = JSON.parse(localStorage.getItem('health_docs_data') || '[]');
+        window.clinicsData = JSON.parse(localStorage.getItem('health_clinics_data') || '[]');
+        window.immData = JSON.parse(localStorage.getItem('health_imm_data') || '[]');
+
+        window.editingIndex = null;
+        window.editingVar = null;
 
         function saveAll() {
             localStorage.setItem('health_reference_data', JSON.stringify(testData));
             localStorage.setItem('health_meds_data', JSON.stringify(medsData));
             localStorage.setItem('health_docs_data', JSON.stringify(docsData));
             localStorage.setItem('health_clinics_data', JSON.stringify(clinicsData));
+            localStorage.setItem('health_imm_data', JSON.stringify(immData));
         }
 
         window.switchTab = (tabId) => {
@@ -471,8 +565,23 @@
         };
 
         // Modal Logic
-        window.openModal = (id) => {
+        window.openModal = (id, isEdit = false) => {
+            if (!isEdit) {
+                editingIndex = null;
+                editingVar = null;
+                // Correct mapping for reset
+                const map = { 'modalTests': 'healthForm', 'modalMeds': 'medForm', 'modalDocs': 'docForm', 'modalClinics': 'clinicForm', 'modalImm': 'immForm' };
+                const formId = map[id];
+                const form = document.getElementById(formId);
+                if (form) form.reset();
+                
+                const title = document.querySelector(`#${id} .section-title`);
+                const btn = document.querySelector(`#${id} form button[type="submit"]`);
+                if (title) title.innerText = title.innerText.replace('Edit', 'Tambah');
+                if (btn) btn.innerHTML = btn.innerHTML.includes('plus') ? btn.innerHTML : `<i data-lucide="plus"></i> Simpan`;
+            }
             document.getElementById(id).classList.add('active');
+            lucide.createIcons();
         };
 
         window.closeModal = (id) => {
@@ -480,6 +589,77 @@
             if(id === 'modalMeds') { currentComposition = []; updateCompListUI(); }
             if(id === 'modalDocs') { currentPracticeLocations = []; updatePracticeListUI(); }
             if(id === 'modalStock') currentMedIndex = null;
+            editingIndex = null;
+            editingVar = null;
+        };
+
+        window.editItem = (dataVar, idx, modalId, formId) => {
+            editingIndex = idx;
+            editingVar = dataVar;
+            const data = window[dataVar][idx];
+            
+            // Populate form
+            if (dataVar === 'testData') {
+                document.getElementById('testName').value = data.testName;
+                document.getElementById('unit').value = data.unit;
+                document.getElementById('category').value = data.category || '';
+                document.getElementById('lowerLimit').value = data.lowerLimit;
+                document.getElementById('lowerLimitIndicators').value = data.lowerLimitIndicators;
+                document.getElementById('lowerLimitSuggestions').value = data.lowerLimitSuggestions;
+                document.getElementById('upperLimit').value = data.upperLimit;
+                document.getElementById('upperLimitIndicators').value = data.upperLimitIndicators;
+                document.getElementById('upperLimitSuggestions').value = data.upperLimitSuggestions;
+            } else if (dataVar === 'medsData') {
+                document.getElementById('medName').value = data.name;
+                document.getElementById('medType').value = data.type;
+                document.getElementById('medDose').value = data.dose;
+                document.getElementById('medPurpose').value = data.purpose;
+                document.getElementById('medAgeLimit').value = data.ageLimit;
+                document.getElementById('medRegNo').value = data.regNo;
+                document.getElementById('medIndication').value = data.indication;
+                currentComposition = [...(data.composition || [])];
+                updateCompListUI();
+                document.getElementById('medContraindication').value = data.contraindication;
+                document.getElementById('medWarning').value = data.warning;
+                document.getElementById('medSideEffects').value = data.sideEffects;
+                document.getElementById('medStorage').value = data.storage;
+                document.getElementById('medManufacturer').value = data.manufacturer;
+            } else if (dataVar === 'docsData') {
+                document.getElementById('docName').value = data.name;
+                document.getElementById('docSpec').value = data.spec;
+                document.getElementById('docPhone').value = data.phone;
+                document.getElementById('docGender').value = data.gender;
+                document.getElementById('docPhoto').value = data.photo;
+                document.getElementById('docBio').value = data.bio;
+                document.getElementById('docReview').value = data.review;
+                currentPracticeLocations = [...(data.locations || [])];
+                updatePracticeListUI();
+            } else if (dataVar === 'clinicsData') {
+                document.getElementById('clinicName').value = data.name;
+                document.getElementById('clinicType').value = data.type;
+                document.getElementById('clinicAddress').value = data.address;
+                document.getElementById('clinicPhone').value = data.phone;
+                document.getElementById('clinicMaps').value = data.mapsUrl;
+                document.getElementById('clinicNotes').value = data.notes;
+            } else if (dataVar === 'immData') {
+                document.getElementById('immName').value = data.name;
+                document.getElementById('immSchedule').value = data.schedule;
+                document.getElementById('immCostType').value = data.costType;
+                document.getElementById('immPrice').value = data.price || '';
+                document.getElementById('immPurpose').value = data.purpose;
+                document.getElementById('immPriceBox').style.display = data.costType === 'Berbayar' ? 'block' : 'none';
+            }
+
+            // Update Modal UI
+            const title = document.querySelector(`#${modalId} .section-title`);
+            const btn = document.querySelector(`#${modalId} form button[type="submit"]`);
+            if (title) {
+                const baseTitle = title.innerText.replace('Tambah ', '').replace('Edit ', '');
+                title.innerText = 'Edit ' + baseTitle;
+            }
+            if (btn) btn.innerHTML = '<i data-lucide="save"></i> Perbarui Data';
+            
+            openModal(modalId, true);
         };
 
         // --- DOCTOR LOCATIONS LOGIC ---
@@ -615,9 +795,11 @@
 
         function updateCategoryDatalist() {
             const dl = document.getElementById('catList');
+            const filter = document.getElementById('filterTestCat');
             if (!dl) return;
             const categories = [...new Set(testData.map(t => t.category).filter(c => c))];
             dl.innerHTML = categories.map(c => `<option value="${c}">`).join('');
+            if (filter) filter.innerHTML = '<option value="">Semua Kategori</option>' + categories.map(c => `<option value="${c}">${c}</option>`).join('');
         }
 
         function updateClinicDatalist() {
@@ -626,18 +808,36 @@
             dl.innerHTML = clinicsData.map(c => `<option value="${c.name}">`).join('');
         }
 
+        function updateSpecFilter() {
+            const filter = document.getElementById('filterDocSpec');
+            if (!filter) return;
+            const specs = [...new Set(docsData.map(d => d.spec).filter(s => s))];
+            filter.innerHTML = '<option value="">Semua Spesialis</option>' + specs.map(s => `<option value="${s}">${s}</option>`).join('');
+        }
+
         // --- RENDERERS ---
         function renderTests() {
             const list = document.getElementById('testList');
-            if (testData.length === 0) {
-                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Belum ada parameter tes. Klik Tambah untuk memulai.</div>';
+            const search = document.getElementById('searchTests').value.toLowerCase();
+            const category = document.getElementById('filterTestCat').value;
+
+            let filtered = testData.filter(t => 
+                (t.testName.toLowerCase().includes(search) || (t.category || '').toLowerCase().includes(search)) &&
+                (!category || t.category === category)
+            );
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Tidak ada parameter yang sesuai pencarian.</div>';
                 return;
             }
-            list.innerHTML = testData.map((t, idx) => `
+            list.innerHTML = filtered.map((t, idx) => `
                 <div class="data-card">
                     <div style="display:flex; justify-content:space-between;">
                         <span class="card-tag" style="background:var(--primary-light); color:var(--primary);">${t.category || 'Umum'}</span>
-                        <button onclick="deleteItem('testData', ${idx}, renderTests)" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
+                        <div style="display:flex; gap:0.5rem; position:relative; z-index:10;">
+                            <button type="button" onclick="editItem('testData', ${testData.indexOf(t)}, 'modalTests', 'healthForm')" style="background:var(--primary-light); border:none; color:var(--primary); cursor:pointer; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; transition:0.2s;"><i data-lucide="edit-3" style="width:14px; pointer-events:none;"></i></button>
+                            <button type="button" onclick="deleteItem('testData', ${testData.indexOf(t)}, renderTests)" style="background:#fef2f2; border:none; color:var(--danger); cursor:pointer; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; transition:0.2s;"><i data-lucide="trash-2" style="width:14px; pointer-events:none;"></i></button>
+                        </div>
                     </div>
                     <div style="font-weight:800; font-size:1.1rem; margin-top:0.5rem;">${t.testName}</div>
                     <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;">Normal: ${t.lowerLimit}-${t.upperLimit} ${t.unit}</div>
@@ -648,27 +848,46 @@
 
         function renderMeds() {
             const list = document.getElementById('medList');
-            if (medsData.length === 0) {
-                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Koleksi obat masih kosong.</div>';
+            const search = document.getElementById('searchMeds').value.toLowerCase();
+            const type = document.getElementById('filterMedType').value;
+            const sortBy = document.getElementById('sortMeds').value;
+
+            let filtered = medsData.filter(m => {
+                const totalStock = (m.batches || []).reduce((acc, b) => acc + b.qty, 0);
+                const compMatch = (m.composition || []).some(c => c.name.toLowerCase().includes(search));
+                return (m.name.toLowerCase().includes(search) || m.purpose.toLowerCase().includes(search) || m.indication.toLowerCase().includes(search) || compMatch) &&
+                       (!type || m.type === type);
+            });
+
+            if(sortBy === 'name') filtered.sort((a,b) => a.name.localeCompare(b.name));
+            if(sortBy === 'stock') filtered.sort((a,b) => {
+                const stockA = (a.batches || []).reduce((acc, bl) => acc + bl.qty, 0);
+                const stockB = (b.batches || []).reduce((acc, bl) => acc + bl.qty, 0);
+                return stockB - stockA;
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Tidak ada obat yang sesuai pencarian.</div>';
                 return;
             }
-            list.innerHTML = medsData.map((m, idx) => {
+            list.innerHTML = filtered.map((m, idx) => {
                 const totalStock = (m.batches || []).reduce((acc, b) => acc + b.qty, 0);
                 const unit = m.batches && m.batches.length > 0 ? m.batches[0].unit : '';
                 return `
                 <div class="data-card" style="border-top: 5px solid ${totalStock > 0 ? 'var(--secondary)' : 'var(--danger)'};">
                     <div style="display:flex; justify-content:space-between;">
                         <span class="card-tag" style="background:#f0fdf4; color:#166534;">${m.type}</span>
-                        <div style="display:flex; gap:0.5rem;">
+                        <div style="display:flex; gap:0.5rem; align-items:center; position:relative; z-index:10;">
                             <span class="card-tag" style="background:${totalStock > 0 ? 'var(--primary-light)' : '#fef2f2'}; color:${totalStock > 0 ? 'var(--primary)' : 'var(--danger)'};">Total Stok: ${totalStock} ${unit}</span>
-                            <button onclick="deleteItem('medsData', ${idx}, renderMeds)" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
+                            <button type="button" onclick="editItem('medsData', ${medsData.indexOf(m)}, 'modalMeds', 'medForm')" style="background:var(--primary-light); border:none; color:var(--primary); cursor:pointer; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; transition:0.2s;"><i data-lucide="edit-3" style="width:14px; pointer-events:none;"></i></button>
+                            <button type="button" onclick="deleteItem('medsData', ${medsData.indexOf(m)}, renderMeds)" style="background:#fef2f2; border:none; color:var(--danger); cursor:pointer; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; transition:0.2s;"><i data-lucide="trash-2" style="width:14px; pointer-events:none;"></i></button>
                         </div>
                     </div>
                     <div style="font-weight:800; font-size:1.1rem; margin-top:0.5rem;">${m.name}</div>
                     <div style="color:var(--primary); font-weight:700; margin-bottom:0.1rem; font-size:0.9rem;">${m.dose} - ${m.purpose || 'Umum'}</div>
                     <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin-bottom:0.5rem;">${m.indication}</div>
                     
-                    <button onclick="openStockManager(${idx})" class="btn btn-outline" style="width:100%; margin-bottom:0.75rem; border-style:dashed; background:var(--primary-light); color:var(--primary); border-color:var(--primary);"><i data-lucide="plus-circle"></i> Kelola Inventori</button>
+                    <button onclick="openStockManager(${medsData.indexOf(m)})" class="btn btn-outline" style="width:100%; margin-bottom:0.75rem; border-style:dashed; background:var(--primary-light); color:var(--primary); border-color:var(--primary);"><i data-lucide="plus-circle"></i> Kelola Inventori</button>
 
                     <div style="font-size:0.75rem; border-top:1px dashed var(--border); padding-top:0.5rem; margin-top:0.5rem;">
                         <div style="margin-bottom:2px;"><strong style="color:var(--text-muted);">Komposisi:</strong> 
@@ -698,11 +917,19 @@
 
         function renderDocs() {
             const list = document.getElementById('docList');
-            if (docsData.length === 0) {
-                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Daftar dokter belum ada.</div>';
+            const search = document.getElementById('searchDocs').value.toLowerCase();
+            const spec = document.getElementById('filterDocSpec').value;
+
+            let filtered = docsData.filter(d => 
+                (d.name.toLowerCase().includes(search) || d.spec.toLowerCase().includes(search) || (d.locations || []).some(l => l.clinic.toLowerCase().includes(search))) &&
+                (!spec || d.spec === spec)
+            );
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Tidak ada dokter yang sesuai kriteria.</div>';
                 return;
             }
-            list.innerHTML = docsData.map((d, idx) => `
+            list.innerHTML = filtered.map((d, idx) => `
                 <div class="data-card" style="padding:0; overflow:hidden;">
                     <div style="background: linear-gradient(135deg, var(--primary-light), white); padding:1.5rem; display:flex; gap:1rem; align-items:center;">
                         <div style="width:64px; height:64px; border-radius:50%; overflow:hidden; background:var(--primary); border:3px solid white; box-shadow:var(--shadow-sm); flex-shrink:0;">
@@ -715,7 +942,10 @@
                             </div>
                             <div style="font-weight:800; font-size:1.1rem; color:var(--text-main); margin-top:2px;">${d.name}</div>
                         </div>
-                        <button onclick="deleteItem('docsData', ${idx}, renderDocs)" style="background:none; border:none; color:var(--danger); cursor:pointer; align-self:flex-start;"><i data-lucide="trash-2" style="width:16px;"></i></button>
+                        <div style="display:flex; gap:0.5rem; align-self:flex-start; position:relative; z-index:10;">
+                            <button type="button" onclick="editItem('docsData', ${docsData.indexOf(d)}, 'modalDocs', 'docForm')" style="background:white; border:none; color:var(--primary); cursor:pointer; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); transition:0.22s;"><i data-lucide="edit-3" style="width:16px; pointer-events:none;"></i></button>
+                            <button type="button" onclick="deleteItem('docsData', ${docsData.indexOf(d)}, renderDocs)" style="background:white; border:none; color:var(--danger); cursor:pointer; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); transition:0.2s;"><i data-lucide="trash-2" style="width:16px; pointer-events:none;"></i></button>
+                        </div>
                     </div>
                     
                     <div style="padding:1.5rem;">
@@ -748,15 +978,26 @@
 
         function renderClinics() {
             const list = document.getElementById('clinicList');
-            if (clinicsData.length === 0) {
-                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Pusat faskes belum terisi.</div>';
+            const search = document.getElementById('searchClinics').value.toLowerCase();
+            const type = document.getElementById('filterClinicType').value;
+
+            let filtered = clinicsData.filter(c => 
+                (c.name.toLowerCase().includes(search) || c.address.toLowerCase().includes(search) || (c.notes || '').toLowerCase().includes(search)) &&
+                (!type || c.type === type)
+            );
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Tidak ada faskes yang sesuai.</div>';
                 return;
             }
-            list.innerHTML = clinicsData.map((c, idx) => `
+            list.innerHTML = filtered.map((c, idx) => `
                 <div class="data-card">
                     <div style="display:flex; justify-content:space-between;">
                         <span class="card-tag" style="background:#fff7ed; color:#9a3412;">${c.type}</span>
-                        <button onclick="deleteItem('clinicsData', ${idx}, renderClinics)" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i data-lucide="trash-2" style="width:14px;"></i></button>
+                        <div style="display:flex; gap:0.5rem; position:relative; z-index:10;">
+                            <button type="button" onclick="editItem('clinicsData', ${clinicsData.indexOf(c)}, 'modalClinics', 'clinicForm')" style="background:var(--primary-light); border:none; color:var(--primary); cursor:pointer; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; transition:0.2s;"><i data-lucide="edit-3" style="width:14px; pointer-events:none;"></i></button>
+                            <button type="button" onclick="deleteItem('clinicsData', ${clinicsData.indexOf(c)}, renderClinics)" style="background:#fef2f2; border:none; color:var(--danger); cursor:pointer; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; transition:0.2s;"><i data-lucide="trash-2" style="width:14px; pointer-events:none;"></i></button>
+                        </div>
                     </div>
                     <div style="font-weight:800; font-size:1.1rem; margin-top:0.5rem;">${c.name}</div>
                     <div style="font-size:0.8rem; color:var(--text-muted); margin:0.5rem 0; line-height:1.4;"><i data-lucide="map-pin" style="width:12px;"></i> ${c.address}</div>
@@ -772,6 +1013,42 @@
             lucide.createIcons();
         }
 
+        function renderImm() {
+            const list = document.getElementById('immList');
+            const search = document.getElementById('searchImm').value.toLowerCase();
+            const cost = document.getElementById('filterImmCost').value;
+
+            let filtered = immData.filter(i => 
+                (i.name.toLowerCase().includes(search) || (i.purpose || '').toLowerCase().includes(search) || (i.schedule || '').toLowerCase().includes(search)) &&
+                (!cost || i.costType === cost)
+            );
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Tidak ada vaksin yang sesuai.</div>';
+                return;
+            }
+            list.innerHTML = filtered.map((i, idx) => `
+                <div class="data-card">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span class="card-tag" style="background:${i.costType === 'Gratis' ? '#ecfdf5' : '#fff7ed'}; color:${i.costType === 'Gratis' ? '#065f46' : '#9a3412'};">${i.costType} ${i.price ? `(Rp${parseInt(i.price).toLocaleString()})` : ''}</span>
+                        <div style="display:flex; gap:0.5rem; position:relative; z-index:10;">
+                            <button type="button" onclick="editItem('immData', ${immData.indexOf(i)}, 'modalImm', 'immForm')" style="background:var(--primary-light); border:none; color:var(--primary); cursor:pointer; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; transition:0.2s;"><i data-lucide="edit-3" style="width:14px; pointer-events:none;"></i></button>
+                            <button type="button" onclick="deleteItem('immData', ${immData.indexOf(i)}, renderImm)" style="background:#fef2f2; border:none; color:var(--danger); cursor:pointer; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; transition:0.2s;"><i data-lucide="trash-2" style="width:14px; pointer-events:none;"></i></button>
+                        </div>
+                    </div>
+                    <div style="font-weight:800; font-size:1.1rem; margin-top:0.5rem; color:var(--text-main);">${i.name}</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin:0.3rem 0; display:flex; align-items:center; gap:0.4rem;">
+                        <i data-lucide="calendar" style="width:12px;"></i> Rekomendasi: ${i.schedule}
+                    </div>
+                    <div style="margin-top:0.75rem; font-size:0.85rem; line-height:1.4; color:var(--text-main); background:var(--primary-light); padding:0.75rem; border-radius:8px; border-left:3px solid var(--primary);">
+                        <div style="font-weight:700; font-size:0.7rem; color:var(--primary); text-transform:uppercase; margin-bottom:4px;">Kegunaan Utama</div>
+                        ${i.purpose || 'Informasi belum lengkap.'}
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
         // --- ACTIONS ---
         window.deleteItem = (dataVar, idx, renderFn) => {
             if(confirm('Hapus item ini?')) {
@@ -779,6 +1056,7 @@
                 if(dataVar === 'medsData') medsData.splice(idx, 1);
                 if(dataVar === 'docsData') docsData.splice(idx, 1);
                 if(dataVar === 'clinicsData') { clinicsData.splice(idx, 1); updateClinicDatalist(); }
+                if(dataVar === 'immData') immData.splice(idx, 1);
                 saveAll(); renderFn();
                 if(dataVar === 'testData') updateCategoryDatalist();
             }
@@ -787,7 +1065,7 @@
         // --- SUBMITS ---
         document.getElementById('healthForm').onsubmit = (e) => {
             e.preventDefault();
-            testData.unshift({
+            const data = {
                 testName: document.getElementById('testName').value,
                 unit: document.getElementById('unit').value,
                 category: document.getElementById('category').value,
@@ -797,14 +1075,20 @@
                 upperLimit: document.getElementById('upperLimit').value,
                 upperLimitIndicators: document.getElementById('upperLimitIndicators').value,
                 upperLimitSuggestions: document.getElementById('upperLimitSuggestions').value,
-            });
+            };
+            if (editingIndex !== null && editingVar === 'testData') {
+                testData[editingIndex] = data;
+                editingIndex = null; editingVar = null;
+            } else {
+                testData.unshift(data);
+            }
             saveAll(); renderTests(); updateCategoryDatalist(); document.getElementById('healthForm').reset(); 
             closeModal('modalTests'); showToast('Parameter Tes');
         };
 
         document.getElementById('medForm').onsubmit = (e) => {
             e.preventDefault();
-            medsData.unshift({
+            const data = {
                 name: document.getElementById('medName').value,
                 type: document.getElementById('medType').value,
                 dose: document.getElementById('medDose').value,
@@ -818,15 +1102,21 @@
                 sideEffects: document.getElementById('medSideEffects').value,
                 storage: document.getElementById('medStorage').value,
                 manufacturer: document.getElementById('medManufacturer').value,
-                batches: [],
-            });
+                batches: editingIndex !== null && editingVar === 'medsData' ? medsData[editingIndex].batches : [],
+            };
+            if (editingIndex !== null && editingVar === 'medsData') {
+                medsData[editingIndex] = data;
+                editingIndex = null; editingVar = null;
+            } else {
+                medsData.unshift(data);
+            }
             saveAll(); renderMeds(); document.getElementById('medForm').reset(); 
             closeModal('modalMeds'); showToast('Obat');
         };
 
         document.getElementById('docForm').onsubmit = (e) => {
             e.preventDefault();
-            docsData.unshift({
+            const data = {
                 name: document.getElementById('docName').value,
                 spec: document.getElementById('docSpec').value,
                 phone: document.getElementById('docPhone').value,
@@ -835,24 +1125,55 @@
                 bio: document.getElementById('docBio').value,
                 review: document.getElementById('docReview').value,
                 locations: [...currentPracticeLocations],
-            });
-            saveAll(); renderDocs(); document.getElementById('docForm').reset(); 
+            };
+            if (editingIndex !== null && editingVar === 'docsData') {
+                docsData[editingIndex] = data;
+                editingIndex = null; editingVar = null;
+            } else {
+                docsData.unshift(data);
+            }
+            saveAll(); renderDocs(); updateSpecFilter(); document.getElementById('docForm').reset(); 
             currentPracticeLocations = []; updatePracticeListUI();
             closeModal('modalDocs'); showToast('Dokter');
         };
 
         document.getElementById('clinicForm').onsubmit = (e) => {
             e.preventDefault();
-            clinicsData.unshift({
+            const data = {
                 name: document.getElementById('clinicName').value,
                 type: document.getElementById('clinicType').value,
                 address: document.getElementById('clinicAddress').value,
                 phone: document.getElementById('clinicPhone').value,
                 mapsUrl: document.getElementById('clinicMaps').value,
                 notes: document.getElementById('clinicNotes').value,
-            });
+            };
+            if (editingIndex !== null && editingVar === 'clinicsData') {
+                clinicsData[editingIndex] = data;
+                editingIndex = null; editingVar = null;
+            } else {
+                clinicsData.unshift(data);
+            }
             saveAll(); renderClinics(); updateClinicDatalist(); document.getElementById('clinicForm').reset(); 
             closeModal('modalClinics'); showToast('Faskes');
+        };
+
+        document.getElementById('immForm').onsubmit = (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('immName').value,
+                schedule: document.getElementById('immSchedule').value,
+                costType: document.getElementById('immCostType').value,
+                price: document.getElementById('immPrice').value,
+                purpose: document.getElementById('immPurpose').value,
+            };
+            if (editingIndex !== null && editingVar === 'immData') {
+                immData[editingIndex] = data;
+                editingIndex = null; editingVar = null;
+            } else {
+                immData.unshift(data);
+            }
+            saveAll(); renderImm(); document.getElementById('immForm').reset(); 
+            closeModal('modalImm'); showToast('Imunisasi');
         };
 
         function showToast(type) {
@@ -862,7 +1183,7 @@
             setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        renderTests(); renderMeds(); renderDocs(); renderClinics(); updateCategoryDatalist(); updateClinicDatalist();
+        renderTests(); renderMeds(); renderDocs(); renderClinics(); renderImm(); updateCategoryDatalist(); updateClinicDatalist(); updateSpecFilter();
     </script>
 </body>
 </html>

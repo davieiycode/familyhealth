@@ -113,14 +113,58 @@
             </div>
         </header>
 
-        <div class="tab-container" style="display:flex; gap:0.5rem; margin-bottom:2rem; background:#f1f5f9; padding:0.4rem; border-radius:14px;">
-            <button class="tab-btn active" id="tabTests" onclick="switchTab('tests')" style="flex:1; padding:0.75rem; border-radius:10px; border:none; background:white; font-weight:700; cursor:pointer;"><i data-lucide="clipboard-list"></i> Tes Kesehatan</button>
-            <button class="tab-btn" id="tabMeds" onclick="switchTab('meds')" style="flex:1; padding:0.75rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted);"><i data-lucide="pill"></i> Minum Obat</button>
+        <div class="tab-container" style="display:flex; gap:0.5rem; margin-bottom:2rem; background:#f1f5f9; padding:0.4rem; border-radius:14px; overflow-x:auto;">
+            <button class="tab-btn active" id="tabConsult" onclick="switchTab('consult')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:white; font-weight:700; cursor:pointer; min-width:max-content; white-space:nowrap;"><i data-lucide="hand-metal"></i> Konsultasi</button>
+            <button class="tab-btn" id="tabTests" onclick="switchTab('tests')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="clipboard-list"></i> Hasil Tes</button>
+            <button class="tab-btn" id="tabMeds" onclick="switchTab('meds')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="pill"></i> Minum Obat</button>
+            <button class="tab-btn" id="tabSymptoms" onclick="switchTab('symptoms')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="activity"></i> Gejala & Kondisi</button>
+            <button class="tab-btn" id="tabRepro" onclick="switchTab('repro')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="heart"></i> Reproduksi/Haid</button>
+            <button class="tab-btn" id="tabClinical" onclick="switchTab('clinical')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="hospital"></i> Klinik/RS</button>
+            <button class="tab-btn" id="tabImm" onclick="switchTab('imm')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="shield-check"></i> Imunisasi</button>
         </div>
 
         <main>
+            <!-- SECTION: DOCTOR CONSULTATION -->
+            <div id="sectionConsult" class="log-section">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="user-check"></i> Log Konsultasi Dokter <span class="activePatientLabel"></span></div>
+                    <form id="consultForm">
+                        <div class="report-meta">
+                            <div>
+                                <label>Pilih Dokter</label>
+                                <input type="text" id="consultDoc" list="docRefList" placeholder="Nama Dokter" required>
+                            </div>
+                            <div>
+                                <label>Tempat / Faskes</label>
+                                <input type="text" id="consultLoc" list="clinicSuggestList" placeholder="Klinik/RS">
+                            </div>
+                            <div>
+                                <label>Waktu</label>
+                                <input type="datetime-local" id="consultTime" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Keluhan Utama & Diagnosa</label>
+                            <textarea id="consultNotes" rows="2" placeholder="Sebutkan keluhan yang disampaikan dan hasil diagnosa dokter..."></textarea>
+                        </div>
+                        <div class="form-group" style="margin-top:1rem;">
+                            <label>Resep Obat (Akan Mengurangi Stok)</label>
+                            <div style="display:grid; grid-template-columns: 2fr 1fr 40px; gap:0.5rem; margin-bottom:0.5rem;">
+                                <input type="text" id="prescMed" list="medRefList" placeholder="Nama Obat">
+                                <input type="number" id="prescQty" step="any" placeholder="Jml">
+                                <button type="button" class="btn btn-secondary" onclick="addPrescription()" style="padding:0;"><i data-lucide="plus"></i></button>
+                            </div>
+                            <div id="prescriptionList" style="display:flex; flex-wrap:wrap; gap:0.5rem;"></div>
+                        </div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;">
+                            <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Simpan Log Konsultasi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <!-- SECTION: TEST LOGS -->
-            <div id="sectionTests" class="log-section">
+            <div id="sectionTests" class="log-section" style="display:none;">
                 <div class="card">
                 <div class="section-header">
                     <i data-lucide="file-plus" style="width:20px;"></i>
@@ -219,20 +263,201 @@
                 </div>
             </div>
 
+            <!-- SECTION: SYMPTOMS & CONDITIONS -->
+            <div id="sectionSymptoms" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="thermometer"></i> Log Gejala & Cedera <span class="activePatientLabel"></span></div>
+                    <form id="symptomForm">
+                        <div class="report-meta" style="grid-template-columns: 1fr 1fr;">
+                            <div>
+                                <label>Gejala / Cedera</label>
+                                <input type="text" id="symName" placeholder="Misal: Demam, Luka Jatuh, Vertigo" required>
+                            </div>
+                            <div>
+                                <label>Tingkat Keparahan (1-10)</label>
+                                <input type="range" id="symSeverity" min="1" max="10" value="5" oninput="document.getElementById('sevVal').innerText = this.value">
+                                <div style="text-align:center; font-size:0.8rem; font-weight:700; color:var(--primary);">Skala: <span id="sevVal">5</span></div>
+                            </div>
+                        </div>
+                        <div class="report-meta">
+                            <div>
+                                <label>Mulai Dirasa</label>
+                                <input type="datetime-local" id="symStart" required>
+                            </div>
+                            <div>
+                                <label>Status</label>
+                                <select id="symStatus">
+                                    <option value="Aktif">Masih Dirasa</option>
+                                    <option value="Sembuh">Sudah Sembuh</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Catatan Kondisi</label>
+                            <textarea id="symNotes" rows="2" placeholder="Detail rasa sakit, pemicu, atau kronologi cedera..."></textarea>
+                        </div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;">
+                            <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Catat Gejala</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SECTION: REPRODUCTIVE HEALTH -->
+            <div id="sectionRepro" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="heart"></i> Siklus & Kehamilan <span class="activePatientLabel"></span></div>
+                    <form id="reproForm">
+                        <div class="report-meta">
+                            <div>
+                                <label>Jenis Log</label>
+                                <select id="reproType" onchange="toggleReproFields(this.value)">
+                                    <option value="PERIOD">Haid / Datang Bulan</option>
+                                    <option value="OVULATION">Masa Subur / Ovulasi</option>
+                                    <option value="PREGNANCY">Pemantauan Kehamilan</option>
+                                    <option value="POSTPARTUM">Masa Nifas</option>
+                                    <option value="SEXUAL">Hubungan Seksual</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Waktu / Tanggal</label>
+                                <input type="datetime-local" id="reproTime" required>
+                            </div>
+                        </div>
+                        
+                        <div id="reproPeriodFields">
+                            <div class="grid">
+                                <div class="form-group"><label>Aliran (Flow)</label>
+                                    <select id="periodFlow"><option value="Ringan">Ringan</option><option value="Sedang" selected>Sedang</option><option value="Banyak">Banyak</option></select>
+                                </div>
+                                <div class="form-group"><label>Warna Darah</label>
+                                    <select id="periodColor"><option value="Merah Terang">Merah Terang</option><option value="Merah Tua">Merah Tua</option><option value="Coklat">Coklat</option></select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="reproPregFields" style="display:none;">
+                            <div class="grid">
+                                <div class="form-group"><label>Berat Badan (kg)</label><input type="number" id="pregWeight" step="any"></div>
+                                <div class="form-group"><label>Lingkar Perut (cm)</label><input type="number" id="pregBelly" step="any"></div>
+                                <div class="form-group"><label>Gerakan Janin</label><select id="pregKicks"><option value="Aktif">Aktif</option><option value="Kurang Aktif">Kurang Aktif</option></select></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Catatan Tambahan</label>
+                            <textarea id="reproNotes" rows="2" placeholder="Gejala penyerta (kram, mood), atau hasil USG..."></textarea>
+                        </div>
+                        
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;">
+                            <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Simpan Log Reproduksi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SECTION: CLINICAL STAYS -->
+            <div id="sectionClinical" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="hospital"></i> Rawat Inap, Jalan & Operasi <span class="activePatientLabel"></span></div>
+                    <form id="clinicalForm">
+                        <div class="report-meta">
+                            <div>
+                                <label>Tipe Layanan</label>
+                                <select id="clinicalType">
+                                    <option value="OUTPATIENT">Rawat Jalan / Poliklinik</option>
+                                    <option value="INPATIENT">Rawat Inap / Opname</option>
+                                    <option value="SURGERY">Tindakan Operasi</option>
+                                    <option value="ER">IGD / Emergency</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Nama Penyakit / Tindakan</label>
+                                <input type="text" id="clinicalName" placeholder="Misal: Operasi Caesar, Demam Berdarah" required>
+                            </div>
+                            <div>
+                                <label>Lokasi Faskes</label>
+                                <input type="text" id="clinicalLoc" list="clinicSuggestList" placeholder="Nama RS/Klinik">
+                            </div>
+                        </div>
+                        <div class="grid">
+                            <div class="form-group"><label>Mulai Tanggal</label><input type="datetime-local" id="clinicalStart" required></div>
+                            <div class="form-group"><label>Selesai Tanggal (Opsional)</label><input type="datetime-local" id="clinicalEnd"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Tim Medis / Dokter Penanggung Jawab</label>
+                            <input type="text" id="clinicalDoc" placeholder="Misal: dr. Andi (Bedah), Tim Perawat">
+                        </div>
+                        <div class="form-group">
+                            <label>Catatan Medis & Prosedur</label>
+                            <textarea id="clinicalNotes" rows="2" placeholder="Ringkasan hasil kontrol atau jalannya operasi..."></textarea>
+                        </div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;">
+                            <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Simpan Catatan Klinis</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SECTION: IMMUNIZATION LOGS -->
+            <div id="sectionImm" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="shield-check"></i> Log Imunisasi / Vaksinasi <span class="activePatientLabel"></span></div>
+                    <form id="immLogForm">
+                        <div class="report-meta">
+                            <div>
+                                <label>Pilih Vaksin</label>
+                                <input type="text" list="immRefList" id="logImmName" placeholder="Nama Vaksin" required>
+                            </div>
+                            <div>
+                                <label>Tanggal Pemberian</label>
+                                <input type="datetime-local" id="immLogTime" required>
+                            </div>
+                            <div>
+                                <label>Lokasi / Faskes</label>
+                                <input type="text" id="immLogLoc" list="clinicSuggestList" placeholder="Nama RS/Klinik/Puskesmas">
+                            </div>
+                        </div>
+                        <div class="grid">
+                            <div class="form-group"><label>Tenaga Medis</label><input type="text" id="immLogDoc" list="docRefList" placeholder="dr. X atau Bidan Y"></div>
+                            <div class="form-group"><label>Nomor Batch / Vial (Opsional)</label><input type="text" id="immLogBatch" placeholder="Batch #"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Catatan (Keluhan Pasca Imunisasi/KIPI)</label>
+                            <input type="text" id="immLogNotes" placeholder="Misal: Demam ringan malam hari, dikompres air hangat">
+                        </div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;">
+                            <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Catat Imunisasi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <div class="log-section">
-                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem; flex-wrap:wrap; gap:1rem;">
                     <h2>Riwayat Aktivitas</h2>
-                    <button class="btn btn-outline" onclick="exportLogs()"><i data-lucide="download"></i> Excel/CSV</button>
+                    <div style="display:flex; gap:0.5rem;">
+                        <select id="filterType" onchange="renderLogs()" style="padding: 0.5rem; font-size: 0.8rem; width:auto;">
+                            <option value="">Semua Log</option>
+                            <option value="CONSULT">Konsultasi</option>
+                            <option value="TEST">Hasil Tes</option>
+                            <option value="MEDICINE">Minum Obat</option>
+                            <option value="SYMPTOM">Gejala</option>
+                            <option value="REPRO">Reproduksi</option>
+                            <option value="CLINICAL">Klinis/RS</option>
+                        </select>
+                        <button class="btn btn-outline" onclick="exportLogs()"><i data-lucide="download"></i> Excel/CSV</button>
+                    </div>
                 </div>
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th>Tanggal & Pasien</th>
-                                <th>Aktivitas / Laporan</th>
-                                <th>Detail (Tes/Obat)</th>
-                                <th>Hasil / Jumlah</th>
-                                <th>Indikasi / Catatan</th>
+                                <th>Waktu & Pasien</th>
+                                <th>Kategori</th>
+                                <th>Aktivitas / Detail</th>
+                                <th>Pesan Utama / Hasil</th>
+                                <th>Catatan Medis</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -255,17 +480,25 @@
 
     <datalist id="testRefList"></datalist>
     <datalist id="medRefList"></datalist>
+    <datalist id="docRefList"></datalist>
+    <datalist id="clinicSuggestList"></datalist>
+    <datalist id="immRefList"></datalist>
 
     <script>
         lucide.createIcons();
         const refData = JSON.parse(localStorage.getItem('health_reference_data') || '[]');
+        const docsData = JSON.parse(localStorage.getItem('health_docs_data') || '[]');
+        const clinicsData = JSON.parse(localStorage.getItem('health_clinics_data') || '[]');
         let logs = JSON.parse(localStorage.getItem('health_logs') || '[]');
         let profiles = JSON.parse(localStorage.getItem('health_profiles') || '["Utama"]');
         let activeProfile = localStorage.getItem('active_health_profile') || 'Utama';
 
         function init() {
-            document.getElementById('timestamp').value = new Date().toISOString().slice(0, 16);
-            document.getElementById('medTimestamp').value = new Date().toISOString().slice(0, 16);
+            const now = new Date().toISOString().slice(0, 16);
+            ["timestamp", "medTimestamp", "consultTime", "symStart", "reproTime", "clinicalStart", "immLogTime"].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.value = now;
+            });
             populateDatalists();
             setupProfiles();
             renderLogs();
@@ -273,34 +506,54 @@
 
         function populateDatalists() {
             const tl = document.getElementById('testRefList');
-            tl.innerHTML = '';
-            refData.forEach(r => {
-                const opt = document.createElement('option');
-                opt.value = r.testName;
-                tl.appendChild(opt);
-            });
+            if(tl) {
+                tl.innerHTML = refData.map(r => `<option value="${r.testName}">`).join('');
+            }
 
             const ml = document.getElementById('medRefList');
-            ml.innerHTML = '';
-            const meds = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
-            meds.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m.name;
-                ml.appendChild(opt);
-            });
+            if(ml) {
+                const meds = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
+                ml.innerHTML = meds.map(m => `<option value="${m.name}">`).join('');
+            }
+
+            const dl = document.getElementById('docRefList');
+            if(dl) {
+                dl.innerHTML = docsData.map(d => `<option value="${d.name}">`).join('');
+            }
+
+            const cl = document.getElementById('clinicSuggestList');
+            if(cl) {
+                cl.innerHTML = clinicsData.map(c => `<option value="${c.name}">`).join('');
+            }
+
+            const il = document.getElementById('immRefList');
+            if(il) {
+                const imms = JSON.parse(localStorage.getItem('health_imm_data') || '[]');
+                il.innerHTML = imms.map(i => `<option value="${i.name}">`).join('');
+            }
         }
 
         window.switchTab = (type) => {
-            document.getElementById('sectionTests').style.display = type === 'tests' ? 'block' : 'none';
-            document.getElementById('sectionMeds').style.display = type === 'meds' ? 'block' : 'none';
+            document.querySelectorAll('.log-section').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.style.background = 'transparent';
+                b.style.color = 'var(--text-muted)';
+                b.classList.remove('active');
+            });
+
+            const targetSection = 'section' + type.charAt(0).toUpperCase() + type.slice(1);
+            const targetTab = 'tab' + type.charAt(0).toUpperCase() + type.slice(1);
             
-            document.getElementById('tabTests').style.background = type === 'tests' ? 'white' : 'transparent';
-            document.getElementById('tabTests').style.color = type === 'tests' ? 'var(--text-main)' : 'var(--text-muted)';
-            
-            document.getElementById('tabMeds').style.background = type === 'meds' ? 'white' : 'transparent';
-            document.getElementById('tabMeds').style.color = type === 'meds' ? 'var(--text-main)' : 'var(--text-muted)';
+            const s = document.getElementById(targetSection);
+            const t = document.getElementById(targetTab);
+            if(s) s.style.display = 'block';
+            if(t) {
+                t.style.background = 'white';
+                t.style.color = 'var(--text-main)';
+                t.classList.add('active');
+            }
             lucide.createIcons();
-        };
+        }
 
         document.getElementById('logMedName').addEventListener('input', (e) => {
             const meds = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
@@ -396,17 +649,149 @@
             }
         };
 
-        window.handleValueInput = (input) => {
-            const row = input.closest('.test-entry-row');
-            const val = parseFloat(input.value);
-            const low = parseFloat(row.dataset.low);
-            const high = parseFloat(row.dataset.high);
-            const ind = row.querySelector('.test-indication');
-            const sug = row.querySelector('.test-suggestions');
-            if (isNaN(val) || isNaN(low)) return;
-            if (val < low) { ind.value = row.dataset.lowInd || 'Rendah'; sug.value = row.dataset.lowSug; }
-            else if (val > high) { ind.value = row.dataset.highInd || 'Tinggi'; sug.value = row.dataset.highSug; }
-            else { ind.value = 'Normal'; sug.value = 'Hasi dalam rentang normal.'; }
+        // --- CONSULTATION LOGIC ---
+        let currentPrescriptions = [];
+        window.addPrescription = () => {
+            const name = document.getElementById('prescMed').value.trim();
+            const qty = parseFloat(document.getElementById('prescQty').value);
+            if(!name || !qty) return;
+            currentPrescriptions.push({ name, qty });
+            document.getElementById('prescMed').value = '';
+            document.getElementById('prescQty').value = '';
+            renderPrescriptions();
+        };
+        window.removePrescription = (idx) => {
+            currentPrescriptions.splice(idx, 1);
+            renderPrescriptions();
+        };
+        function renderPrescriptions() {
+            const cont = document.getElementById('prescriptionList');
+            cont.innerHTML = currentPrescriptions.map((p, i) => `
+                <div class="tag tag-normal" style="display:flex; align-items:center; gap:0.4rem; padding:0.4rem 0.75rem; border-radius:8px; background:var(--primary-light); color:var(--primary);">
+                    ${p.name} (${p.qty})
+                    <i data-lucide="x" style="width:12px; cursor:pointer;" onclick="removePrescription(${i})"></i>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        document.getElementById('consultForm').onsubmit = (e) => {
+            e.preventDefault();
+            const meds = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
+            
+            // Deduct stock for each prescription
+            currentPrescriptions.forEach(p => {
+                const medIdx = meds.findIndex(m => m.name.toLowerCase() === p.name.toLowerCase());
+                if(medIdx !== -1 && meds[medIdx].batches) {
+                    let qtyToReduce = p.qty;
+                    meds[medIdx].batches.sort((a,b) => new Date(a.expiry) - new Date(b.expiry));
+                    for(let b of meds[medIdx].batches) {
+                        if(qtyToReduce <= 0) break;
+                        if(b.qty >= qtyToReduce) { b.qty -= qtyToReduce; qtyToReduce = 0; }
+                        else { qtyToReduce -= b.qty; b.qty = 0; }
+                    }
+                    meds[medIdx].batches = meds[medIdx].batches.filter(b => b.qty > 0);
+                }
+            });
+            localStorage.setItem('health_meds_data', JSON.stringify(meds));
+
+            const newEntry = {
+                logId: 'CON-' + Date.now(),
+                type: 'CONSULT',
+                author: activeProfile,
+                timestamp: document.getElementById('consultTime').value,
+                doc: document.getElementById('consultDoc').value,
+                location: document.getElementById('consultLoc').value,
+                notes: document.getElementById('consultNotes').value,
+                prescriptions: [...currentPrescriptions]
+            };
+            logs = [newEntry, ...logs];
+            localStorage.setItem('health_logs', JSON.stringify(logs));
+            showToast('Konsultasi dokter berhasil dicatat.');
+            location.reload();
+        };
+
+        // --- REPRO LOGIC ---
+        window.toggleReproFields = (val) => {
+            document.getElementById('reproPeriodFields').style.display = val === 'PERIOD' ? 'block' : 'none';
+            document.getElementById('reproPregFields').style.display = val === 'PREGNANCY' ? 'block' : 'none';
+        };
+
+        document.getElementById('reproForm').onsubmit = (e) => {
+            e.preventDefault();
+            const type = document.getElementById('reproType').value;
+            const newEntry = {
+                logId: 'REP-' + Date.now(),
+                type: 'REPRO',
+                reproType: type,
+                author: activeProfile,
+                timestamp: document.getElementById('reproTime').value,
+                notes: document.getElementById('reproNotes').value,
+                details: type === 'PERIOD' ? { flow: document.getElementById('periodFlow').value, color: document.getElementById('periodColor').value } :
+                         type === 'PREGNANCY' ? { weight: document.getElementById('pregWeight').value, belly: document.getElementById('pregBelly').value, kicks: document.getElementById('pregKicks').value } : {}
+            };
+            logs = [newEntry, ...logs];
+            localStorage.setItem('health_logs', JSON.stringify(logs));
+            showToast('Log kesehatan reproduksi disimpan.');
+            location.reload();
+        };
+
+        // --- OTHER SUBMITS ---
+        document.getElementById('symptomForm').onsubmit = (e) => {
+            e.preventDefault();
+            const newEntry = {
+                logId: 'SYM-' + Date.now(),
+                type: 'SYMPTOM',
+                author: activeProfile,
+                timestamp: document.getElementById('symStart').value,
+                name: document.getElementById('symName').value,
+                severity: document.getElementById('symSeverity').value,
+                status: document.getElementById('symStatus').value,
+                notes: document.getElementById('symNotes').value
+            };
+            logs = [newEntry, ...logs];
+            localStorage.setItem('health_logs', JSON.stringify(logs));
+            showToast('Keluhan kesehatan berhasil dicatat.');
+            location.reload();
+        };
+
+        document.getElementById('clinicalForm').onsubmit = (e) => {
+            e.preventDefault();
+            const newEntry = {
+                logId: 'CLI-' + Date.now(),
+                type: 'CLINICAL',
+                clinicalType: document.getElementById('clinicalType').value,
+                author: activeProfile,
+                timestamp: document.getElementById('clinicalStart').value,
+                endTimestamp: document.getElementById('clinicalEnd').value,
+                name: document.getElementById('clinicalName').value,
+                location: document.getElementById('clinicalLoc').value,
+                doc: document.getElementById('clinicalDoc').value,
+                notes: document.getElementById('clinicalNotes').value
+            };
+            logs = [newEntry, ...logs];
+            localStorage.setItem('health_logs', JSON.stringify(logs));
+            showToast('Catatan klinis berhasil disimpan.');
+            location.reload();
+        };
+
+        document.getElementById('immLogForm').onsubmit = (e) => {
+            e.preventDefault();
+            const newEntry = {
+                logId: 'IMM-' + Date.now(),
+                type: 'IMM',
+                author: activeProfile,
+                timestamp: document.getElementById('immLogTime').value,
+                name: document.getElementById('logImmName').value,
+                location: document.getElementById('immLogLoc').value,
+                doc: document.getElementById('immLogDoc').value,
+                batch: document.getElementById('immLogBatch').value,
+                notes: document.getElementById('immLogNotes').value
+            };
+            logs = [newEntry, ...logs];
+            localStorage.setItem('health_logs', JSON.stringify(logs));
+            showToast('Catatan imunisasi berhasil disimpan.');
+            location.reload();
         };
 
         document.getElementById('reportForm').onsubmit = (e) => {
@@ -481,30 +866,92 @@
 
         function renderLogs() {
             const body = document.getElementById('logTableBody');
+            const filter = document.getElementById('filterType').value;
             body.innerHTML = '';
-            const filtered = logs.filter(l => l.author === activeProfile).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            const filtered = logs.filter(l => 
+                l.author === activeProfile && (!filter || l.type === filter || (filter === 'CLINICAL' && l.type === 'IMM'))
+            ).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
             filtered.forEach(log => {
                 const tr = document.createElement('tr');
-                if(log.type === 'MEDICINE') {
-                    tr.innerHTML = `
-                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.7rem">${new Date(log.timestamp).toLocaleDateString()}</div></td>
-                        <td style="color:var(--success); font-weight:700;"><i data-lucide="pill" style="width:12px;"></i> Minum Obat</td>
-                        <td><div style="font-weight:600; color:var(--primary);">${log.medName}</div><div style="font-size:0.7rem; color:var(--text-muted);">Di ${log.location || '-'}</div></td>
-                        <td>${log.qty} ${log.unit}</td>
-                        <td><div style="font-size:0.8rem;">${log.notes || 'Tanpa catatan.'}</div></td>
-                        <td><button class="btn-outline" onclick="deleteLog('${log.logId}')" style="padding:4px;"><i data-lucide="trash-2" style="width:14px; color:var(--danger);"></i></button></td>
+                let content = '';
+                
+                if(log.type === 'CONSULT') {
+                    content = `
+                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td><span class="tag" style="background:#eef2ff; color:#4f46e5;">KONSULTASI</span></td>
+                        <td><div style="font-weight:600; color:var(--primary);"><i data-lucide="user-check" style="width:12px;"></i> ${log.doc}</div><div style="font-size:0.75rem; color:var(--text-muted);"><i data-lucide="map-pin" style="width:12px;"></i> ${log.location}</div></td>
+                        <td><div style="font-size:0.85rem; font-weight:700;">Preskripsi:</div>
+                            ${(log.prescriptions || []).map(p => `<div style="font-size:0.8rem; color:var(--success); font-weight:600;">• ${p.name} (${p.qty})</div>`).join('') || '-'}
+                        </td>
+                        <td><div style="font-size:0.85rem; line-height:1.4;">${log.notes || '-'}</div></td>
+                    `;
+                } else if(log.type === 'MEDICINE') {
+                    content = `
+                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td><span class="tag" style="background:#f0fdf4; color:#166534;">MINUM OBAT</span></td>
+                        <td><div style="font-weight:600; color:var(--primary);"><i data-lucide="pill" style="width:12px;"></i> ${log.medName}</div></td>
+                        <td><div style="font-weight:700;">${log.qty} ${log.unit || ''}</div></td>
+                        <td><div style="font-size:0.85rem;">${log.notes || 'Rutin.'}</div></td>
+                    `;
+                } else if(log.type === 'SYMPTOM') {
+                    content = `
+                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td><span class="tag" style="background:#fffbeb; color:#92400e;">GEJALA</span></td>
+                        <td><div style="font-weight:600; color:var(--primary);">${log.name}</div><div style="font-size:0.75rem; color:var(--text-muted);">Status: ${log.status}</div></td>
+                        <td><div style="font-weight:700; color:${log.severity > 7 ? 'var(--danger)' : 'var(--warning)'};">Skala: ${log.severity}/10</div></td>
+                        <td><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
+                    `;
+                } else if(log.type === 'REPRO') {
+                    const reproNames = { PERIOD: 'Haid', OVULATION: 'Ovulasi', PREGNANCY: 'Kehamilan', POSTPARTUM: 'Nifas', SEXUAL: 'Hub. Seksual' };
+                    content = `
+                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td><span class="tag" style="background:#fdf2f7; color:#9d174d;">${reproNames[log.reproType] || 'REPRODUKSI'}</span></td>
+                        <td><div style="font-weight:600; color:var(--primary);">${reproNames[log.reproType]}</div></td>
+                        <td>${log.reproType === 'PERIOD' ? `<div style="font-size:0.8rem;">Flow: <strong>${log.details.flow}</strong><br>Warna: <strong>${log.details.color}</strong></div>` : 
+                              log.reproType === 'PREGNANCY' ? `<div style="font-size:0.8rem;">BB: <strong>${log.details.weight}kg</strong><br>Perut: <strong>${log.details.belly}cm</strong></div>` : '-'}
+                        </td>
+                        <td><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
+                    `;
+                } else if(log.type === 'CLINICAL') {
+                    const clinNames = { INPATIENT: 'Rawat Inap', OUTPATIENT: 'Rawat Jalan', SURGERY: 'Operasi', ER: 'IGD' };
+                    content = `
+                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td><span class="tag" style="background:#f1f5f9; color:#475569;">KLINIS/RS</span></td>
+                        <td><div style="font-weight:600; color:var(--primary);">${clinNames[log.clinicalType]}</div><div style="font-size:0.75rem; color:var(--text-muted);">${log.name}</div></td>
+                        <td><div style="font-size:0.75rem;"><i data-lucide="hospital" style="width:10px;"></i> ${log.location}<br><i data-lucide="user" style="width:10px;"></i> ${log.doc}</div></td>
+                        <td><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
+                    `;
+                } else if(log.type === 'IMM') {
+                    content = `
+                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td><span class="tag" style="background:#ecfdf5; color:#065f46;">IMUNISASI</span></td>
+                        <td><div style="font-weight:600; color:var(--primary);"><i data-lucide="shield-check" style="width:12px;"></i> ${log.name}</div><div style="font-size:0.7rem; color:var(--text-muted);">Batch: ${log.batch || '-'}</div></td>
+                        <td><div style="font-size:0.75rem;"><i data-lucide="map-pin" style="width:10px;"></i> ${log.location}<br><i data-lucide="user" style="width:10px;"></i> ${log.doc}</div></td>
+                        <td><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
+                    `;
+                } else if(log.type === 'MENTAL') {
+                    content = `
+                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td><span class="tag" style="background:#f5f3ff; color:#5b21b6;">SKRINING MENTAL</span></td>
+                        <td><div style="font-weight:600; color:var(--primary);"><i data-lucide="brain" style="width:12px;"></i> ${log.tool}</div><div style="font-size:0.75rem; color:var(--text-muted);">Skor: <strong>${log.score}</strong></div></td>
+                        <td><div style="font-weight:800; color:${log.score > 14 ? 'var(--danger)' : 'var(--success)'};">${log.result}</div></td>
+                        <td><div style="font-size:0.85rem; line-height:1.4;">${log.interpretation || '-'}</div></td>
                     `;
                 } else {
-                    const tag = `tag-${(log.indication || '').toLowerCase().replace(/ /g, '-')}`;
-                    tr.innerHTML = `
-                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.7rem">${new Date(log.timestamp).toLocaleDateString()}</div></td>
-                        <td>${log.reportName}</td>
-                        <td><div style="font-weight:600; color:var(--primary);">${log.testName}</div><div style="font-size:0.7rem; color:var(--text-muted);">${log.category}</div></td>
-                        <td>${log.value} ${log.unit}</td>
-                        <td><span class="tag ${tag}">${log.indication}</span><div style="font-size:0.7rem; margin-top:4px;">${log.suggestions}</div></td>
-                        <td><button class="btn-outline" onclick="deleteLog('${log.logId}')" style="padding:4px;"><i data-lucide="trash-2" style="width:14px; color:var(--danger);"></i></button></td>
+                    // Default for TEST/Laporan
+                    const tagClass = `tag-${(log.indication || '').toLowerCase().replace(/ /g, '-')}`;
+                    content = `
+                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td><span class="tag" style="background:#f1f5f9; color:#475569;">HASIL TES</span></td>
+                        <td><div style="font-weight:600; color:var(--primary);">${log.testName}</div><div style="font-size:0.7rem; color:var(--text-muted);">${log.category || 'Umum'}</div></td>
+                        <td><div style="font-weight:800;">${log.value} ${log.unit}</div><span class="tag ${tagClass}" style="font-size:0.6rem;">${log.indication}</span></td>
+                        <td><div style="font-size:0.8rem; line-height:1.3;"><strong>${log.reportName}</strong><br>${log.suggestions || '-'}</div></td>
                     `;
                 }
+                
+                tr.innerHTML = content + `<td><button class="btn-outline" onclick="deleteLog('${log.logId}')" style="padding:4px;"><i data-lucide="trash-2" style="width:14px; color:var(--danger);"></i></button></td>`;
                 body.appendChild(tr);
             });
             lucide.createIcons();
@@ -531,5 +978,11 @@
 
         init();
     </script>
+    
+    <nav class="sidebar-nav">
+        <a href="health-log.html" class="nav-link active"><i data-lucide="clipboard-list"></i> Log</a>
+        <a href="health-screening.html" class="nav-link"><i data-lucide="brain"></i> Skrining</a>
+        <a href="health-reference.html" class="nav-link"><i data-lucide="settings"></i> Referensi</a>
+    </nav>
 </body>
 </html>
