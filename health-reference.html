@@ -146,10 +146,12 @@
                         <button class="btn btn-primary" onclick="openModal('modalTests')"><i data-lucide="plus"></i> Tambah</button>
                     </div>
                     <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-                        <input type="text" id="searchTests" placeholder="Cari nama tes atau kategori..." oninput="renderTests()" style="flex:1;">
+                        <input type="text" id="searchTests" placeholder="Cari nama tes, kategori..." oninput="renderTests()" style="flex:1;">
                         <select id="filterTestCat" onchange="renderTests()" style="max-width:150px;">
                             <option value="">Semua Kategori</option>
                         </select>
+                        <button class="btn btn-outline" onclick="triggerReferenceImport()" style="gap:0.3rem; border-color:var(--secondary); color:var(--secondary);"><i data-lucide="file-up" style="width:14px;"></i> Impor CSV</button>
+                        <input type="file" id="referenceImportFile" style="display:none;" accept=".csv,.txt" onchange="importReferenceCSV(event)">
                     </div>
                 </div>
                 <div id="testList" class="data-grid"></div>
@@ -1256,6 +1258,60 @@
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 3000);
         }
+
+        window.triggerReferenceImport = () => {
+            document.getElementById('referenceImportFile').click();
+        };
+
+        window.importReferenceCSV = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = e.target.result;
+                const rows = text.split('\n').filter(r => r.trim() !== '');
+                if (rows.length < 2) return;
+
+                const headers = rows[0].split(/[,\t]/).map(h => h.trim().toLowerCase());
+                
+                // Column mapping based on user input
+                const mapping = {
+                    testName: headers.indexOf('test name'),
+                    unit: headers.indexOf('unit'),
+                    lowerLimit: headers.indexOf('lower limit'),
+                    lowerLimitIndicators: headers.indexOf('lower limit indicators'),
+                    lowerLimitSuggestions: headers.indexOf('lower limit suggestions'),
+                    upperLimit: headers.indexOf('upper limit'),
+                    upperLimitIndicators: headers.indexOf('upper limit indicators'),
+                    upperLimitSuggestions: headers.indexOf('upper limit suggestions'),
+                    category: headers.indexOf('category')
+                };
+
+                const newItems = rows.slice(1).map(row => {
+                    const cells = row.split(/[,\t]/).map(c => c.trim().replace(/^"|"$/g, ''));
+                    return {
+                        testName: cells[mapping.testName] || '',
+                        unit: cells[mapping.unit] || '',
+                        category: cells[mapping.category] || 'Umum',
+                        lowerLimit: cells[mapping.lowerLimit] || '',
+                        lowerLimitIndicators: cells[mapping.lowerLimitIndicators] || '',
+                        lowerLimitSuggestions: cells[mapping.lowerLimitSuggestions] || '',
+                        upperLimit: cells[mapping.upperLimit] || '',
+                        upperLimitIndicators: cells[mapping.upperLimitIndicators] || '',
+                        upperLimitSuggestions: cells[mapping.upperLimitSuggestions] || ''
+                    };
+                }).filter(i => i.testName !== '');
+
+                testData = [...newItems, ...testData];
+                saveAll();
+                renderTests();
+                updateCategoryDatalist();
+                showToast(`${newItems.length} Parameter Berhasil Diimpor`);
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        };
 
         renderTests(); renderMeds(); renderDocs(); renderClinics(); renderImm(); updateCategoryDatalist(); updateClinicDatalist(); updateSpecFilter();
     </script>

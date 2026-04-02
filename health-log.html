@@ -953,6 +953,32 @@
             }
         };
 
+        window.handleValueInput = (input) => {
+            const row = input.closest('.test-entry-row');
+            const val = parseFloat(input.value);
+            const low = parseFloat(row.dataset.low);
+            const high = parseFloat(row.dataset.high);
+            const indField = row.querySelector('.test-indication');
+            const sugField = row.querySelector('.test-suggestions');
+
+            if (isNaN(val)) {
+                indField.value = "Menunggu Data";
+                sugField.value = "";
+                return;
+            }
+
+            if (!isNaN(low) && val < low) {
+                indField.value = row.dataset.lowInd || "Rendah";
+                sugField.value = row.dataset.lowSug || "";
+            } else if (!isNaN(high) && val > high) {
+                indField.value = row.dataset.highInd || "Tinggi";
+                sugField.value = row.dataset.highSug || "";
+            } else {
+                indField.value = "Normal";
+                sugField.value = "";
+            }
+        };
+
         // --- CONSULTATION LOGIC ---
         let currentPrescriptions = [];
         window.addPrescription = () => {
