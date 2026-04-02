@@ -116,6 +116,14 @@
             .profile-switcher { width: 100%; justify-content: space-between; margin-bottom: 0.5rem; }
             header { flex-direction: column; align-items: flex-start; }
             .sidebar-nav { width: calc(100% - 1rem); max-width: 500px; justify-content: space-between; padding: 0.75rem 1rem; min-width: auto; gap: 0; bottom: 1rem; }
+
+            .table-container { background: transparent; border: none; box-shadow: none; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { position: absolute; top: -9999px; left: -9999px; }
+            tr { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 1.25rem; padding: 1rem; box-shadow: var(--shadow-sm); }
+            td { border: none; border-bottom: 1px solid #f1f5f9; position: relative; padding-left: 0; padding-top: 1.5rem; }
+            td:last-child { border-bottom: none; }
+            td::before { content: attr(data-label); position: absolute; top: 0; left: 0; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
             .container { padding-bottom: 6rem; }
         }
     </style>
@@ -147,22 +155,31 @@
             </div>
         </header>
 
-        <div class="tab-container" style="display:flex; gap:0.5rem; margin-bottom:2rem; background:#f1f5f9; padding:0.4rem; border-radius:14px; overflow-x:auto;">
-            <button class="tab-btn active" id="tabConsult" onclick="switchTab('consult')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:white; font-weight:700; cursor:pointer; min-width:max-content; white-space:nowrap;"><i data-lucide="hand-metal"></i> Konsultasi</button>
-            <button class="tab-btn" id="tabTests" onclick="switchTab('tests')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="clipboard-list"></i> Hasil Tes</button>
-            <button class="tab-btn" id="tabMeds" onclick="switchTab('meds')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="pill"></i> Minum Obat</button>
-            <button class="tab-btn" id="tabSymptoms" onclick="switchTab('symptoms')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="activity"></i> Gejala & Kondisi</button>
-            <button class="tab-btn" id="tabRepro" onclick="switchTab('repro')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="heart"></i> Reproduksi/Haid</button>
-            <button class="tab-btn" id="tabClinical" onclick="switchTab('clinical')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="hospital"></i> Klinik/RS</button>
-            <button class="tab-btn" id="tabImm" onclick="switchTab('imm')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="shield-check"></i> Imunisasi</button>
-            <button class="tab-btn" id="tabNutrition" onclick="switchTab('nutrition')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="coffee"></i> Nutrisi/Makan</button>
-            <button class="tab-btn" id="tabLactation" onclick="switchTab('lactation')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="baby"></i> Menyusui</button>
-            <button class="tab-btn" id="tabFasting" onclick="switchTab('fasting')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="moon"></i> Puasa</button>
-            <button class="tab-btn" id="tabSleep" onclick="switchTab('sleep')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="bed-double"></i> Tidur</button>
-            <button class="tab-btn" id="tabFitness" onclick="switchTab('fitness')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="dumbbell"></i> Aktivitas Fisik</button>
-            <button class="tab-btn" id="tabSteps" onclick="switchTab('steps')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="footprints"></i> Langkah</button>
-            <button class="tab-btn" id="tabKMS" onclick="switchTab('kms')" style="padding:0.75rem 1rem; border-radius:10px; border:none; background:transparent; font-weight:700; cursor:pointer; color:var(--text-muted); min-width:max-content; white-space:nowrap;"><i data-lucide="line-chart"></i> KMS Anak</button>
+        <div class="card" style="padding: 1.5rem; margin-bottom: 2.5rem; border-color: var(--primary); border-width: 2px; position: relative; overflow: visible;">
+            <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i data-lucide="plus-circle" style="width: 14px;"></i> Tambah Rekam Medis Baru
+            </div>
+            <div style="position: relative;">
+                <i data-lucide="search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 18px;"></i>
+                <input type="text" id="logSearchInput" placeholder="Cari tipe input (misal: Obat, Dokter, Lab, Tidur...)" 
+                       style="padding-left: 2.8rem; border-radius: 30px; border: 2px solid var(--border); font-size: 1rem;"
+                       onfocus="showLogSuggestions()" oninput="filterLogSuggestions()">
+                
+                <div id="logSuggestions" class="profile-menu" style="width: 100%; top: calc(100% + 8px); left: 0; padding: 0.8rem; max-height: 400px; overflow-y: auto;">
+                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; padding: 0.5rem; text-transform: uppercase;">Pilih Kategori Input</div>
+                    <div id="logSuggestionsList">
+                        <!-- Types will be injected here -->
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <div id="inputSections" style="display: none;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <button class="btn btn-outline" onclick="closeInputSection()" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 20px;">
+                    <i data-lucide="arrow-left" style="width: 14px;"></i> Batal / Tutup Input
+                </button>
+            </div>
 
         <main>
             <!-- SECTION: DOCTOR CONSULTATION -->
@@ -738,27 +755,92 @@
             }
         }
 
-        window.switchTab = (type) => {
-            document.querySelectorAll('.log-section').forEach(s => s.style.display = 'none');
-            document.querySelectorAll('.tab-btn').forEach(b => {
-                b.style.background = 'transparent';
-                b.style.color = 'var(--text-muted)';
-                b.classList.remove('active');
-            });
+        const LOG_CATEGORIES = [
+            { id: 'consult', name: 'Konsultasi Dokter', icon: 'user-check', keywords: 'dokter consult periksa sakit' },
+            { id: 'tests', name: 'Hasil Tes Lab', icon: 'clipboard-list', keywords: 'lab darah urin kolesterol gula' },
+            { id: 'meds', name: 'Minum Obat', icon: 'pill', keywords: 'obat puyer sirup kapsul tablet' },
+            { id: 'symptoms', name: 'Gejala & Kondisi', icon: 'thermometer', keywords: 'sakit pusing demam mual gejala injury' },
+            { id: 'repro', name: 'Reproduksi / Haid', icon: 'heart', keywords: 'haid menstruasi period hamil nifas' },
+            { id: 'clinical', name: 'Klinik / RS', icon: 'hospital', keywords: 'opname rawat jalan inap operasi' },
+            { id: 'imm', name: 'Imunisasi / Vaksin', icon: 'shield-check', keywords: 'vaksin imunisasi booster campak flu' },
+            { id: 'nutrition', name: 'Nutrisi / Makan', icon: 'coffee', keywords: 'makan kalori gizi diet' },
+            { id: 'lactation', name: 'Menyusui / Pumping', icon: 'baby', keywords: 'asi menyusu pumping botol asip' },
+            { id: 'fasting', name: 'Puasa', icon: 'moon', keywords: 'puasa ramadhan intermittent' },
+            { id: 'sleep', name: 'Tidur', icon: 'bed-double', keywords: 'tidur sleep istirahat' },
+            { id: 'fitness', name: 'Olahraga / Fisik', icon: 'dumbbell', keywords: 'gym lari fisik workout' },
+            { id: 'steps', name: 'Langkah Kaki', icon: 'footprints', keywords: 'jalan langkah step pedometer' },
+            { id: 'kms', name: 'KMS Anak', icon: 'line-chart', keywords: 'anak bayi tumbuh kembang kms bb tb' }
+        ];
 
-            const targetSection = 'section' + type.charAt(0).toUpperCase() + type.slice(1);
-            const targetTab = 'tab' + type.charAt(0).toUpperCase() + type.slice(1);
+        window.showLogSuggestions = () => {
+            const container = document.getElementById('logSuggestions');
+            container.style.display = 'block';
+            filterLogSuggestions();
+        };
+
+        window.filterLogSuggestions = () => {
+            const query = document.getElementById('logSearchInput').value.toLowerCase();
+            const list = document.getElementById('logSuggestionsList');
+            list.innerHTML = '';
             
-            const s = document.getElementById(targetSection);
-            const t = document.getElementById(targetTab);
-            if(s) s.style.display = 'block';
-            if(t) {
-                t.style.background = 'white';
-                t.style.color = 'var(--text-main)';
-                t.classList.add('active');
+            const filtered = LOG_CATEGORIES.filter(c => 
+                c.name.toLowerCase().includes(query) || c.keywords.toLowerCase().includes(query)
+            );
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.8rem;">Tidak menemukan kategori "${query}"...</div>`;
+                return;
+            }
+
+            filtered.forEach(c => {
+                const opt = document.createElement('div');
+                opt.className = 'profile-opt';
+                opt.innerHTML = `<i data-lucide="${c.icon}" style="width:16px;"></i> ${c.name}`;
+                opt.onclick = () => selectCategory(c.id);
+                list.appendChild(opt);
+            });
+            lucide.createIcons();
+        };
+
+        window.selectCategory = (id) => {
+            document.getElementById('logSuggestions').style.display = 'none';
+            document.getElementById('inputSections').style.display = 'block';
+            document.getElementById('logSearchInput').value = '';
+            
+            // Hide all sections first
+            document.querySelectorAll('.log-section').forEach(s => s.style.display = 'none');
+            
+            // Show the target section
+            const target = 'section' + id.charAt(0).toUpperCase() + id.slice(1);
+            const el = document.getElementById(target);
+            if(el) {
+                el.style.display = 'block';
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
             lucide.createIcons();
-        }
+        };
+
+        window.closeInputSection = () => {
+            document.getElementById('inputSections').style.display = 'none';
+            document.querySelectorAll('.log-section').forEach(s => s.style.display = 'none');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        // Close suggestions when clicking outside
+        window.addEventListener('click', (e) => {
+            const sugg = document.getElementById('logSuggestions');
+            const input = document.getElementById('logSearchInput');
+            if (sugg && !sugg.contains(e.target) && e.target !== input) {
+                sugg.style.display = 'none';
+            }
+        });
+
+        // Initialize suggestions on load
+        document.addEventListener('DOMContentLoaded', () => {
+            // ... already hidden in HTML
+        });
+
+        window.switchTab = (type) => selectCategory(type);
 
         document.getElementById('logMedName').addEventListener('input', (e) => {
             const meds = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
@@ -1087,79 +1169,88 @@
                 
                 if(log.type === 'CONSULT') {
                     content = `
-                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td><span class="tag" style="background:#eef2ff; color:#4f46e5;">KONSULTASI</span></td>
-                        <td><div style="font-weight:600; color:var(--primary);"><i data-lucide="user-check" style="width:12px;"></i> ${log.doc}</div><div style="font-size:0.75rem; color:var(--text-muted);"><i data-lucide="map-pin" style="width:12px;"></i> ${log.location}</div></td>
-                        <td><div style="font-size:0.85rem; font-weight:700;">Preskripsi:</div>
+                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td data-label="Kategori"><span class="tag" style="background:#eef2ff; color:#4f46e5;">KONSULTASI</span></td>
+                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);"><i data-lucide="user-check" style="width:12px;"></i> ${log.doc}</div><div style="font-size:0.75rem; color:var(--text-muted);"><i data-lucide="map-pin" style="width:12px;"></i> ${log.location}</div></td>
+                        <td data-label="Hasil"><div style="font-size:0.85rem; font-weight:700;">Preskripsi:</div>
                             ${(log.prescriptions || []).map(p => `<div style="font-size:0.8rem; color:var(--success); font-weight:600;">• ${p.name} (${p.qty})</div>`).join('') || '-'}
                         </td>
-                        <td><div style="font-size:0.85rem; line-height:1.4;">${log.notes || '-'}</div></td>
+                        <td data-label="Catatan"><div style="font-size:0.85rem; line-height:1.4;">${log.notes || '-'}</div></td>
                     `;
                 } else if(log.type === 'MEDICINE') {
                     content = `
-                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td><span class="tag" style="background:#f0fdf4; color:#166534;">MINUM OBAT</span></td>
-                        <td><div style="font-weight:600; color:var(--primary);"><i data-lucide="pill" style="width:12px;"></i> ${log.medName}</div></td>
-                        <td><div style="font-weight:700;">${log.qty} ${log.unit || ''}</div></td>
-                        <td><div style="font-size:0.85rem;">${log.notes || 'Rutin.'}</div></td>
+                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td data-label="Kategori"><span class="tag" style="background:#f0fdf4; color:#166534;">MINUM OBAT</span></td>
+                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);"><i data-lucide="pill" style="width:12px;"></i> ${log.medName}</div></td>
+                        <td data-label="Hasil"><div style="font-weight:700;">${log.qty} ${log.unit || ''}</div></td>
+                        <td data-label="Catatan"><div style="font-size:0.85rem;">${log.notes || 'Rutin.'}</div></td>
                     `;
                 } else if(log.type === 'SYMPTOM') {
                     content = `
-                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td><span class="tag" style="background:#fffbeb; color:#92400e;">GEJALA</span></td>
-                        <td><div style="font-weight:600; color:var(--primary);">${log.name}</div><div style="font-size:0.75rem; color:var(--text-muted);">Status: ${log.status}</div></td>
-                        <td><div style="font-weight:700; color:${log.severity > 7 ? 'var(--danger)' : 'var(--warning)'};">Skala: ${log.severity}/10</div></td>
-                        <td><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
+                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td data-label="Kategori"><span class="tag" style="background:#fffbeb; color:#92400e;">GEJALA</span></td>
+                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);">${log.name}</div><div style="font-size:0.75rem; color:var(--text-muted);">Status: ${log.status}</div></td>
+                        <td data-label="Hasil"><div style="font-weight:700; color:${log.severity > 7 ? 'var(--danger)' : 'var(--warning)'};">Skala: ${log.severity}/10</div></td>
+                        <td data-label="Catatan"><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
                     `;
                 } else if(log.type === 'REPRO') {
                     const reproNames = { PERIOD: 'Haid', OVULATION: 'Ovulasi', PREGNANCY: 'Kehamilan', POSTPARTUM: 'Nifas', SEXUAL: 'Hub. Seksual' };
                     content = `
-                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td><span class="tag" style="background:#fdf2f7; color:#9d174d;">${reproNames[log.reproType] || 'REPRODUKSI'}</span></td>
-                        <td><div style="font-weight:600; color:var(--primary);">${reproNames[log.reproType]}</div></td>
-                        <td>${log.reproType === 'PERIOD' ? `<div style="font-size:0.8rem;">Flow: <strong>${log.details.flow}</strong><br>Warna: <strong>${log.details.color}</strong></div>` : 
-                              log.reproType === 'PREGNANCY' ? `<div style="font-size:0.8rem;">BB: <strong>${log.details.weight}kg</strong><br>Perut: <strong>${log.details.belly}cm</strong></div>` : '-'}
+                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td data-label="Kategori"><span class="tag" style="background:#fdf2f7; color:#9d174d;">${reproNames[log.reproType] || 'REPRODUKSI'}</span></td>
+                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);">${reproNames[log.reproType]}</div></td>
+                        <td data-label="Hasil">${log.reproType === 'PERIOD' ? `<div style="font-size:0.8rem;">Flow: <strong>${log.details.flow}</strong><br>Warna: <strong>${log.details.color}</strong></div>` : 
+                               log.reproType === 'PREGNANCY' ? `<div style="font-size:0.8rem;">BB: <strong>${log.details.weight}kg</strong><br>Perut: <strong>${log.details.belly}cm</strong></div>` : '-'}
                         </td>
-                        <td><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
+                        <td data-label="Catatan"><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
                     `;
                 } else if(log.type === 'CLINICAL') {
                     const clinNames = { INPATIENT: 'Rawat Inap', OUTPATIENT: 'Rawat Jalan', SURGERY: 'Operasi', ER: 'IGD' };
                     content = `
-                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td><span class="tag" style="background:#f1f5f9; color:#475569;">KLINIS/RS</span></td>
-                        <td><div style="font-weight:600; color:var(--primary);">${clinNames[log.clinicalType]}</div><div style="font-size:0.75rem; color:var(--text-muted);">${log.name}</div></td>
-                        <td><div style="font-size:0.75rem;"><i data-lucide="hospital" style="width:10px;"></i> ${log.location}<br><i data-lucide="user" style="width:10px;"></i> ${log.doc}</div></td>
-                        <td><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
+                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td data-label="Kategori"><span class="tag" style="background:#f1f5f9; color:#475569;">KLINIS/RS</span></td>
+                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);">${clinNames[log.clinicalType]}</div><div style="font-size:0.75rem; color:var(--text-muted);">${log.name}</div></td>
+                        <td data-label="Hasil"><div style="font-size:0.75rem;"><i data-lucide="hospital" style="width:10px;"></i> ${log.location}<br><i data-lucide="user" style="width:10px;"></i> ${log.doc}</div></td>
+                        <td data-label="Catatan"><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
                     `;
                 } else if(log.type === 'IMM') {
                     content = `
-                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td><span class="tag" style="background:#ecfdf5; color:#065f46;">IMUNISASI</span></td>
-                        <td><div style="font-weight:600; color:var(--primary);"><i data-lucide="shield-check" style="width:12px;"></i> ${log.name}</div><div style="font-size:0.7rem; color:var(--text-muted);">Batch: ${log.batch || '-'}</div></td>
-                        <td><div style="font-size:0.75rem;"><i data-lucide="map-pin" style="width:10px;"></i> ${log.location}<br><i data-lucide="user" style="width:10px;"></i> ${log.doc}</div></td>
-                        <td><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
+                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td data-label="Kategori"><span class="tag" style="background:#ecfdf5; color:#065f46;">IMUNISASI</span></td>
+                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);"><i data-lucide="shield-check" style="width:12px;"></i> ${log.name}</div><div style="font-size:0.7rem; color:var(--text-muted);">Batch: ${log.batch || '-'}</div></td>
+                        <td data-label="Hasil"><div style="font-size:0.75rem;"><i data-lucide="map-pin" style="width:10px;"></i> ${log.location}<br><i data-lucide="user" style="width:10px;"></i> ${log.doc}</div></td>
+                        <td data-label="Catatan"><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
                     `;
                 } else if(log.type === 'MENTAL') {
                     content = `
-                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td><span class="tag" style="background:#f5f3ff; color:#5b21b6;">SKRINING MENTAL</span></td>
-                        <td><div style="font-weight:600; color:var(--primary);"><i data-lucide="brain" style="width:12px;"></i> ${log.tool}</div><div style="font-size:0.75rem; color:var(--text-muted);">Skor: <strong>${log.score}</strong></div></td>
-                        <td><div style="font-weight:800; color:${log.score > 14 ? 'var(--danger)' : 'var(--success)'};">${log.result}</div></td>
-                        <td><div style="font-size:0.85rem; line-height:1.4;">${log.interpretation || '-'}</div></td>
+                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td data-label="Kategori"><span class="tag" style="background:#f5f3ff; color:#5b21b6;">SKRINING MENTAL</span></td>
+                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);"><i data-lucide="brain" style="width:12px;"></i> ${log.tool}</div><div style="font-size:0.75rem; color:var(--text-muted);">Skor: <strong>${log.score}</strong></div></td>
+                        <td data-label="Hasil"><div style="font-weight:800; color:${log.score > 14 ? 'var(--danger)' : 'var(--success)'};">${log.result}</div></td>
+                        <td data-label="Catatan"><div style="font-size:0.85rem; line-height:1.4;">${log.interpretation || '-'}</div></td>
+                    `;
+                } else if(log.type === 'GENERIC' || log.testName) {
+                    // Default for TEST/Laporan or Generic
+                    const tagClass = log.testName ? `tag-${(log.indication || '').toLowerCase().replace(/ /g, '-')}` : 'tag-normal';
+                    content = `
+                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td data-label="Kategori"><span class="tag" style="background:#f1f5f9; color:#475569;">${log.testName ? 'HASIL TES' : log.category || 'AKTIVITAS'}</span></td>
+                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);">${log.testName || log.name}</div><div style="font-size:0.7rem; color:var(--text-muted);">${log.category || 'Umum'}</div></td>
+                        <td data-label="Hasil"><div style="font-weight:800;">${log.value} ${log.unit}</div>${log.indication ? `<span class="tag ${tagClass}" style="font-size:0.6rem;">${log.indication}</span>` : ''}</td>
+                        <td data-label="Catatan"><div style="font-size:0.8rem; line-height:1.3;"><strong>${log.reportName || ''}</strong><br>${log.suggestions || log.notes || '-'}</div></td>
                     `;
                 } else {
-                    // Default for TEST/Laporan
-                    const tagClass = `tag-${(log.indication || '').toLowerCase().replace(/ /g, '-')}`;
+                    // Fallback
                     content = `
-                        <td><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td><span class="tag" style="background:#f1f5f9; color:#475569;">HASIL TES</span></td>
-                        <td><div style="font-weight:600; color:var(--primary);">${log.testName}</div><div style="font-size:0.7rem; color:var(--text-muted);">${log.category || 'Umum'}</div></td>
-                        <td><div style="font-weight:800;">${log.value} ${log.unit}</div><span class="tag ${tagClass}" style="font-size:0.6rem;">${log.indication}</span></td>
-                        <td><div style="font-size:0.8rem; line-height:1.3;"><strong>${log.reportName}</strong><br>${log.suggestions || '-'}</div></td>
+                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
+                        <td data-label="Kategori"><span class="tag">${log.type}</span></td>
+                        <td data-label="Detail">${log.name || '-'}</td>
+                        <td data-label="Hasil">${log.value || '-'}</td>
+                        <td data-label="Catatan">${log.notes || '-'}</td>
                     `;
                 }
                 
-                tr.innerHTML = content + `<td><button class="btn-outline" onclick="deleteLog('${log.logId}')" style="padding:4px;"><i data-lucide="trash-2" style="width:14px; color:var(--danger);"></i></button></td>`;
+                tr.innerHTML = content + `<td data-label="Aksi"><button class="btn-outline" onclick="deleteLog('${log.logId}')" style="padding:4px;"><i data-lucide="trash-2" style="width:14px; color:var(--danger);"></i></button></td>`;
                 body.appendChild(tr);
             });
             lucide.createIcons();
