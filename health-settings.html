@@ -86,7 +86,7 @@
     <div class="container">
         <header>
             <div class="brand-icon"><i data-lucide="settings"></i></div>
-            <h1>Pengaturan <span class="version-badge">v1.3.0 &bull; Update: 2 Apr 2026</span></h1>
+            <h1>Pengaturan <span class="version-badge">v1.3.1 &bull; Update: 2 Apr 2026</span></h1>
             <p>Kelola data aplikasi dan preferensi sistem Anda.</p>
         </header>
 
@@ -95,21 +95,24 @@
             
             <div class="setting-item">
                 <div class="setting-info">
-                    <div class="setting-title">Ekspor Semua Data</div>
-                    <div class="setting-desc">Unduh seluruh Log Kesehatan, Skrining Mental, dan Sentra Referensi Anda dalam format terlisensi (JSON). Berguna untuk pencadangan (*backup*).</div>
+                    <div class="setting-title">Pencadangan Data (JSON)</div>
+                    <div class="setting-desc">Unduh seluruh Log Kesehatan, Skrining Mental, dan Sentra Referensi Anda dalam format JSON atau pulihkan dari berkas yang ada.</div>
                 </div>
-                <div>
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
                     <button class="btn btn-outline" onclick="exportData()"><i data-lucide="download"></i> Ekspor (JSON)</button>
+                    <button class="btn btn-outline" onclick="triggerImport()"><i data-lucide="upload"></i> Pulihkan dari File</button>
+                    <input type="file" id="importFile" style="display:none;" onchange="importData(event)" accept=".json">
                 </div>
             </div>
 
             <div class="setting-item">
                 <div class="setting-info">
                     <div class="setting-title">Sinkronisasi Cloud (Google Sheets)</div>
-                    <div class="setting-desc">Kirim seluruh riwayat data lokal ke URL Google Apps Script Anda sebagai *backup* sentral.</div>
+                    <div class="setting-desc">Kirim seluruh riwayat data lokal ke URL Google Apps Script Anda sebagai *backup* sentral atau unduh data yang tersimpan di Cloud ke perangkat ini.</div>
                 </div>
-                <div>
-                    <button class="btn btn-primary" onclick="syncToCloud()" id="btnSync"><i data-lucide="cloud-upload"></i> Mulai Sinkronisasi</button>
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="syncToCloud()" id="btnSync"><i data-lucide="cloud-upload"></i> Unggah ke Cloud</button>
+                    <button class="btn btn-outline" onclick="downloadFromCloud()" id="btnDownload"><i data-lucide="cloud-download"></i> Unduh dari Cloud</button>
                 </div>
             </div>
 
@@ -133,11 +136,13 @@
                     <div class="setting-desc" style="white-space: pre-line;">
                         Aplikasi Pencatatan dan Manajemen Kesehatan Keluarga Modern.
                         
-                        <strong>Versi:</strong> 1.3.0
+                        <strong>Versi:</strong> 1.3.1
                         <strong>Update Terakhir:</strong> 2 April 2026
                         <strong>Engine:</strong> HTML5 LocalStorage + JS DOM API
                         
-                        Pembaruan Terkini (v1.3):
+                        Pembaruan Terkini (v1.3.1):
+                        - Fitur Pencadangan Cloud Bi-Directional (Unggah & Unduh)
+                        - Pemulihan Data Manual via Berkas JSON
                         - Skrining Mental Terintegrasi (PHQ-9, DASS-21, MBTI)
                         - Pembaruan UI/UX Dinamis dan Animasi Responsif
                         - Penyempurnaan Sinkronisasi Log Konsultasi dan Resep Obat
@@ -187,6 +192,38 @@
             showToast("Data berhasil diekspor.");
         };
 
+        window.triggerImport = () => {
+            document.getElementById('importFile').click();
+        };
+
+        window.importData = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    const confirmRestore = confirm("⚠️ PERINGATAN: Memulihkan dari berkas akan menggantikan seluruh data lokal saat ini. Lanjutkan?");
+                    if (!confirmRestore) return;
+
+                    if (data.health_logs) localStorage.setItem('health_logs', JSON.stringify(data.health_logs));
+                    if (data.health_profiles) localStorage.setItem('health_profiles', JSON.stringify(data.health_profiles));
+                    if (data.health_reference_data) localStorage.setItem('health_reference_data', JSON.stringify(data.health_reference_data));
+                    if (data.health_meds_data) localStorage.setItem('health_meds_data', JSON.stringify(data.health_meds_data));
+                    if (data.health_docs_data) localStorage.setItem('health_docs_data', JSON.stringify(data.health_docs_data));
+                    if (data.health_clinics_data) localStorage.setItem('health_clinics_data', JSON.stringify(data.health_clinics_data));
+                    if (data.health_imm_data) localStorage.setItem('health_imm_data', JSON.stringify(data.health_imm_data));
+
+                    showToast("Data berhasil dipulihkan dari berkas!");
+                    setTimeout(() => window.location.reload(), 1500);
+                } catch (err) {
+                    alert("Berkas tidak valid atau rusak.");
+                }
+            };
+            reader.readAsText(file);
+        };
+
         window.factoryReset = () => {
             const confirm1 = confirm("⚠️ PERINGATAN: Anda akan menghapus SELURUH Log Medis, Referensi Kesehatan, Obat, dan Skrining secara permanen di perangkat ini.");
             if (confirm1) {
@@ -226,22 +263,70 @@
 
             const btn = document.getElementById('btnSync');
             const originalText = btn.innerHTML;
-            btn.innerHTML = `<i data-lucide="loader" class="rotating"></i> Menyinkronkan...`;
+            btn.innerHTML = `<i data-lucide="loader" class="rotating"></i> Mengirim...`;
             btn.disabled = true;
 
             try {
-                const response = await fetch(url, {
+                // Post to GAS. Note: no-cors is used to bypass pre-flight check but limited response
+                await fetch(url, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ payload: allData })
                 });
 
-                showToast("Berhasil mengirim data ke Google Spreadsheet!");
+                showToast("Data hasil cadangan telah diunggah ke Cloud!");
             } catch (err) {
-                showToast("Galat koneksi ke Cloud.");
+                showToast("Gagal mengunggah data ke Cloud.");
+                console.error(err);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                lucide.createIcons();
+            }
+        };
+
+        window.downloadFromCloud = async () => {
+            const url = localStorage.getItem('familyhealth_appscript_url');
+            if (!url) {
+                alert("URL Cloud belum diatur. Silakan buka ulang aplikasi dari halaman awal untuk memindai QR code.");
+                return;
+            }
+
+            const confirmRestore = confirm("⚠️ PERHATIAN: Mengunduh data dari Cloud akan menggantikan seluruh data lokal saat ini. Lanjutkan?");
+            if (!confirmRestore) return;
+
+            const btn = document.getElementById('btnDownload');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="loader" class="rotating"></i> Mengunduh...`;
+            btn.disabled = true;
+
+            try {
+                // Fetch from GAS. Because doGet returns JSON and uses redirects, we need to handle it.
+                // Note: Apps Script web apps usually handle CORS for GET requests fine if set up correctly.
+                const response = await fetch(url + '?_t=' + Date.now()); // Date.now to avoid cache
+                const result = await response.json();
+
+                if (result.status === "success" && result.data) {
+                    const data = result.data.payload || result.data; // Handle different structures if any
+                    
+                    // Populate localStorage
+                    if (data.health_logs) localStorage.setItem('health_logs', JSON.stringify(data.health_logs));
+                    if (data.health_profiles) localStorage.setItem('health_profiles', JSON.stringify(data.health_profiles));
+                    if (data.health_reference_data) localStorage.setItem('health_reference_data', JSON.stringify(data.health_reference_data));
+                    if (data.health_meds_data) localStorage.setItem('health_meds_data', JSON.stringify(data.health_meds_data));
+                    if (data.health_docs_data) localStorage.setItem('health_docs_data', JSON.stringify(data.health_docs_data));
+                    if (data.health_clinics_data) localStorage.setItem('health_clinics_data', JSON.stringify(data.health_clinics_data));
+                    if (data.health_imm_data) localStorage.setItem('health_imm_data', JSON.stringify(data.health_imm_data));
+
+                    showToast("Pencadangan berhasil diunduh dan dipulihkan!");
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    showToast("Tidak ada data ditemukan di Cloud.");
+                }
+            } catch (err) {
+                showToast("Gagal mengunduh data. Pastikan Apps Script diatur untuk akses 'Anyone'.");
+                console.error(err);
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
