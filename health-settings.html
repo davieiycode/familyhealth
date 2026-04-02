@@ -83,6 +83,15 @@
     </style>
 </head>
 <body>
+    <div class="profile-switcher" onclick="toggleProfileMenu(event)" style="z-index: 1300; display: flex; align-items: center; gap: 0.5rem; background: white; padding: 0.4rem 1rem; border-radius: 30px; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; position: fixed; top: 1.5rem; right: 1.5rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-sm);">
+        <div class="profile-avatar" id="activeAvatarTop" style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem;">U</div>
+        <span id="activeProfileNameTop" style="font-size:0.85rem; font-weight:600;">Utama</span>
+        <div class="profile-menu" id="profileMenuMain" style="position:absolute; top:45px; right:0; background:white; border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow-md); display:none; padding:0.5rem; width:200px; text-align:left; z-index: 1301;">
+            <div id="profileOptionsListMain"></div>
+            <div style="border-top:1px solid var(--border); margin:5px 0;"></div>
+            <a href="health-profiles.html" style="text-decoration:none; padding:0.5rem; display:flex; align-items:center; gap:0.5rem; color:var(--text-muted); font-size:0.8rem;"><i data-lucide="users" style="width:14px;"></i> Kelola Profil</a>
+        </div>
+    </div>
     <div class="container">
         <header>
             <div class="brand-icon"><i data-lucide="settings"></i></div>
@@ -165,18 +174,56 @@
     <div id="toast">Operasi Berhasil.</div>
 
     <script>
-        lucide.createIcons();
+        const profiles = JSON.parse(localStorage.getItem('health_profiles') || '["Utama"]');
+        let activeProfile = localStorage.getItem('active_health_profile') || 'Utama';
+
+        function setupProfiles() {
+            const listM = document.getElementById('profileOptionsListMain');
+            if(listM) {
+                listM.innerHTML = profiles.map(p => `
+                    <div style="padding:0.6rem; border-radius:8px; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:0.5rem; ${p === activeProfile ? 'background:var(--primary-light); color:var(--primary); font-weight:700;' : 'color:var(--text-muted);'}" onclick="switchProfile('${p}')">
+                        <i data-lucide="user" style="width:14px;"></i> ${p}
+                    </div>
+                `).join('');
+            }
+            if(document.getElementById('activeProfileNameTop')) document.getElementById('activeProfileNameTop').innerText = activeProfile;
+            if(document.getElementById('activeAvatarTop')) document.getElementById('activeAvatarTop').innerText = activeProfile.charAt(0);
+        }
+
+        window.toggleProfileMenu = (e) => {
+            e.stopPropagation();
+            const m = document.getElementById('profileMenuMain');
+            if(m) m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        };
+
+        window.switchProfile = (name) => {
+            localStorage.setItem('active_health_profile', name);
+            location.reload();
+        };
+
+        window.onclick = () => {
+            const m = document.getElementById('profileMenuMain');
+            if(m) m.style.display = 'none';
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupProfiles();
+            lucide.createIcons();
+        });
 
         function showToast(msg) {
-            document.getElementById('toast').innerText = msg;
-            document.getElementById('toast').classList.add('active');
-            setTimeout(() => document.getElementById('toast').classList.remove('active'), 3000);
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.add('active');
+            setTimeout(() => toast.classList.remove('active'), 3000);
         }
 
         window.exportData = () => {
             const allData = {
                 health_logs: JSON.parse(localStorage.getItem('health_logs') || '[]'),
                 health_profiles: JSON.parse(localStorage.getItem('health_profiles') || '[]'),
+                health_profiles_v2: JSON.parse(localStorage.getItem('health_profiles_v2') || '[]'),
+                health_emergency_contacts: JSON.parse(localStorage.getItem('health_emergency_contacts') || '[]'),
                 health_reference_data: JSON.parse(localStorage.getItem('health_reference_data') || '[]'),
                 health_meds_data: JSON.parse(localStorage.getItem('health_meds_data') || '[]'),
                 health_docs_data: JSON.parse(localStorage.getItem('health_docs_data') || '[]'),
@@ -209,6 +256,8 @@
 
                     if (data.health_logs) localStorage.setItem('health_logs', JSON.stringify(data.health_logs));
                     if (data.health_profiles) localStorage.setItem('health_profiles', JSON.stringify(data.health_profiles));
+                    if (data.health_profiles_v2) localStorage.setItem('health_profiles_v2', JSON.stringify(data.health_profiles_v2));
+                    if (data.health_emergency_contacts) localStorage.setItem('health_emergency_contacts', JSON.stringify(data.health_emergency_contacts));
                     if (data.health_reference_data) localStorage.setItem('health_reference_data', JSON.stringify(data.health_reference_data));
                     if (data.health_meds_data) localStorage.setItem('health_meds_data', JSON.stringify(data.health_meds_data));
                     if (data.health_docs_data) localStorage.setItem('health_docs_data', JSON.stringify(data.health_docs_data));
@@ -254,6 +303,8 @@
             const allData = {
                 health_logs: JSON.parse(localStorage.getItem('health_logs') || '[]'),
                 health_profiles: JSON.parse(localStorage.getItem('health_profiles') || '[]'),
+                health_profiles_v2: JSON.parse(localStorage.getItem('health_profiles_v2') || '[]'),
+                health_emergency_contacts: JSON.parse(localStorage.getItem('health_emergency_contacts') || '[]'),
                 health_reference_data: JSON.parse(localStorage.getItem('health_reference_data') || '[]'),
                 health_meds_data: JSON.parse(localStorage.getItem('health_meds_data') || '[]'),
                 health_docs_data: JSON.parse(localStorage.getItem('health_docs_data') || '[]'),
@@ -313,6 +364,8 @@
                     // Populate localStorage
                     if (data.health_logs) localStorage.setItem('health_logs', JSON.stringify(data.health_logs));
                     if (data.health_profiles) localStorage.setItem('health_profiles', JSON.stringify(data.health_profiles));
+                    if (data.health_profiles_v2) localStorage.setItem('health_profiles_v2', JSON.stringify(data.health_profiles_v2));
+                    if (data.health_emergency_contacts) localStorage.setItem('health_emergency_contacts', JSON.stringify(data.health_emergency_contacts));
                     if (data.health_reference_data) localStorage.setItem('health_reference_data', JSON.stringify(data.health_reference_data));
                     if (data.health_meds_data) localStorage.setItem('health_meds_data', JSON.stringify(data.health_meds_data));
                     if (data.health_docs_data) localStorage.setItem('health_docs_data', JSON.stringify(data.health_docs_data));

@@ -105,7 +105,16 @@
         }
     </style>
 </head>
-<body>
+<body style="padding-bottom: 8rem;">
+    <div class="profile-switcher" onclick="toggleProfileMenu(event)" style="z-index: 1300; display: flex; align-items: center; gap: 0.5rem; background: white; padding: 0.4rem 1rem; border-radius: 30px; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; position: fixed; top: 1.5rem; right: 1.5rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-sm);">
+        <div class="profile-avatar" id="activeAvatarTop" style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem;">U</div>
+        <span id="activeProfileNameTop" style="font-size:0.85rem; font-weight:600;">Utama</span>
+        <div class="profile-menu" id="profileMenuMain" style="position:absolute; top:45px; right:0; background:white; border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow-md); display:none; padding:0.5rem; width:200px; text-align:left; z-index: 1301;">
+            <div id="profileOptionsListMain"></div>
+            <div style="border-top:1px solid var(--border); margin:5px 0;"></div>
+            <a href="health-profiles.html" style="text-decoration:none; padding:0.5rem; display:flex; align-items:center; gap:0.5rem; color:var(--text-muted); font-size:0.8rem;"><i data-lucide="users" style="width:14px;"></i> Kelola Profil</a>
+        </div>
+    </div>
 
     <div class="container" style="padding-bottom: 8rem;">
         <header style="margin-bottom: 2.5rem; transition: all 0.3s ease;">
@@ -566,14 +575,49 @@
     <div id="toast">Data Berhasil Disimpan!</div>
 
     <script>
-        lucide.createIcons();
+        const profiles = JSON.parse(localStorage.getItem('health_profiles') || '["Utama"]');
+        let activeProfile = localStorage.getItem('active_health_profile') || 'Utama';
 
-        // Global Data Storage
-        window.testData = JSON.parse(localStorage.getItem('health_reference_data') || '[]');
-        window.medsData = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
-        window.docsData = JSON.parse(localStorage.getItem('health_docs_data') || '[]');
-        window.clinicsData = JSON.parse(localStorage.getItem('health_clinics_data') || '[]');
-        window.immData = JSON.parse(localStorage.getItem('health_imm_data') || '[]');
+        function setupProfiles() {
+            const listM = document.getElementById('profileOptionsListMain');
+            if(listM) {
+                listM.innerHTML = profiles.map(p => `
+                    <div style="padding:0.6rem; border-radius:8px; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:0.5rem; ${p === activeProfile ? 'background:var(--primary-light); color:var(--primary); font-weight:700;' : 'color:var(--text-muted);'}" onclick="switchProfile('${p}')">
+                        <i data-lucide="user" style="width:14px;"></i> ${p}
+                    </div>
+                `).join('');
+            }
+            if(document.getElementById('activeProfileNameTop')) document.getElementById('activeProfileNameTop').innerText = activeProfile;
+            if(document.getElementById('activeAvatarTop')) document.getElementById('activeAvatarTop').innerText = activeProfile.charAt(0);
+        }
+
+        window.toggleProfileMenu = (e) => {
+            e.stopPropagation();
+            const m = document.getElementById('profileMenuMain');
+            if(m) m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        };
+
+        window.switchProfile = (name) => {
+            localStorage.setItem('active_health_profile', name);
+            location.reload();
+        };
+
+        window.onclick = () => {
+            const m = document.getElementById('profileMenuMain');
+            if(m) m.style.display = 'none';
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupProfiles();
+            lucide.createIcons();
+            
+            // Global Data Storage
+            window.testData = JSON.parse(localStorage.getItem('health_reference_data') || '[]');
+            window.medsData = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
+            window.docsData = JSON.parse(localStorage.getItem('health_docs_data') || '[]');
+            window.clinicsData = JSON.parse(localStorage.getItem('health_clinics_data') || '[]');
+            window.immData = JSON.parse(localStorage.getItem('health_imm_data') || '[]');
+        });
 
         window.editingIndex = null;
         window.editingVar = null;

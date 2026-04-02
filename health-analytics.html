@@ -43,7 +43,7 @@
         .profile-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; }
         .profile-name { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
 
-        .profile-menu { position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: var(--radius-md); box-shadow: var(--shadow); border: 1px solid var(--border); width: 220px; padding: 0.5rem; display: none; z-index: 1100; text-align: left; }
+        .profile-menu { position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: var(--radius-md); box-shadow: var(--shadow); border: 1px solid var(--border); width: 220px; padding: 0.5rem; display: none; z-index: 1300; text-align: left; }
         .profile-menu.active { display: block; animation: slideUp 0.3s ease; }
         @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .profile-opt { padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 0.75rem; color: var(--text-muted); }
@@ -164,11 +164,7 @@
         </div>
     </div>
 
-    <nav class="sidebar-nav">
-        <a href="health-log.html" class="nav-link"><i data-lucide="clipboard-list"></i> Log</a>
-        <a href="health-analytics.html" class="nav-link active"><i data-lucide="bar-chart-3"></i> Analisis</a>
-        <a href="health-reference.html" class="nav-link"><i data-lucide="settings"></i> Referensi</a>
-    </nav>
+
 
     <script>
         lucide.createIcons();
@@ -308,7 +304,10 @@
             });
         }
 
-        init();
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+            lucide.createIcons();
+        });
     </script>
     
     <nav class="sidebar-nav">

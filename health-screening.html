@@ -16,12 +16,12 @@
             --warning: #f59e0b;
             --bg: #f8fafc;
             --card-bg: #ffffff;
-            --text-main: #0f172a;
+            --text-main: #1e293b;
             --text-muted: #64748b;
             --border: #e2e8f0;
-            --radius-xl: 20px;
             --radius-lg: 16px;
             --radius-md: 12px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
@@ -96,15 +96,20 @@
             .btn { width: 100%; margin-bottom: 0.5rem; }
             .result-screen > div[style*="justify-content:center;"] { flex-direction: column; gap: 0.5rem; }
             .sidebar-nav { width: calc(100% - 2rem); max-width: 400px; justify-content: space-between; padding: 0.75rem 1.5rem; min-width: auto; gap: 0; bottom: 1rem; }
-            .profile-switcher { top: 1rem; right: 1rem; padding: 0.3rem 0.8rem; }
+            .profile-switcher { position: relative; top: 0; right: 0; width: 100%; justify-content: space-between; margin-bottom: 1.5rem; }
             .container { padding-bottom: 6rem; }
         }
     </style>
 </head>
 <body>
-    <div class="profile-switcher">
-        <div class="profile-avatar" id="activeAvatar">U</div>
-        <span id="activeProfileName" style="font-size:0.85rem; font-weight:600;">Utama</span>
+    <div class="profile-switcher" onclick="toggleProfileMenu(event)" style="z-index: 1300;">
+        <div class="profile-avatar" id="activeAvatarTop">U</div>
+        <span id="activeProfileNameTop" style="font-size:0.85rem; font-weight:600;">Utama</span>
+        <div class="profile-menu" id="profileMenuMain" style="position:absolute; top:45px; right:0; background:white; border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow-md); display:none; padding:0.5rem; width:200px; text-align:left;">
+            <div id="profileOptionsListMain"></div>
+            <div style="border-top:1px solid var(--border); margin:5px 0;"></div>
+            <a href="health-profiles.html" style="text-decoration:none; padding:0.5rem; display:flex; align-items:center; gap:0.5rem; color:var(--text-muted); font-size:0.8rem;"><i data-lucide="users" style="width:14px;"></i> Kelola Profil</a>
+        </div>
     </div>
 
     <div class="container">
@@ -152,9 +157,15 @@
             </div>
         </div>
 
-        <div id="screeningBox" class="screening-container">
+    <div id="screeningBox" class="screening-container">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
                 <h2 id="toolTitle" style="font-size:1.25rem; font-weight:800;">GAD-7</h2>
+                <div class="profile-switcher" onclick="toggleProfileMenu(event)" style="margin-bottom:0; width:auto; border-radius:12px; padding:0.25rem 0.75rem; position:relative;">
+                    <div class="profile-avatar" id="activeAvatar" style="width:28px; height:28px; font-size:0.7rem;">U</div>
+                    <div class="profile-menu" id="profileMenu" style="z-index:1300; top:40px; right:0; background:white; position:absolute; border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow-md); display:none; padding:0.5rem; width:180px;">
+                        <div id="profileOptionsList"></div>
+                    </div>
+                </div>
                 <button onclick="quitScreening()" style="background:none; border:none; color:var(--text-muted); cursor:pointer;"><i data-lucide="x"></i></button>
             </div>
             <div class="progress-bar"><div id="progressBar" class="progress-inner"></div></div>
@@ -196,11 +207,45 @@
     </nav>
 
     <script>
-        lucide.createIcons();
-        const activeProfile = localStorage.getItem('active_health_profile') || 'Utama';
-        document.getElementById('activeProfileName').innerText = activeProfile;
-        document.getElementById('activeAvatar').innerText = activeProfile.charAt(0);
+        const profiles = JSON.parse(localStorage.getItem('health_profiles') || '["Utama"]');
+        let activeProfile = localStorage.getItem('active_health_profile') || 'Utama';
 
+        function setupProfiles() {
+            const listM = document.getElementById('profileOptionsListMain');
+            if(listM) {
+                listM.innerHTML = profiles.map(p => `
+                    <div style="padding:0.6rem; border-radius:8px; font-size:0.85rem; cursor:pointer; display:flex; align-items:center; gap:0.5rem; ${p === activeProfile ? 'background:var(--primary-light); color:var(--primary); font-weight:700;' : 'color:var(--text-muted);'}" onclick="switchProfile('${p}')">
+                        <i data-lucide="user" style="width:14px;"></i> ${p}
+                    </div>
+                `).join('');
+            }
+            if(document.getElementById('activeProfileNameTop')) document.getElementById('activeProfileNameTop').innerText = activeProfile;
+            if(document.getElementById('activeAvatarTop')) document.getElementById('activeAvatarTop').innerText = activeProfile.charAt(0);
+        }
+
+        window.toggleProfileMenu = (e) => {
+            e.stopPropagation();
+            const m = document.getElementById('profileMenuMain');
+            if(m) m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        };
+
+        window.switchProfile = (name) => {
+            localStorage.setItem('active_health_profile', name);
+            location.reload();
+        };
+
+        window.onclick = () => {
+            const m = document.getElementById('profileMenuMain');
+            if(m) m.style.display = 'none';
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupProfiles();
+            lucide.createIcons();
+        });
+
+
+ 
         const TOOLS = {
             PHQ9: {
                 title: "PHQ-9 (Patient Health Questionnaire-9)",

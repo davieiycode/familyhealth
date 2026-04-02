@@ -165,12 +165,19 @@
 
     <nav class="sidebar-nav">
         <a href="health-log.html" class="nav-link"><i data-lucide="clipboard-list"></i> Log</a>
-        <a href="health-analytics.html" class="nav-link"><i data-lucide="bar-chart-3"></i> Analisis</a>
-        <a href="health-reference.html" class="nav-link"><i data-lucide="settings"></i> Referensi</a>
+        <a href="health-analytics.html" class="nav-link"><i data-lucide="line-chart"></i> Analisis</a>
+        <a href="health-screening.html" class="nav-link"><i data-lucide="brain"></i> Skrining</a>
+        <a href="health-reference.html" class="nav-link"><i data-lucide="book-open"></i> Referensi</a>
+        <a href="health-settings.html" class="nav-link"><i data-lucide="settings"></i> Pengaturan</a>
     </nav>
 
     <script>
-        lucide.createIcons();
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            renderProfiles();
+            renderEmergencyContacts();
+        });
+
         let profiles = JSON.parse(localStorage.getItem('health_profiles_v2') || '[]');
         let emergencyContacts = JSON.parse(localStorage.getItem('health_emergency_contacts') || '[]');
 

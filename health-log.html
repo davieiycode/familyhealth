@@ -33,7 +33,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .log-section { animation: fadeIn 0.4s ease-out; }
 
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; position: relative; z-index: 100; }
         .brand { display: flex; align-items: center; gap: 0.75rem; }
         .brand-icon { background: linear-gradient(135deg, var(--primary), #8b5cf6); color: white; width: 44px; height: 44px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3); transition: transform 0.3s ease; }
         .brand:hover .brand-icon { transform: rotate(10deg) scale(1.05); }
@@ -44,11 +44,13 @@
         .profile-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; }
         .profile-name { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
 
-        .profile-menu { position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid var(--border); width: 220px; padding: 0.5rem; display: none; z-index: 1100; text-align: left; animation: fadeIn 0.2s ease-out; }
+        .profile-menu { position: absolute; top: calc(100% + 10px); right: 0; background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-md); border: 1px solid var(--border); width: 220px; padding: 0.5rem; display: none; z-index: 1300; text-align: left; animation: fadeIn 0.2s ease-out; }
         .profile-menu.active { display: block; }
         .profile-opt { padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 0.75rem; color: var(--text-muted); }
         .profile-opt:hover { background: var(--primary-light); color: var(--primary); transform: translateX(4px); }
         .profile-opt.active { background: var(--primary-light); color: var(--primary); font-weight: 700; }
+
+        input#editLogId { display: none; }
 
         .card { background: var(--card-bg); border-radius: var(--radius-lg); padding: 2rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 2rem; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease; }
         .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
@@ -95,6 +97,40 @@
         .nav-link i { width: 20px; height: 20px; transition: transform 0.3s ease; }
         .nav-link:hover i { transform: scale(1.15); }
 
+        /* ACTIVITY SEARCH STYLES */
+        .search-bar-wrapper { position: relative; display: flex; align-items: center; background: white; border: 2px solid var(--border); border-radius: 18px; padding: 0.5rem 1.25rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-sm); }
+        .search-bar-wrapper:focus-within { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); transform: translateY(-2px); }
+        .search-icon { color: var(--text-muted); width: 20px; height: 20px; margin-right: 12px; }
+        .search-input { border: none !important; background: transparent !important; padding: 0.75rem 0 !important; font-size: 1rem !important; font-weight: 500 !important; width: 100%; outline: none !important; box-shadow: none !important; transform: none !important; }
+        .search-kbd { background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; font-size: 0.65rem; font-weight: 700; color: var(--text-muted); margin-left: 10px; white-space: nowrap; box-shadow: 0 2px 0 var(--border); }
+
+        .activity-dropdown { position: absolute; top: calc(100% + 12px); left: 0; right: 0; background: white; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15); z-index: 1200; padding: 1.5rem; display: none; transform-origin: top center; animation: dropdownEntry 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+        @keyframes dropdownEntry { from { opacity: 0; transform: scale(0.95) translateY(-10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .activity-dropdown.active { display: block; }
+        .dropdown-header { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1.5rem; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+        
+        .activity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; max-height: 400px; overflow-y: auto; padding-right: 5px; }
+        .activity-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: 14px; background: #f8fafc; border: 1px solid transparent; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .activity-item:hover { background: var(--primary-light); border-color: var(--primary); transform: translateX(5px); }
+        .activity-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .activity-info h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.2rem; }
+        .activity-info p { font-size: 0.75rem; color: var(--text-muted); }
+
+        .c-consult { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+        .c-tests { background: linear-gradient(135deg, #10b981, #059669); }
+        .c-meds { background: linear-gradient(135deg, #ec4899, #db2777); }
+        .c-symptoms { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .c-repro { background: linear-gradient(135deg, #f472b6, #e879f9); }
+        .c-clinical { background: linear-gradient(135deg, #64748b, #475569); }
+        .c-imm { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .c-nutrition { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .c-lactation { background: linear-gradient(135deg, #818cf8, #a78bfa); }
+        .c-fasting { background: linear-gradient(135deg, #4338ca, #312e81); }
+        .c-sleep { background: linear-gradient(135deg, #6366f1, #4338ca); }
+        .c-fitness { background: linear-gradient(135deg, #10b981, #047857); }
+        .c-steps { background: linear-gradient(135deg, #64748b, #1e293b); }
+        .c-kms { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+
         #toast { position: fixed; top: 2rem; right: 2rem; padding: 1rem 1.5rem; background: #1e293b; color: white; border-radius: var(--radius-md); display: flex; align-items: center; gap: 0.75rem; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 9999; pointer-events: none; }
         #toast.active { transform: translateX(0); }
 
@@ -104,27 +140,31 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        @media (max-width: 1000px) {
-            .test-entry-row { grid-template-columns: 1fr 1fr; }
-            .report-meta { grid-template-columns: 1fr 1fr; }
-        }
+        /* MOBILE OPTIMIZATIONS (HP KECIL) */
         @media (max-width: 768px) {
-            body { padding: 1rem; }
-            .card { padding: 1.25rem; }
-            .test-entry-row, .report-meta, .grid { grid-template-columns: 1fr; gap: 1rem; }
-            .btn { width: 100%; justify-content: center; }
-            .profile-switcher { width: 100%; justify-content: space-between; margin-bottom: 0.5rem; }
-            header { flex-direction: column; align-items: flex-start; }
-            .sidebar-nav { width: calc(100% - 1rem); max-width: 500px; justify-content: space-between; padding: 0.75rem 1rem; min-width: auto; gap: 0; bottom: 1rem; }
+            body { padding: 0.75rem; }
+            .container { padding-bottom: 7rem; }
+            .card { padding: 1.25rem; border-radius: 18px; }
+            .section-header { font-size: 1rem; margin-bottom: 1.25rem; }
+            .brand-text h1 { font-size: 1.25rem; }
+            .search-bar-wrapper { padding: 0.4rem 1rem; }
+            .search-input { font-size: 0.9rem !important; }
+            .search-kbd { display: none; }
+            .activity-grid { grid-template-columns: 1fr; }
+            .activity-dropdown { padding: 1rem; width: 100vw; left: -0.75rem; border-radius: 0 0 20px 20px; border-left: none; border-right: none; }
 
-            .table-container { background: transparent; border: none; box-shadow: none; }
-            table, thead, tbody, th, td, tr { display: block; }
-            thead tr { position: absolute; top: -9999px; left: -9999px; }
-            tr { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 1.25rem; padding: 1rem; box-shadow: var(--shadow-sm); }
-            td { border: none; border-bottom: 1px solid #f1f5f9; position: relative; padding-left: 0; padding-top: 1.5rem; }
-            td:last-child { border-bottom: none; }
-            td::before { content: attr(data-label); position: absolute; top: 0; left: 0; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
-            .container { padding-bottom: 6rem; }
+            .table-container { border: none; background: transparent; box-shadow: none; }
+            .table-container table { display: block; min-width: auto; }
+            .table-container thead { display: none; }
+            .table-container tbody { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+            .table-container tr { display: block; background: white; border-radius: 16px; padding: 1.25rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); position: relative; margin-bottom: 0; transform: none !important; }
+            .table-container td { display: block; padding: 0.3rem 0; border-bottom: none; }
+            .table-container td:last-child { position: absolute; top: 1.25rem; right: 1.25rem; border: none; padding: 0; }
+            
+            .mobile-label { display: inline-block; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.2rem; margin-right: 0.5rem; min-width: 70px; }
+            .sidebar-nav { width: calc(100% - 1.5rem); padding: 0.6rem 1rem; gap: 0; justify-content: space-between; border-radius: 30px; bottom: 1rem; }
+            .nav-link { font-size: 0.65rem; }
+            .nav-link i { width: 18px; height: 18px; }
         }
     </style>
 </head>
@@ -155,31 +195,77 @@
             </div>
         </header>
 
-        <div class="card" style="padding: 1.5rem; margin-bottom: 2.5rem; border-color: var(--primary); border-width: 2px; position: relative; overflow: visible;">
-            <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                <i data-lucide="plus-circle" style="width: 14px;"></i> Tambah Rekam Medis Baru
+        <div id="actionArea">
+            <input type="hidden" id="editLogId" value="">
+            <div id="search-section" style="margin-bottom: 2rem; position: relative;">
+            <div class="search-bar-wrapper">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" id="activitySearch" class="search-input" placeholder="Apa yang ingin Anda catat hari ini? (misal: Obat, Konsultasi, Tes...)" onfocus="showActivityList()" oninput="filterActivities()">
+                <kbd class="search-kbd">Shift + S</kbd>
             </div>
-            <div style="position: relative;">
-                <i data-lucide="search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 18px;"></i>
-                <input type="text" id="logSearchInput" placeholder="Cari tipe input (misal: Obat, Dokter, Lab, Tidur...)" 
-                       style="padding-left: 2.8rem; border-radius: 30px; border: 2px solid var(--border); font-size: 1rem;"
-                       onfocus="showLogSuggestions()" oninput="filterLogSuggestions()">
-                
-                <div id="logSuggestions" class="profile-menu" style="width: 100%; top: calc(100% + 8px); left: 0; padding: 0.8rem; max-height: 400px; overflow-y: auto;">
-                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; padding: 0.5rem; text-transform: uppercase;">Pilih Kategori Input</div>
-                    <div id="logSuggestionsList">
-                        <!-- Types will be injected here -->
+            
+            <div id="activityDropdown" class="activity-dropdown">
+                <div class="dropdown-header">Pilih Jenis Catatan Kesehatan</div>
+                <div id="activityList" class="activity-grid">
+                    <div class="activity-item" onclick="selectActivity('consult', 'Konsultasi Dokter', 'hand-metal')">
+                        <div class="activity-icon c-consult"><i data-lucide="hand-metal"></i></div>
+                        <div class="activity-info"><h3>Konsultasi</h3><p>Dokter & Diagnosa</p></div>
+                    </div>
+                    <div class="activity-item" onclick="selectActivity('tests', 'Hasil Tes Lab', 'clipboard-list')">
+                        <div class="activity-icon c-tests"><i data-lucide="clipboard-list"></i></div>
+                        <div class="activity-info"><h3>Hasil Tes</h3><p>Lab & Radiologi</p></div>
+                    </div>
+                    <div class="activity-item" onclick="selectActivity('meds', 'Minum Obat', 'pill')">
+                        <div class="activity-icon c-meds"><i data-lucide="pill"></i></div>
+                        <div class="activity-info"><h3>Minum Obat</h3><p>Konsumsi & Stok</p></div>
+                    </div>
+                    <div class="activity-item" onclick="selectActivity('symptoms', 'Gejala & Kondisi', 'activity')">
+                        <div class="activity-icon c-symptoms"><i data-lucide="activity"></i></div>
+                        <div class="activity-info"><h3>Gejala</h3><p>Sakit & Keluhan</p></div>
+                    </div>
+                    <div class="activity-item" onclick="selectActivity('repro', 'Reproduksi', 'heart')">
+                        <div class="activity-icon c-repro"><i data-lucide="heart"></i></div>
+                        <div class="activity-info"><h3>Reproduksi</h3><p>Haid & Kehamilan</p></div>
+                    </div>
+                    <div class="activity-item" onclick="selectActivity('clinical', 'Klinik / RS', 'hospital')">
+                        <div class="activity-icon c-clinical"><i data-lucide="hospital"></i></div>
+                        <div class="activity-info"><h3>Klinik/RS</h3><p>Rawat Inap/Jalan</p></div>
+                    </div>
+                    <div class="activity-item" onclick="selectActivity('imm', 'Imunisasi', 'shield-check')">
+                        <div class="activity-icon c-imm"><i data-lucide="shield-check"></i></div>
+                        <div class="activity-info"><h3>Imunisasi</h3><p>Vaksin & Booster</p></div>
+                    </div>
+                    <div class="activity-item" onclick="selectActivity('nutrition', 'Nutrisi', 'coffee')">
+                        <div class="activity-icon c-nutrition"><i data-lucide="coffee"></i></div>
+                        <div class="activity-info"><h3>Nutrisi</h3><p>Makan & Minum</p></div>
+                    </div>
+                    <div class="activity-item" onclick="selectActivity('lactation', 'Menyusui', 'baby')">
+                        <div class="activity-icon c-lactation"><i data-lucide="baby"></i></div>
+                        <div class="activity-info"><h3>Menyusui</h3><p>DBF & Pumping</p></div>
+                    </div>
+                    <div class="activity-item" onclick="selectActivity('fasting', 'Puasa', 'moon')">
+                        <div class="activity-icon c-fasting"><i data-lucide="moon"></i></div>
+                        <div class="activity-info"><h3>Puasa</h3><p>Ramadhan & IF</p></div>
+                    </div>
+                    <div class="activity-item" onclick="selectActivity('sleep', 'Tidur', 'bed-double')">
+                        <div class="activity-icon c-sleep"><i data-lucide="bed-double"></i></div>
+                        <div class="activity-info"><h3>Tidur</h3><p>Kualitas & Durasi</p></div>
+                    </div>
+                    <div class="activity-item" onclick="selectActivity('fitness', 'Aktivitas Fisik', 'dumbbell')">
+                        <div class="activity-icon c-fitness"><i data-lucide="dumbbell"></i></div>
+                        <div class="activity-info"><h3>Olahraga</h3><p>Latihan & Gym</p></div>
+                    </div>
+                    <div class="activity-item" onclick="selectActivity('steps', 'Langkah', 'footprints')">
+                        <div class="activity-icon c-steps"><i data-lucide="footprints"></i></div>
+                        <div class="activity-info"><h3>Langkah</h3><p>Pedometer Harian</p></div>
+                    </div>
+                    <div class="activity-item" onclick="selectActivity('kms', 'KMS Anak', 'line-chart')">
+                        <div class="activity-icon c-kms"><i data-lucide="line-chart"></i></div>
+                        <div class="activity-info"><h3>KMS Anak</h3><p>Tumbuh Kembang</p></div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div id="inputSections" style="display: none;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <button class="btn btn-outline" onclick="closeInputSection()" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; border-radius: 20px;">
-                    <i data-lucide="arrow-left" style="width: 14px;"></i> Batal / Tutup Input
-                </button>
-            </div>
 
         <main>
             <!-- SECTION: DOCTOR CONSULTATION -->
@@ -687,11 +773,7 @@
         </main>
     </div>
 
-    <nav class="sidebar-nav">
-        <a href="health-log.html" class="nav-link active"><i data-lucide="clipboard-list"></i> Log</a>
-        <a href="health-analytics.html" class="nav-link"><i data-lucide="bar-chart-3"></i> Analisis</a>
-        <a href="health-reference.html" class="nav-link"><i data-lucide="settings"></i> Referensi</a>
-    </nav>
+
 
     <div id="toast">
         <span id="toastMsg"></span>
@@ -755,92 +837,27 @@
             }
         }
 
-        const LOG_CATEGORIES = [
-            { id: 'consult', name: 'Konsultasi Dokter', icon: 'user-check', keywords: 'dokter consult periksa sakit' },
-            { id: 'tests', name: 'Hasil Tes Lab', icon: 'clipboard-list', keywords: 'lab darah urin kolesterol gula' },
-            { id: 'meds', name: 'Minum Obat', icon: 'pill', keywords: 'obat puyer sirup kapsul tablet' },
-            { id: 'symptoms', name: 'Gejala & Kondisi', icon: 'thermometer', keywords: 'sakit pusing demam mual gejala injury' },
-            { id: 'repro', name: 'Reproduksi / Haid', icon: 'heart', keywords: 'haid menstruasi period hamil nifas' },
-            { id: 'clinical', name: 'Klinik / RS', icon: 'hospital', keywords: 'opname rawat jalan inap operasi' },
-            { id: 'imm', name: 'Imunisasi / Vaksin', icon: 'shield-check', keywords: 'vaksin imunisasi booster campak flu' },
-            { id: 'nutrition', name: 'Nutrisi / Makan', icon: 'coffee', keywords: 'makan kalori gizi diet' },
-            { id: 'lactation', name: 'Menyusui / Pumping', icon: 'baby', keywords: 'asi menyusu pumping botol asip' },
-            { id: 'fasting', name: 'Puasa', icon: 'moon', keywords: 'puasa ramadhan intermittent' },
-            { id: 'sleep', name: 'Tidur', icon: 'bed-double', keywords: 'tidur sleep istirahat' },
-            { id: 'fitness', name: 'Olahraga / Fisik', icon: 'dumbbell', keywords: 'gym lari fisik workout' },
-            { id: 'steps', name: 'Langkah Kaki', icon: 'footprints', keywords: 'jalan langkah step pedometer' },
-            { id: 'kms', name: 'KMS Anak', icon: 'line-chart', keywords: 'anak bayi tumbuh kembang kms bb tb' }
-        ];
-
-        window.showLogSuggestions = () => {
-            const container = document.getElementById('logSuggestions');
-            container.style.display = 'block';
-            filterLogSuggestions();
-        };
-
-        window.filterLogSuggestions = () => {
-            const query = document.getElementById('logSearchInput').value.toLowerCase();
-            const list = document.getElementById('logSuggestionsList');
-            list.innerHTML = '';
-            
-            const filtered = LOG_CATEGORIES.filter(c => 
-                c.name.toLowerCase().includes(query) || c.keywords.toLowerCase().includes(query)
-            );
-
-            if (filtered.length === 0) {
-                list.innerHTML = `<div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.8rem;">Tidak menemukan kategori "${query}"...</div>`;
-                return;
-            }
-
-            filtered.forEach(c => {
-                const opt = document.createElement('div');
-                opt.className = 'profile-opt';
-                opt.innerHTML = `<i data-lucide="${c.icon}" style="width:16px;"></i> ${c.name}`;
-                opt.onclick = () => selectCategory(c.id);
-                list.appendChild(opt);
+        window.switchTab = (type) => {
+            document.querySelectorAll('.log-section').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.style.background = 'transparent';
+                b.style.color = 'var(--text-muted)';
+                b.classList.remove('active');
             });
-            lucide.createIcons();
-        };
 
-        window.selectCategory = (id) => {
-            document.getElementById('logSuggestions').style.display = 'none';
-            document.getElementById('inputSections').style.display = 'block';
-            document.getElementById('logSearchInput').value = '';
+            const targetSection = 'section' + type.charAt(0).toUpperCase() + type.slice(1);
+            const targetTab = 'tab' + type.charAt(0).toUpperCase() + type.slice(1);
             
-            // Hide all sections first
-            document.querySelectorAll('.log-section').forEach(s => s.style.display = 'none');
-            
-            // Show the target section
-            const target = 'section' + id.charAt(0).toUpperCase() + id.slice(1);
-            const el = document.getElementById(target);
-            if(el) {
-                el.style.display = 'block';
-                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const s = document.getElementById(targetSection);
+            const t = document.getElementById(targetTab);
+            if(s) s.style.display = 'block';
+            if(t) {
+                t.style.background = 'white';
+                t.style.color = 'var(--text-main)';
+                t.classList.add('active');
             }
             lucide.createIcons();
-        };
-
-        window.closeInputSection = () => {
-            document.getElementById('inputSections').style.display = 'none';
-            document.querySelectorAll('.log-section').forEach(s => s.style.display = 'none');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        // Close suggestions when clicking outside
-        window.addEventListener('click', (e) => {
-            const sugg = document.getElementById('logSuggestions');
-            const input = document.getElementById('logSearchInput');
-            if (sugg && !sugg.contains(e.target) && e.target !== input) {
-                sugg.style.display = 'none';
-            }
-        });
-
-        // Initialize suggestions on load
-        document.addEventListener('DOMContentLoaded', () => {
-            // ... already hidden in HTML
-        });
-
-        window.switchTab = (type) => selectCategory(type);
+        }
 
         document.getElementById('logMedName').addEventListener('input', (e) => {
             const meds = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
@@ -985,8 +1002,9 @@
             });
             localStorage.setItem('health_meds_data', JSON.stringify(meds));
 
+            const editId = document.getElementById('editLogId').value;
             const newEntry = {
-                logId: 'CON-' + Date.now(),
+                logId: editId ? editId : 'CON-' + Date.now(),
                 type: 'CONSULT',
                 author: activeProfile,
                 timestamp: document.getElementById('consultTime').value,
@@ -995,9 +1013,17 @@
                 notes: document.getElementById('consultNotes').value,
                 prescriptions: [...currentPrescriptions]
             };
-            logs = [newEntry, ...logs];
+            
+            if (editId) {
+                const idx = logs.findIndex(l => (l.logId || l.id) == editId);
+                if (idx > -1) logs[idx] = newEntry;
+                document.getElementById('editLogId').value = "";
+            } else {
+                logs = [newEntry, ...logs];
+            }
+            
             localStorage.setItem('health_logs', JSON.stringify(logs));
-            showToast('Konsultasi dokter berhasil dicatat.');
+            showToast('Konsultasi dokter berhasil disimpan.');
             location.reload();
         };
 
@@ -1009,28 +1035,39 @@
 
         document.getElementById('reproForm').onsubmit = (e) => {
             e.preventDefault();
+            const editId = document.getElementById('editLogId').value;
             const type = document.getElementById('reproType').value;
-            const newEntry = {
-                logId: 'REP-' + Date.now(),
+            const entry = {
+                logId: editId ? editId : 'REP-' + Date.now(),
                 type: 'REPRO',
-                reproType: type,
                 author: activeProfile,
+                reproType: type,
                 timestamp: document.getElementById('reproTime').value,
-                notes: document.getElementById('reproNotes').value,
-                details: type === 'PERIOD' ? { flow: document.getElementById('periodFlow').value, color: document.getElementById('periodColor').value } :
-                         type === 'PREGNANCY' ? { weight: document.getElementById('pregWeight').value, belly: document.getElementById('pregBelly').value, kicks: document.getElementById('pregKicks').value } : {}
+                notes: document.getElementById('reproNotes').value
             };
-            logs = [newEntry, ...logs];
+            if(type==='PERIOD') entry.details = { flow: document.getElementById('periodFlow').value, color: document.getElementById('periodColor').value };
+            if(type==='PREGNANCY') entry.details = { weight: document.getElementById('pregWeight').value, belly: document.getElementById('pregBelly').value, kicks: document.getElementById('pregKicks').value };
+
+            if (editId) {
+                const idx = logs.findIndex(l => (l.logId || l.id) == editId);
+                if (idx > -1) logs[idx] = entry;
+                document.getElementById('editLogId').value = "";
+            } else {
+                logs = [entry, ...logs];
+            }
+            
             localStorage.setItem('health_logs', JSON.stringify(logs));
-            showToast('Log kesehatan reproduksi disimpan.');
-            location.reload();
+            showToast('Catatan reproduksi berhasil disimpan.');
+            renderLogs();
+            e.target.reset();
         };
 
         // --- OTHER SUBMITS ---
         document.getElementById('symptomForm').onsubmit = (e) => {
             e.preventDefault();
-            const newEntry = {
-                logId: 'SYM-' + Date.now(),
+            const editId = document.getElementById('editLogId').value;
+            const entry = {
+                logId: editId ? editId : 'SYM-' + Date.now(),
                 type: 'SYMPTOM',
                 author: activeProfile,
                 timestamp: document.getElementById('symStart').value,
@@ -1039,36 +1076,56 @@
                 status: document.getElementById('symStatus').value,
                 notes: document.getElementById('symNotes').value
             };
-            logs = [newEntry, ...logs];
+            
+            if (editId) {
+                const idx = logs.findIndex(l => (l.logId || l.id) == editId);
+                if (idx > -1) logs[idx] = entry;
+                document.getElementById('editLogId').value = "";
+            } else {
+                logs = [entry, ...logs];
+            }
+            
             localStorage.setItem('health_logs', JSON.stringify(logs));
-            showToast('Keluhan kesehatan berhasil dicatat.');
-            location.reload();
+            showToast('Log gejala/cedera berhasil disimpan.');
+            renderLogs();
+            e.target.reset();
         };
 
         document.getElementById('clinicalForm').onsubmit = (e) => {
             e.preventDefault();
-            const newEntry = {
-                logId: 'CLI-' + Date.now(),
+            const editId = document.getElementById('editLogId').value;
+            const entry = {
+                logId: editId ? editId : 'CLI-' + Date.now(),
                 type: 'CLINICAL',
-                clinicalType: document.getElementById('clinicalType').value,
                 author: activeProfile,
-                timestamp: document.getElementById('clinicalStart').value,
-                endTimestamp: document.getElementById('clinicalEnd').value,
+                clinicalType: document.getElementById('clinicalType').value,
                 name: document.getElementById('clinicalName').value,
                 location: document.getElementById('clinicalLoc').value,
+                timestamp: document.getElementById('clinicalStart').value,
+                endTimestamp: document.getElementById('clinicalEnd').value,
                 doc: document.getElementById('clinicalDoc').value,
                 notes: document.getElementById('clinicalNotes').value
             };
-            logs = [newEntry, ...logs];
+            
+            if (editId) {
+                const idx = logs.findIndex(l => (l.logId || l.id) == editId);
+                if (idx > -1) logs[idx] = entry;
+                document.getElementById('editLogId').value = "";
+            } else {
+                logs = [entry, ...logs];
+            }
+            
             localStorage.setItem('health_logs', JSON.stringify(logs));
             showToast('Catatan klinis berhasil disimpan.');
-            location.reload();
+            renderLogs();
+            e.target.reset();
         };
 
         document.getElementById('immLogForm').onsubmit = (e) => {
             e.preventDefault();
-            const newEntry = {
-                logId: 'IMM-' + Date.now(),
+            const editId = document.getElementById('editLogId').value;
+            const entry = {
+                logId: editId ? editId : 'IMM-' + Date.now(),
                 type: 'IMM',
                 author: activeProfile,
                 timestamp: document.getElementById('immLogTime').value,
@@ -1078,10 +1135,17 @@
                 batch: document.getElementById('immLogBatch').value,
                 notes: document.getElementById('immLogNotes').value
             };
-            logs = [newEntry, ...logs];
+            if (editId) {
+                const idx = logs.findIndex(l => (l.logId || l.id) == editId);
+                if (idx > -1) logs[idx] = entry;
+                document.getElementById('editLogId').value = "";
+            } else {
+                logs = [entry, ...logs];
+            }
             localStorage.setItem('health_logs', JSON.stringify(logs));
             showToast('Catatan imunisasi berhasil disimpan.');
-            location.reload();
+            renderLogs();
+            e.target.reset();
         };
 
         document.getElementById('reportForm').onsubmit = (e) => {
@@ -1109,50 +1173,87 @@
             e.preventDefault();
             const meds = JSON.parse(localStorage.getItem('health_meds_data') || '[]');
             const medName = document.getElementById('logMedName').value;
-            let qtyToReduce = parseFloat(document.getElementById('logMedQty').value);
             const medIdx = meds.findIndex(m => m.name.toLowerCase() === medName.toLowerCase());
             
             if(medIdx === -1) { alert("Obat tidak ditemukan di koleksi referensi."); return; }
             
-            const totalStock = (meds[medIdx].batches || []).reduce((acc, b) => acc + b.qty, 0);
-            if(totalStock < qtyToReduce) { if(!confirm("Stok total tidak mencukupi. Tetap catat?")) return; }
-
-            // FEFO Logic (First Expired First Out)
-            if(meds[medIdx].batches) {
-                meds[medIdx].batches.sort((a, b) => new Date(a.expiry) - new Date(b.expiry));
+            const qtyRequired = parseFloat(document.getElementById('logMedQty').value);
+            if(medIdx !== -1) {
+                let remaining = qtyRequired;
+                meds[medIdx].batches.sort((a,b) => new Date(a.expiry) - new Date(b.expiry));
                 for(let b of meds[medIdx].batches) {
-                    if(qtyToReduce <= 0) break;
-                    if(b.qty >= qtyToReduce) {
-                        b.qty -= qtyToReduce;
-                        qtyToReduce = 0;
-                    } else {
-                        qtyToReduce -= b.qty;
-                        b.qty = 0;
-                    }
+                    if(remaining <= 0) break;
+                    if(b.qty >= remaining) { b.qty -= remaining; remaining = 0; }
+                    else { remaining -= b.qty; b.qty = 0; }
                 }
-                // Clean up empty batches
                 meds[medIdx].batches = meds[medIdx].batches.filter(b => b.qty > 0);
+                localStorage.setItem('health_meds_data', JSON.stringify(meds));
             }
 
-            localStorage.setItem('health_meds_data', JSON.stringify(meds));
-
-            const newEntry = {
-                logId: 'MED-' + Date.now(),
+            const editId = document.getElementById('editLogId').value;
+            const entry = {
+                logId: editId ? editId : 'MED-' + Date.now(),
                 type: 'MEDICINE',
                 author: activeProfile,
                 timestamp: document.getElementById('medTimestamp').value,
                 medName: meds[medIdx].name,
-                qty: parseFloat(document.getElementById('logMedQty').value),
+                qty: qtyRequired,
                 unit: document.getElementById('logMedUnit').value,
                 notes: document.getElementById('logMedNotes').value,
                 location: 'Inventori Terpusat'
             };
 
-            logs = [newEntry, ...logs];
+            if (editId) {
+                const idx = logs.findIndex(l => (l.logId || l.id) == editId);
+                if (idx > -1) logs[idx] = entry;
+                document.getElementById('editLogId').value = "";
+            } else {
+                logs = [entry, ...logs];
+            }
             localStorage.setItem('health_logs', JSON.stringify(logs));
-            showToast(`Berhasil mencatat konsumsi obat.`);
-            location.reload();
+            showToast(`Berhasil menyimpan catatan konsumsi obat.`);
+            renderLogs();
+            e.target.reset();
         };
+
+        function showActivityList() {
+            document.getElementById('activityDropdown').classList.add('active');
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.search-input') && !event.target.closest('.activity-dropdown')) {
+                document.getElementById('activityDropdown').classList.remove('active');
+            }
+        }
+
+        function filterActivities() {
+            const input = document.getElementById('activitySearch').value.toLowerCase();
+            const items = document.querySelectorAll('.activity-item');
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(input) ? 'flex' : 'none';
+            });
+        }
+
+        function selectActivity(type, label, icon) {
+            document.getElementById('activitySearch').value = label;
+            document.getElementById('activityDropdown').classList.remove('active');
+            switchTab(type);
+            
+            // Scroll to the form
+            setTimeout(() => {
+                const section = document.getElementById('section' + type.charAt(0).toUpperCase() + type.slice(1));
+                if (section) section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+
+        // Global key shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.shiftKey && e.key === 'S') {
+                e.preventDefault();
+                document.getElementById('activitySearch').focus();
+            }
+        });
 
         function renderLogs() {
             const body = document.getElementById('logTableBody');
@@ -1166,95 +1267,91 @@
             filtered.forEach(log => {
                 const tr = document.createElement('tr');
                 let content = '';
+                const dateHeader = `<div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div>`;
                 
                 if(log.type === 'CONSULT') {
                     content = `
-                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td data-label="Kategori"><span class="tag" style="background:#eef2ff; color:#4f46e5;">KONSULTASI</span></td>
-                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);"><i data-lucide="user-check" style="width:12px;"></i> ${log.doc}</div><div style="font-size:0.75rem; color:var(--text-muted);"><i data-lucide="map-pin" style="width:12px;"></i> ${log.location}</div></td>
-                        <td data-label="Hasil"><div style="font-size:0.85rem; font-weight:700;">Preskripsi:</div>
+                        <td><span class="mobile-label">Pasien & Waktu</span>${dateHeader}</td>
+                        <td><span class="mobile-label">Kategori</span><span class="tag" style="background:#eef2ff; color:#4f46e5;">KONSULTASI</span></td>
+                        <td><span class="mobile-label">Detail</span><div style="font-weight:600; color:var(--primary);"><i data-lucide="user-check" style="width:12px;"></i> ${log.doc}</div><div style="font-size:0.75rem; color:var(--text-muted);"><i data-lucide="map-pin" style="width:12px;"></i> ${log.location}</div></td>
+                        <td><span class="mobile-label">Hasil/Log</span><div style="font-size:0.85rem; font-weight:700;">Preskripsi:</div>
                             ${(log.prescriptions || []).map(p => `<div style="font-size:0.8rem; color:var(--success); font-weight:600;">• ${p.name} (${p.qty})</div>`).join('') || '-'}
                         </td>
-                        <td data-label="Catatan"><div style="font-size:0.85rem; line-height:1.4;">${log.notes || '-'}</div></td>
+                        <td><span class="mobile-label">Catatan</span><div style="font-size:0.85rem; line-height:1.4;">${log.notes || '-'}</div></td>
                     `;
                 } else if(log.type === 'MEDICINE') {
                     content = `
-                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td data-label="Kategori"><span class="tag" style="background:#f0fdf4; color:#166534;">MINUM OBAT</span></td>
-                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);"><i data-lucide="pill" style="width:12px;"></i> ${log.medName}</div></td>
-                        <td data-label="Hasil"><div style="font-weight:700;">${log.qty} ${log.unit || ''}</div></td>
-                        <td data-label="Catatan"><div style="font-size:0.85rem;">${log.notes || 'Rutin.'}</div></td>
+                        <td><span class="mobile-label">Pasien & Waktu</span>${dateHeader}</td>
+                        <td><span class="mobile-label">Kategori</span><span class="tag" style="background:#f0fdf4; color:#166534;">MINUM OBAT</span></td>
+                        <td><span class="mobile-label">Detail</span><div style="font-weight:600; color:var(--primary);"><i data-lucide="pill" style="width:12px;"></i> ${log.medName}</div></td>
+                        <td><span class="mobile-label">Hasil/Log</span><div style="font-weight:700;">${log.qty} ${log.unit || ''}</div></td>
+                        <td><span class="mobile-label">Catatan</span><div style="font-size:0.85rem;">${log.notes || 'Rutin.'}</div></td>
                     `;
                 } else if(log.type === 'SYMPTOM') {
                     content = `
-                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td data-label="Kategori"><span class="tag" style="background:#fffbeb; color:#92400e;">GEJALA</span></td>
-                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);">${log.name}</div><div style="font-size:0.75rem; color:var(--text-muted);">Status: ${log.status}</div></td>
-                        <td data-label="Hasil"><div style="font-weight:700; color:${log.severity > 7 ? 'var(--danger)' : 'var(--warning)'};">Skala: ${log.severity}/10</div></td>
-                        <td data-label="Catatan"><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
+                        <td><span class="mobile-label">Pasien & Waktu</span>${dateHeader}</td>
+                        <td><span class="mobile-label">Kategori</span><span class="tag" style="background:#fffbeb; color:#92400e;">GEJALA</span></td>
+                        <td><span class="mobile-label">Detail</span><div style="font-weight:600; color:var(--primary);">${log.name}</div><div style="font-size:0.75rem; color:var(--text-muted);">Status: ${log.status}</div></td>
+                        <td><span class="mobile-label">Hasil/Log</span><div style="font-weight:700; color:${log.severity > 7 ? 'var(--danger)' : 'var(--warning)'};">Skala: ${log.severity}/10</div></td>
+                        <td><span class="mobile-label">Catatan</span><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
                     `;
                 } else if(log.type === 'REPRO') {
                     const reproNames = { PERIOD: 'Haid', OVULATION: 'Ovulasi', PREGNANCY: 'Kehamilan', POSTPARTUM: 'Nifas', SEXUAL: 'Hub. Seksual' };
                     content = `
-                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td data-label="Kategori"><span class="tag" style="background:#fdf2f7; color:#9d174d;">${reproNames[log.reproType] || 'REPRODUKSI'}</span></td>
-                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);">${reproNames[log.reproType]}</div></td>
-                        <td data-label="Hasil">${log.reproType === 'PERIOD' ? `<div style="font-size:0.8rem;">Flow: <strong>${log.details.flow}</strong><br>Warna: <strong>${log.details.color}</strong></div>` : 
+                        <td><span class="mobile-label">Pasien & Waktu</span>${dateHeader}</td>
+                        <td><span class="mobile-label">Kategori</span><span class="tag" style="background:#fdf2f7; color:#9d174d;">${reproNames[log.reproType] || 'REPRODUKSI'}</span></td>
+                        <td><span class="mobile-label">Detail</span><div style="font-weight:600; color:var(--primary);">${reproNames[log.reproType]}</div></td>
+                        <td><span class="mobile-label">Hasil/Log</span>${log.reproType === 'PERIOD' ? `<div style="font-size:0.8rem;">Flow: <strong>${log.details.flow}</strong><br>Warna: <strong>${log.details.color}</strong></div>` : 
                                log.reproType === 'PREGNANCY' ? `<div style="font-size:0.8rem;">BB: <strong>${log.details.weight}kg</strong><br>Perut: <strong>${log.details.belly}cm</strong></div>` : '-'}
                         </td>
-                        <td data-label="Catatan"><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
+                        <td><span class="mobile-label">Catatan</span><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
                     `;
                 } else if(log.type === 'CLINICAL') {
                     const clinNames = { INPATIENT: 'Rawat Inap', OUTPATIENT: 'Rawat Jalan', SURGERY: 'Operasi', ER: 'IGD' };
                     content = `
-                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td data-label="Kategori"><span class="tag" style="background:#f1f5f9; color:#475569;">KLINIS/RS</span></td>
-                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);">${clinNames[log.clinicalType]}</div><div style="font-size:0.75rem; color:var(--text-muted);">${log.name}</div></td>
-                        <td data-label="Hasil"><div style="font-size:0.75rem;"><i data-lucide="hospital" style="width:10px;"></i> ${log.location}<br><i data-lucide="user" style="width:10px;"></i> ${log.doc}</div></td>
-                        <td data-label="Catatan"><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
+                        <td><span class="mobile-label">Pasien & Waktu</span>${dateHeader}</td>
+                        <td><span class="mobile-label">Kategori</span><span class="tag" style="background:#f1f5f9; color:#475569;">KLINIS/RS</span></td>
+                        <td><span class="mobile-label">Detail</span><div style="font-weight:600; color:var(--primary);">${clinNames[log.clinicalType]}</div><div style="font-size:0.75rem; color:var(--text-muted);">${log.name}</div></td>
+                        <td><span class="mobile-label">Hasil/Log</span><div style="font-size:0.75rem;"><i data-lucide="hospital" style="width:10px;"></i> ${log.location}<br><i data-lucide="user" style="width:10px;"></i> ${log.doc}</div></td>
+                        <td><span class="mobile-label">Catatan</span><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
                     `;
                 } else if(log.type === 'IMM') {
                     content = `
-                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td data-label="Kategori"><span class="tag" style="background:#ecfdf5; color:#065f46;">IMUNISASI</span></td>
-                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);"><i data-lucide="shield-check" style="width:12px;"></i> ${log.name}</div><div style="font-size:0.7rem; color:var(--text-muted);">Batch: ${log.batch || '-'}</div></td>
-                        <td data-label="Hasil"><div style="font-size:0.75rem;"><i data-lucide="map-pin" style="width:10px;"></i> ${log.location}<br><i data-lucide="user" style="width:10px;"></i> ${log.doc}</div></td>
-                        <td data-label="Catatan"><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
+                        <td><span class="mobile-label">Pasien & Waktu</span>${dateHeader}</td>
+                        <td><span class="mobile-label">Kategori</span><span class="tag" style="background:#ecfdf5; color:#065f46;">IMUNISASI</span></td>
+                        <td><span class="mobile-label">Detail</span><div style="font-weight:600; color:var(--primary);"><i data-lucide="shield-check" style="width:12px;"></i> ${log.name}</div><div style="font-size:0.7rem; color:var(--text-muted);">Batch: ${log.batch || '-'}</div></td>
+                        <td><span class="mobile-label">Hasil/Log</span><div style="font-size:0.75rem;"><i data-lucide="map-pin" style="width:10px;"></i> ${log.location}<br><i data-lucide="user" style="width:10px;"></i> ${log.doc}</div></td>
+                        <td><span class="mobile-label">Catatan</span><div style="font-size:0.85rem;">${log.notes || '-'}</div></td>
                     `;
                 } else if(log.type === 'MENTAL') {
                     content = `
-                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td data-label="Kategori"><span class="tag" style="background:#f5f3ff; color:#5b21b6;">SKRINING MENTAL</span></td>
-                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);"><i data-lucide="brain" style="width:12px;"></i> ${log.tool}</div><div style="font-size:0.75rem; color:var(--text-muted);">Skor: <strong>${log.score}</strong></div></td>
-                        <td data-label="Hasil"><div style="font-weight:800; color:${log.score > 14 ? 'var(--danger)' : 'var(--success)'};">${log.result}</div></td>
-                        <td data-label="Catatan"><div style="font-size:0.85rem; line-height:1.4;">${log.interpretation || '-'}</div></td>
-                    `;
-                } else if(log.type === 'GENERIC' || log.testName) {
-                    // Default for TEST/Laporan or Generic
-                    const tagClass = log.testName ? `tag-${(log.indication || '').toLowerCase().replace(/ /g, '-')}` : 'tag-normal';
-                    content = `
-                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td data-label="Kategori"><span class="tag" style="background:#f1f5f9; color:#475569;">${log.testName ? 'HASIL TES' : log.category || 'AKTIVITAS'}</span></td>
-                        <td data-label="Detail"><div style="font-weight:600; color:var(--primary);">${log.testName || log.name}</div><div style="font-size:0.7rem; color:var(--text-muted);">${log.category || 'Umum'}</div></td>
-                        <td data-label="Hasil"><div style="font-weight:800;">${log.value} ${log.unit}</div>${log.indication ? `<span class="tag ${tagClass}" style="font-size:0.6rem;">${log.indication}</span>` : ''}</td>
-                        <td data-label="Catatan"><div style="font-size:0.8rem; line-height:1.3;"><strong>${log.reportName || ''}</strong><br>${log.suggestions || log.notes || '-'}</div></td>
+                        <td><span class="mobile-label">Pasien & Waktu</span>${dateHeader}</td>
+                        <td><span class="mobile-label">Kategori</span><span class="tag" style="background:#f5f3ff; color:#5b21b6;">SKRINING MENTAL</span></td>
+                        <td><span class="mobile-label">Detail</span><div style="font-weight:600; color:var(--primary);"><i data-lucide="brain" style="width:12px;"></i> ${log.tool}</div><div style="font-size:0.75rem; color:var(--text-muted);">Skor: <strong>${log.score}</strong></div></td>
+                        <td><span class="mobile-label">Hasil/Log</span><div style="font-weight:800; color:${log.score > 14 ? 'var(--danger)' : 'var(--success)'};">${log.result}</div></td>
+                        <td><span class="mobile-label">Catatan</span><div style="font-size:0.85rem; line-height:1.4;">${log.interpretation || '-'}</div></td>
                     `;
                 } else {
-                    // Fallback
+                    // Default for TEST/Laporan
+                    const tagClass = `tag-${(log.indication || '').toLowerCase().replace(/ /g, '-')}`;
                     content = `
-                        <td data-label="Pasien & Waktu"><div style="font-weight:700;">${log.author}</div><div style="font-size:0.75rem">${new Date(log.timestamp).toLocaleString()}</div></td>
-                        <td data-label="Kategori"><span class="tag">${log.type}</span></td>
-                        <td data-label="Detail">${log.name || '-'}</td>
-                        <td data-label="Hasil">${log.value || '-'}</td>
-                        <td data-label="Catatan">${log.notes || '-'}</td>
+                        <td><span class="mobile-label">Pasien & Waktu</span>${dateHeader}</td>
+                        <td><span class="mobile-label">Kategori</span><span class="tag" style="background:#f1f5f9; color:#475569;">HASIL TES</span></td>
+                        <td><span class="mobile-label">Detail</span><div style="font-weight:600; color:var(--primary);">${log.testName}</div><div style="font-size:0.7rem; color:var(--text-muted);">${log.category || 'Umum'}</div></td>
+                        <td><span class="mobile-label">Hasil/Log</span><div style="font-weight:800;">${log.value} ${log.unit}</div><span class="tag ${tagClass}" style="font-size:0.6rem;">${log.indication}</span></td>
+                        <td><span class="mobile-label">Catatan</span><div style="font-size:0.8rem; line-height:1.3;">${log.suggestions || '-'}</div></td>
                     `;
                 }
                 
-                tr.innerHTML = content + `<td data-label="Aksi"><button class="btn-outline" onclick="deleteLog('${log.logId}')" style="padding:4px;"><i data-lucide="trash-2" style="width:14px; color:var(--danger);"></i></button></td>`;
+                tr.innerHTML = content + `
+                    <td style="border:none; white-space:nowrap;">
+                        <button class="btn-outline" onclick="editLog('${log.logId || log.id}')" style="padding:4px; margin-right:4px;"><i data-lucide="edit-2" style="width:14px; color:var(--primary);"></i></button>
+                        <button class="btn-outline" onclick="deleteLog('${log.logId || log.id}')" style="padding:4px;"><i data-lucide="trash-2" style="width:14px; color:var(--danger);"></i></button>
+                    </td>`;
                 body.appendChild(tr);
             });
             lucide.createIcons();
-        }
+        } 
 
         window.deleteLog = (id) => {
             if(confirm('Hapus log?')) { logs = logs.filter(l => l.logId != id); localStorage.setItem('health_logs', JSON.stringify(logs)); renderLogs(); }
@@ -1283,18 +1380,29 @@
             const tUnit = document.getElementById(unitId).value;
             const tNotes = document.getElementById(notesId).value;
             
-            logs.unshift({
-                id: Date.now().toString(),
-                timestamp: ts,
-                author: activeProfile,
-                reportName: reportName,
-                testName: tType,
-                value: tVal,
-                unit: tUnit,
-                indication: 'Tercatat',
-                category: reportName,
-                suggestions: tNotes
-            });
+            const editId = document.getElementById('editLogId').value;
+            
+            if (editId) {
+                const idx = logs.findIndex(l => (l.logId || l.id) == editId);
+                if (idx > -1) {
+                    logs[idx] = { ...logs[idx], timestamp: ts, testName: tType, value: tVal, unit: tUnit, suggestions: tNotes };
+                }
+                document.getElementById('editLogId').value = "";
+            } else {
+                logs.unshift({
+                    id: Date.now().toString(),
+                    timestamp: ts,
+                    author: activeProfile,
+                    reportName: reportName,
+                    testName: tType,
+                    value: tVal,
+                    unit: tUnit,
+                    indication: 'Tercatat',
+                    category: reportName,
+                    suggestions: tNotes
+                });
+            }
+            
             localStorage.setItem('health_logs', JSON.stringify(logs));
             renderLogs();
             document.getElementById(typeId).parentNode.parentNode.parentNode.reset();
@@ -1303,7 +1411,128 @@
             showToast(reportName + " Berhasil Disimpan!");
         }
 
-        init();
+        window.editLog = (id) => {
+            const log = logs.find(l => (l.logId || l.id) == id);
+            if (!log) return;
+            
+            document.getElementById('editLogId').value = id;
+            
+            // Show correct section and fill form
+            if (log.reportName === "Gula Darah") {
+                showLogSection('glucose');
+                document.getElementById('gluTime').value = log.timestamp;
+                document.getElementById('gluType').value = log.testName;
+                document.getElementById('gluVal').value = log.value;
+            } else if (log.reportName === "Tekanan Darah") {
+                showLogSection('bp');
+                document.getElementById('bpTime').value = log.timestamp;
+                document.getElementById('bpSys').value = log.sys;
+                document.getElementById('bpDia').value = log.dia;
+                document.getElementById('bpPulse').value = log.pulse;
+            } else if (log.reportName === "Kolesterol") {
+                showLogSection('cholesterol');
+                document.getElementById('choTime').value = log.timestamp;
+                document.getElementById('choType').value = log.testName;
+                document.getElementById('choVal').value = log.value;
+            } else if (log.reportName === "Asam Urat") {
+                showLogSection('uric');
+                document.getElementById('uricTime').value = log.timestamp;
+                document.getElementById('uricVal').value = log.value;
+            } else if (log.reportName === "Body Comp") {
+                showLogSection('body');
+                document.getElementById('bodyTime').value = log.timestamp;
+                document.getElementById('bodyWeight').value = log.weight;
+                document.getElementById('bodyBelly').value = log.belly;
+            } else if (log.type === "SYMPTOM") {
+                showLogSection('symptoms');
+                document.getElementById('symName').value = log.name;
+                document.getElementById('symSeverity').value = log.severity;
+                document.getElementById('sevVal').innerText = log.severity;
+                document.getElementById('symStart').value = log.timestamp;
+                document.getElementById('symStatus').value = log.status;
+                document.getElementById('symNotes').value = log.notes;
+            } else if (log.reportName === "Nutrisi") {
+                showLogSection('nutrition');
+                document.getElementById('nutTime').value = log.timestamp;
+                document.getElementById('nutFood').value = log.testName;
+                document.getElementById('nutVal').value = log.value;
+                document.getElementById('nutUnit').value = log.unit;
+                document.getElementById('nutNotes').value = log.suggestions || log.notes;
+            } else if (log.reportName === "Menyusui") {
+                showLogSection('lactation');
+                document.getElementById('lacTime').value = log.timestamp;
+                document.getElementById('lacType').value = log.testName;
+                document.getElementById('lacVal').value = log.value;
+                document.getElementById('lacUnit').value = log.unit;
+                document.getElementById('lacNotes').value = log.suggestions || log.notes;
+            } else if (log.type === "IMMUNIZATION" || log.type === "IMM") {
+                showLogSection('imm');
+                document.getElementById('logImmName').value = log.name || log.testName;
+                document.getElementById('immLogTime').value = log.timestamp;
+                document.getElementById('immLogLoc').value = log.location;
+                document.getElementById('immLogDoc').value = log.doctor || log.doc;
+                document.getElementById('immLogBatch').value = log.batch;
+                document.getElementById('immLogNotes').value = log.notes || log.suggestions;
+            } else if (log.type === "CONSULT") {
+                showLogSection('consult');
+                document.getElementById('consultTime').value = log.timestamp;
+                document.getElementById('consultDoc').value = log.doc;
+                document.getElementById('consultLoc').value = log.location;
+                document.getElementById('consultNotes').value = log.notes;
+                currentPrescriptions = [...(log.prescriptions || [])];
+                renderPrescriptions();
+            } else if (log.type === "REPRO") {
+                showLogSection('repro');
+                document.getElementById('reproType').value = log.reproType;
+                toggleReproFields(log.reproType);
+                document.getElementById('reproTime').value = log.timestamp;
+                document.getElementById('reproNotes').value = log.notes;
+                if(log.reproType==='PERIOD') {
+                    document.getElementById('periodFlow').value = log.details.flow;
+                    document.getElementById('periodColor').value = log.details.color;
+                } else if(log.reproType==='PREGNANCY') {
+                    document.getElementById('pregWeight').value = log.details.weight;
+                    document.getElementById('pregBelly').value = log.details.belly;
+                    document.getElementById('pregKicks').value = log.details.kicks;
+                }
+            } else if (log.type === "CLINICAL") {
+                showLogSection('clinical');
+                document.getElementById('clinicalType').value = log.clinicalType;
+                document.getElementById('clinicalName').value = log.name || log.testName;
+                document.getElementById('clinicalLoc').value = log.location;
+                document.getElementById('clinicalStart').value = log.timestamp;
+                document.getElementById('clinicalEnd').value = log.endTimestamp;
+                document.getElementById('clinicalDoc').value = log.doc;
+                document.getElementById('clinicalNotes').value = log.notes;
+            } else if (log.type === "MEDICINE") {
+                showLogSection('meds');
+                document.getElementById('medTimestamp').value = log.timestamp;
+                document.getElementById('logMedName').value = log.medName;
+                document.getElementById('logMedQty').value = log.qty;
+                document.getElementById('logMedUnit').value = log.unit;
+                document.getElementById('logMedNotes').value = log.notes;
+            } else if (log.reportName === "Puasa") {
+                showLogSection('fasting');
+                document.getElementById('fasTime').value = log.timestamp;
+                document.getElementById('fasType').value = log.testName;
+                document.getElementById('fasVal').value = log.value;
+                document.getElementById('fasNotes').value = log.suggestions || log.notes;
+            } else if (log.reportName === "Tidur") {
+                showLogSection('sleep');
+                document.getElementById('slpTime').value = log.timestamp;
+                document.getElementById('slpType').value = log.testName;
+                document.getElementById('slpVal').value = log.value;
+                document.getElementById('slpNotes').value = log.suggestions || log.notes;
+            }
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+            lucide.createIcons();
+        });
     </script>
     
     <nav class="sidebar-nav">
