@@ -269,7 +269,7 @@
 
         <main>
             <!-- SECTION: DOCTOR CONSULTATION -->
-            <div id="sectionConsult" class="log-section">
+            <div id="sectionConsult" class="log-section" style="display:none;">
                 <div class="card">
                     <div class="section-header"><i data-lucide="user-check"></i> Log Konsultasi Dokter <span class="activePatientLabel"></span></div>
                     <form id="consultForm">
@@ -303,6 +303,107 @@
                         <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;">
                             <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Simpan Log Konsultasi</button>
                         </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SECTION: BLOOD GLUCOSE -->
+            <div id="sectionGlucose" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="droplet"></i> Log Gula Darah <span class="activePatientLabel"></span></div>
+                    <form onsubmit="handleGenericLogSubmit(event, 'Gula Darah', 'gluTime', 'gluType', 'gluVal', 'gluUnit', 'gluNotes')">
+                        <div class="grid">
+                            <div class="form-group"><label>Waktu Cek</label><input type="datetime-local" id="gluTime" required></div>
+                            <div class="form-group">
+                                <label>Jenis Tes</label>
+                                <select id="gluType" required>
+                                    <option value="Sewaktu">Sewaktu</option>
+                                    <option value="Puasa">Puasa</option>
+                                    <option value="2 Jam PP">2 Jam PP</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Hasil Nilai</label><input type="number" id="gluVal" placeholder="mg/dL" required oninput="handleValueInput(this, 'mg/dL', 'Gula Darah')"></div>
+                            <div class="form-group"><label>Satuan</label><input type="text" id="gluUnit" value="mg/dL" readonly></div>
+                        </div>
+                        <input type="hidden" class="test-indication" id="gluInd">
+                        <input type="hidden" class="test-suggestions" id="gluSug">
+                        <div class="form-group" style="margin-top:1rem;"><label>Catatan Tambahan</label><input type="text" id="gluNotes" placeholder="Habis makan manis, dll"></div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;"><button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Rekam Gula Darah</button></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SECTION: BLOOD PRESSURE -->
+            <div id="sectionBp" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="heart"></i> Log Tekanan Darah <span class="activePatientLabel"></span></div>
+                    <form id="bpForm">
+                        <div class="grid">
+                            <div class="form-group"><label>Waktu Periksa</label><input type="datetime-local" id="bpTime" required></div>
+                            <div class="form-group"><label>Sistolik (Atas)</label><input type="number" id="bpSys" placeholder="mmHg" required></div>
+                            <div class="form-group"><label>Diastolik (Bawah)</label><input type="number" id="bpDia" placeholder="mmHg" required></div>
+                            <div class="form-group"><label>Denyut Nadi</label><input type="number" id="bpPulse" placeholder="bpm"></div>
+                        </div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;"><button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Rekam Tensi</button></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SECTION: CHOLESTEROL -->
+            <div id="sectionCholesterol" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="activity"></i> Log Kolesterol <span class="activePatientLabel"></span></div>
+                    <form onsubmit="handleGenericLogSubmit(event, 'Kolesterol', 'choTime', 'choType', 'choVal', 'choUnit', 'choNotes')">
+                        <div class="grid">
+                            <div class="form-group"><label>Waktu Cek</label><input type="datetime-local" id="choTime" required></div>
+                            <div class="form-group">
+                                <label>Jenis Kolesterol</label>
+                                <select id="choType" required>
+                                    <option value="Kolesterol Total">Total</option>
+                                    <option value="LDL">LDL (Jahat)</option>
+                                    <option value="HDL">HDL (Baik)</option>
+                                    <option value="Trigliserida">Trigliserida</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Hasil Nilai</label><input type="number" id="choVal" placeholder="mg/dL" required oninput="handleValueInput(this, 'mg/dL', 'Kolesterol')"></div>
+                            <div class="form-group"><label>Satuan</label><input type="text" id="choUnit" value="mg/dL" readonly></div>
+                        </div>
+                        <input type="hidden" class="test-indication" id="choInd">
+                        <input type="hidden" class="test-suggestions" id="choSug">
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;"><button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Rekam Kolesterol</button></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SECTION: URIC ACID -->
+            <div id="sectionUric" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="flask-conical"></i> Log Asam Urat <span class="activePatientLabel"></span></div>
+                    <form onsubmit="handleGenericLogSubmit(event, 'Asam Urat', 'uricTime', 'uricType', 'uricVal', 'uricUnit', 'uricNotes')">
+                        <div class="grid">
+                            <div class="form-group"><label>Waktu Cek</label><input type="datetime-local" id="uricTime" required></div>
+                            <input type="hidden" id="uricType" value="Asam Urat">
+                            <div class="form-group"><label>Hasil Nilai</label><input type="number" step="any" id="uricVal" placeholder="mg/dL" required oninput="handleValueInput(this, 'mg/dL', 'Asam Urat')"></div>
+                            <div class="form-group"><label>Satuan</label><input type="text" id="uricUnit" value="mg/dL" readonly></div>
+                        </div>
+                        <input type="hidden" class="test-indication" id="uricInd">
+                        <input type="hidden" class="test-suggestions" id="uricSug">
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;"><button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Rekam Asam Urat</button></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SECTION: BODY COMPOSITION -->
+            <div id="sectionBody" class="log-section" style="display:none;">
+                <div class="card">
+                    <div class="section-header"><i data-lucide="scale"></i> Antropometri & Berat Badan <span class="activePatientLabel"></span></div>
+                    <form id="bodyForm">
+                        <div class="grid">
+                            <div class="form-group"><label>Waktu Timbang</label><input type="datetime-local" id="bodyTime" required></div>
+                            <div class="form-group"><label>Berat Badan (kg)</label><input type="number" step="any" id="bodyWeight" placeholder="kg" required></div>
+                            <div class="form-group"><label>Lingkar Perut (cm)</label><input type="number" step="any" id="bodyBelly" placeholder="cm"></div>
+                        </div>
+                        <div style="display:flex; justify-content:flex-end; margin-top:1.5rem;"><button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Rekam Berat Badan</button></div>
                     </form>
                 </div>
             </div>
@@ -953,29 +1054,55 @@
             }
         };
 
-        window.handleValueInput = (input) => {
+        window.handleValueInput = (input, forceUnit, forceTestName) => {
             const row = input.closest('.test-entry-row');
-            const val = parseFloat(input.value);
-            const low = parseFloat(row.dataset.low);
-            const high = parseFloat(row.dataset.high);
-            const indField = row.querySelector('.test-indication');
-            const sugField = row.querySelector('.test-suggestions');
+            let indField, sugField, low, high, lowInd, lowSug, highInd, highSug;
 
+            if (row) {
+                indField = row.querySelector('.test-indication');
+                sugField = row.querySelector('.test-suggestions');
+                low = parseFloat(row.dataset.low);
+                high = parseFloat(row.dataset.high);
+                lowInd = row.dataset.lowInd;
+                lowSug = row.dataset.lowSug;
+                highInd = row.dataset.highInd;
+                highSug = row.dataset.highSug;
+            } else {
+                // Specialized forms (Glucose, BP, etc)
+                const testName = forceTestName || "";
+                const match = refData.find(r => r.testName.toLowerCase() === testName.toLowerCase());
+                if (!match) return;
+
+                low = parseFloat(match.lowerLimit);
+                high = parseFloat(match.upperLimit);
+                lowInd = match.lowerLimitIndicators;
+                lowSug = match.lowerLimitSuggestions;
+                highInd = match.upperLimitIndicators;
+                highSug = match.upperLimitSuggestions;
+
+                // Find fields by prefix
+                const prefix = input.id.substring(0, 3); // 'glu', 'cho', 'uri'
+                indField = document.getElementById(prefix + 'Ind');
+                sugField = document.getElementById(prefix + 'Sug');
+            }
+
+            const val = parseFloat(input.value);
             if (isNaN(val)) {
-                indField.value = "Menunggu Data";
-                sugField.value = "";
+                if (indField) indField.value = "Menunggu Data";
                 return;
             }
 
-            if (!isNaN(low) && val < low) {
-                indField.value = row.dataset.lowInd || "Rendah";
-                sugField.value = row.dataset.lowSug || "";
-            } else if (!isNaN(high) && val > high) {
-                indField.value = row.dataset.highInd || "Tinggi";
-                sugField.value = row.dataset.highSug || "";
-            } else {
-                indField.value = "Normal";
-                sugField.value = "";
+            if (indField) {
+                if (!isNaN(low) && val < low) {
+                    indField.value = lowInd || "Rendah";
+                    if (sugField) sugField.value = lowSug || "";
+                } else if (!isNaN(high) && val > high) {
+                    indField.value = highInd || "Tinggi";
+                    if (sugField) sugField.value = highSug || "";
+                } else {
+                    indField.value = "Normal";
+                    if (sugField) sugField.value = "";
+                }
             }
         };
 
@@ -1143,6 +1270,65 @@
             
             localStorage.setItem('health_logs', JSON.stringify(logs));
             showToast('Catatan klinis berhasil disimpan.');
+            renderLogs();
+            e.target.reset();
+        };
+
+        document.getElementById('bpForm').onsubmit = (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('editLogId').value;
+            const entry = {
+                logId: editId ? editId : 'BP-' + Date.now(),
+                type: 'TEST',
+                author: activeProfile,
+                reportName: 'Tekanan Darah',
+                testName: 'Tekanan Darah',
+                timestamp: document.getElementById('bpTime').value,
+                sys: parseFloat(document.getElementById('bpSys').value),
+                dia: parseFloat(document.getElementById('bpDia').value),
+                pulse: parseFloat(document.getElementById('bpPulse').value),
+                value: document.getElementById('bpSys').value + '/' + document.getElementById('bpDia').value,
+                unit: 'mmHg',
+                indication: 'Tercatat'
+            };
+            if (editId) {
+                const idx = logs.findIndex(l => (l.logId || l.id) == editId);
+                if (idx > -1) logs[idx] = entry;
+                document.getElementById('editLogId').value = "";
+            } else {
+                logs = [entry, ...logs];
+            }
+            localStorage.setItem('health_logs', JSON.stringify(logs));
+            showToast('Tekanan darah berhasil disimpan.');
+            renderLogs();
+            e.target.reset();
+        };
+
+        document.getElementById('bodyForm').onsubmit = (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('editLogId').value;
+            const entry = {
+                logId: editId ? editId : 'BODY-' + Date.now(),
+                type: 'TEST',
+                author: activeProfile,
+                reportName: 'Body Comp',
+                testName: 'Berat Badan',
+                timestamp: document.getElementById('bodyTime').value,
+                weight: parseFloat(document.getElementById('bodyWeight').value),
+                belly: parseFloat(document.getElementById('bodyBelly').value),
+                value: document.getElementById('bodyWeight').value,
+                unit: 'kg',
+                indication: 'Tercatat'
+            };
+            if (editId) {
+                const idx = logs.findIndex(l => (l.logId || l.id) == editId);
+                if (idx > -1) logs[idx] = entry;
+                document.getElementById('editLogId').value = "";
+            } else {
+                logs = [entry, ...logs];
+            }
+            localStorage.setItem('health_logs', JSON.stringify(logs));
+            showToast('Data anthropometri berhasil disimpan.');
             renderLogs();
             e.target.reset();
         };
