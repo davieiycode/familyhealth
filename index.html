@@ -62,6 +62,8 @@
         #toast.active { transform: translateX(-50%) translateY(0); }
 
         .hidden { display: none !important; }
+        @keyframes rotating { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .rotating { animation: rotating 2s linear infinite; display: inline-block; vertical-align: middle; margin-right: 5px; }
     </style>
 </head>
 <body>
@@ -129,16 +131,52 @@
             setTimeout(() => document.getElementById('toast').classList.remove('active'), 3000);
         }
 
-        function saveUrlAndContinue(url) {
+        async function saveUrlAndContinue(url) {
             if (!url.includes('script.google.com')) {
                 alert('Tautan tidak lazim. Harap gunakan URL Web App Google Apps Script Anda.');
                 return;
             }
             localStorage.setItem('familyhealth_appscript_url', url);
             showToast("Konfigurasi Cloud Berhasil Disimpan!");
-            setTimeout(() => {
-                goToDashboard();
-            }, 1500);
+            
+            // Auto download data right after saving URL
+            await autoDownloadData(url);
+        }
+
+        async function autoDownloadData(url) {
+            const desc = document.getElementById('onboardDesc');
+            const originalDesc = desc.innerHTML;
+            desc.innerHTML = `<i data-lucide="loader" class="rotating"></i> <strong>Sedang mensinkronkan data awal dari Cloud...</strong><br>Mohon tunggu sebentar.`;
+            lucide.createIcons();
+
+            try {
+                const response = await fetch(url + '?_t=' + Date.now());
+                const result = await response.json();
+
+                if (result.status === "success" && result.data) {
+                    const data = result.data.payload || result.data;
+                    
+                    // Populate localStorage
+                    if (data.health_logs) localStorage.setItem('health_logs', JSON.stringify(data.health_logs));
+                    if (data.health_profiles) localStorage.setItem('health_profiles', JSON.stringify(data.health_profiles));
+                    if (data.health_reference_data) localStorage.setItem('health_reference_data', JSON.stringify(data.health_reference_data));
+                    if (data.health_meds_data) localStorage.setItem('health_meds_data', JSON.stringify(data.health_meds_data));
+                    if (data.health_docs_data) localStorage.setItem('health_docs_data', JSON.stringify(data.health_docs_data));
+                    if (data.health_clinics_data) localStorage.setItem('health_clinics_data', JSON.stringify(data.health_clinics_data));
+                    if (data.health_imm_data) localStorage.setItem('health_imm_data', JSON.stringify(data.health_imm_data));
+
+                    showToast("Basis data berhasil diunduh ke perangkat!");
+                } else {
+                    showToast("Berhasil hubungkan Cloud, tapi data belum ada.");
+                }
+            } catch (err) {
+                console.error("Gagal unduh otomatis:", err);
+                showToast("Galat saat mengunduh data awal.");
+            } finally {
+                setTimeout(() => {
+                    goToDashboard();
+                }, 1500);
+            }
         }
 
         function saveManualUrl() {
