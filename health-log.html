@@ -279,11 +279,11 @@
                                 <input type="text" id="consultDoc" list="docRefList" placeholder="Nama Dokter" required>
                             </div>
                             <div>
-                                <label>Tempat / Faskes</label>
-                                <input type="text" id="consultLoc" list="clinicSuggestList" placeholder="Klinik/RS">
+                                <label>Lokasi / RS / Klinik</label>
+                                <input type="text" id="consultLoc" list="clinicSuggestList" placeholder="Nama Faskes" required>
                             </div>
                             <div>
-                                <label>Waktu</label>
+                                <label>Waktu Konsultasi</label>
                                 <input type="datetime-local" id="consultTime" required>
                             </div>
                         </div>
@@ -1121,6 +1121,65 @@
             e.target.reset();
         };
 
+        document.getElementById('bpForm').onsubmit = (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('editLogId').value;
+            const entry = {
+                logId: editId ? editId : 'BP-' + Date.now(),
+                type: 'TEST',
+                author: activeProfile,
+                reportName: 'Tekanan Darah',
+                testName: 'Tekanan Darah',
+                timestamp: document.getElementById('bpTime').value,
+                sys: parseFloat(document.getElementById('bpSys').value),
+                dia: parseFloat(document.getElementById('bpDia').value),
+                pulse: parseFloat(document.getElementById('bpPulse').value),
+                value: document.getElementById('bpSys').value + '/' + document.getElementById('bpDia').value,
+                unit: 'mmHg',
+                indication: 'Tercatat'
+            };
+            if (editId) {
+                const idx = logs.findIndex(l => (l.logId || l.id) == editId);
+                if (idx > -1) logs[idx] = entry;
+                document.getElementById('editLogId').value = "";
+            } else {
+                logs = [entry, ...logs];
+            }
+            localStorage.setItem('health_logs', JSON.stringify(logs));
+            showToast('Tekanan darah berhasil disimpan.');
+            renderLogs();
+            e.target.reset();
+        };
+
+        document.getElementById('bodyForm').onsubmit = (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('editLogId').value;
+            const entry = {
+                logId: editId ? editId : 'BODY-' + Date.now(),
+                type: 'TEST',
+                author: activeProfile,
+                reportName: 'Body Comp',
+                testName: 'Berat Badan',
+                timestamp: document.getElementById('bodyTime').value,
+                weight: parseFloat(document.getElementById('bodyWeight').value),
+                belly: parseFloat(document.getElementById('bodyBelly').value),
+                value: document.getElementById('bodyWeight').value,
+                unit: 'kg',
+                indication: 'Tercatat'
+            };
+            if (editId) {
+                const idx = logs.findIndex(l => (l.logId || l.id) == editId);
+                if (idx > -1) logs[idx] = entry;
+                document.getElementById('editLogId').value = "";
+            } else {
+                logs = [entry, ...logs];
+            }
+            localStorage.setItem('health_logs', JSON.stringify(logs));
+            showToast('Data anthropometri berhasil disimpan.');
+            renderLogs();
+            e.target.reset();
+        };
+
         document.getElementById('immLogForm').onsubmit = (e) => {
             e.preventDefault();
             const editId = document.getElementById('editLogId').value;
@@ -1419,32 +1478,32 @@
             
             // Show correct section and fill form
             if (log.reportName === "Gula Darah") {
-                showLogSection('glucose');
+                switchTab('glucose');
                 document.getElementById('gluTime').value = log.timestamp;
                 document.getElementById('gluType').value = log.testName;
                 document.getElementById('gluVal').value = log.value;
             } else if (log.reportName === "Tekanan Darah") {
-                showLogSection('bp');
+                switchTab('bp');
                 document.getElementById('bpTime').value = log.timestamp;
                 document.getElementById('bpSys').value = log.sys;
                 document.getElementById('bpDia').value = log.dia;
                 document.getElementById('bpPulse').value = log.pulse;
             } else if (log.reportName === "Kolesterol") {
-                showLogSection('cholesterol');
+                switchTab('cholesterol');
                 document.getElementById('choTime').value = log.timestamp;
                 document.getElementById('choType').value = log.testName;
                 document.getElementById('choVal').value = log.value;
             } else if (log.reportName === "Asam Urat") {
-                showLogSection('uric');
+                switchTab('uric');
                 document.getElementById('uricTime').value = log.timestamp;
                 document.getElementById('uricVal').value = log.value;
             } else if (log.reportName === "Body Comp") {
-                showLogSection('body');
+                switchTab('body');
                 document.getElementById('bodyTime').value = log.timestamp;
                 document.getElementById('bodyWeight').value = log.weight;
                 document.getElementById('bodyBelly').value = log.belly;
             } else if (log.type === "SYMPTOM") {
-                showLogSection('symptoms');
+                switchTab('symptoms');
                 document.getElementById('symName').value = log.name;
                 document.getElementById('symSeverity').value = log.severity;
                 document.getElementById('sevVal').innerText = log.severity;
@@ -1452,21 +1511,21 @@
                 document.getElementById('symStatus').value = log.status;
                 document.getElementById('symNotes').value = log.notes;
             } else if (log.reportName === "Nutrisi") {
-                showLogSection('nutrition');
+                switchTab('nutrition');
                 document.getElementById('nutTime').value = log.timestamp;
                 document.getElementById('nutFood').value = log.testName;
                 document.getElementById('nutVal').value = log.value;
                 document.getElementById('nutUnit').value = log.unit;
                 document.getElementById('nutNotes').value = log.suggestions || log.notes;
             } else if (log.reportName === "Menyusui") {
-                showLogSection('lactation');
+                switchTab('lactation');
                 document.getElementById('lacTime').value = log.timestamp;
                 document.getElementById('lacType').value = log.testName;
                 document.getElementById('lacVal').value = log.value;
                 document.getElementById('lacUnit').value = log.unit;
                 document.getElementById('lacNotes').value = log.suggestions || log.notes;
             } else if (log.type === "IMMUNIZATION" || log.type === "IMM") {
-                showLogSection('imm');
+                switchTab('imm');
                 document.getElementById('logImmName').value = log.name || log.testName;
                 document.getElementById('immLogTime').value = log.timestamp;
                 document.getElementById('immLogLoc').value = log.location;
@@ -1474,7 +1533,7 @@
                 document.getElementById('immLogBatch').value = log.batch;
                 document.getElementById('immLogNotes').value = log.notes || log.suggestions;
             } else if (log.type === "CONSULT") {
-                showLogSection('consult');
+                switchTab('consult');
                 document.getElementById('consultTime').value = log.timestamp;
                 document.getElementById('consultDoc').value = log.doc;
                 document.getElementById('consultLoc').value = log.location;
@@ -1482,7 +1541,7 @@
                 currentPrescriptions = [...(log.prescriptions || [])];
                 renderPrescriptions();
             } else if (log.type === "REPRO") {
-                showLogSection('repro');
+                switchTab('repro');
                 document.getElementById('reproType').value = log.reproType;
                 toggleReproFields(log.reproType);
                 document.getElementById('reproTime').value = log.timestamp;
@@ -1496,7 +1555,7 @@
                     document.getElementById('pregKicks').value = log.details.kicks;
                 }
             } else if (log.type === "CLINICAL") {
-                showLogSection('clinical');
+                switchTab('clinical');
                 document.getElementById('clinicalType').value = log.clinicalType;
                 document.getElementById('clinicalName').value = log.name || log.testName;
                 document.getElementById('clinicalLoc').value = log.location;
@@ -1505,20 +1564,20 @@
                 document.getElementById('clinicalDoc').value = log.doc;
                 document.getElementById('clinicalNotes').value = log.notes;
             } else if (log.type === "MEDICINE") {
-                showLogSection('meds');
+                switchTab('meds');
                 document.getElementById('medTimestamp').value = log.timestamp;
                 document.getElementById('logMedName').value = log.medName;
                 document.getElementById('logMedQty').value = log.qty;
                 document.getElementById('logMedUnit').value = log.unit;
                 document.getElementById('logMedNotes').value = log.notes;
             } else if (log.reportName === "Puasa") {
-                showLogSection('fasting');
+                switchTab('fasting');
                 document.getElementById('fasTime').value = log.timestamp;
                 document.getElementById('fasType').value = log.testName;
                 document.getElementById('fasVal').value = log.value;
                 document.getElementById('fasNotes').value = log.suggestions || log.notes;
             } else if (log.reportName === "Tidur") {
-                showLogSection('sleep');
+                switchTab('sleep');
                 document.getElementById('slpTime').value = log.timestamp;
                 document.getElementById('slpType').value = log.testName;
                 document.getElementById('slpVal').value = log.value;
